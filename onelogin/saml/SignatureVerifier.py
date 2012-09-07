@@ -120,6 +120,8 @@ def verify(
                     cert_filename,
                     '--id-attr:ID',
                     'urn:oasis:names:tc:SAML:2.0:assertion:Assertion',
+                    '--id-attr:ID',
+                    'urn:oasis:names:tc:SAML:2.0:protocol:Response',
                     xml_filename,
                     ]
 
