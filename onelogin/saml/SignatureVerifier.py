@@ -116,13 +116,14 @@ def verify(
                 cmds = [
                     xmlsec_bin,
                     '--verify',
+                    '--dtd-file',
+                    'saml.dtd',
                     '--pubkey-cert-pem',
                     cert_filename,
                     '--id-attr:ID',
                     'urn:oasis:names:tc:SAML:2.0:assertion:Assertion',
                     xml_filename,
                     ]
-
                 proc = _subprocess.Popen(
                     cmds,
                     stderr=_subprocess.PIPE,
