@@ -34,6 +34,7 @@ class ExampleCommand(_install.install):
 
 install_requires = [
         'lxml>=2.3',
+        'python-dateutil<2.0',
         ]
 tests_require = [
         'fudge >=0.9.5',
@@ -42,7 +43,7 @@ tests_require = [
 
 setup(
     name='onelogin.saml',
-    version='0.0.1',
+    version='0.0.2',
     description="Python client library for SAML Version 2.0",
     packages = find_packages(),
     namespace_packages = ['onelogin'],

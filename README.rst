@@ -30,6 +30,7 @@ Python Requirements
 - python2.6
 - python2.6-dev
 - lxml 2.3 or greater
+- python-dateutil<2.0 (>2.0 for python 3.x)
 
 Test Requirements
 =================
