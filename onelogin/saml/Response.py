@@ -2,6 +2,8 @@ import base64
 
 from lxml import etree
 from datetime import datetime, timedelta
+import dateutil.tz
+import dateutil.parser
 
 from onelogin.saml import SignatureVerifier
 
@@ -58,7 +60,7 @@ class Response(object):
         self._signature = signature
 
     def _parse_datetime(self, dt):
-        return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ')
+        return dateutil.parser.parse(dt)
 
     def _get_name_id(self):
         result = self._document.xpath(
@@ -101,7 +103,7 @@ class Response(object):
         Return True if valid, otherwise False.
         """
         if _clock is None:
-            _clock = datetime.utcnow
+            _clock = lambda :datetime.now(dateutil.tz.tzutc())
         if _verifier is None:
             _verifier = SignatureVerifier.verify
 

@@ -3,6 +3,8 @@ from datetime import datetime
 import base64
 import fudge
 
+import dateutil.tz
+
 from nose.tools import eq_ as eq
 
 from onelogin.saml.test.util import assert_raises
@@ -310,12 +312,11 @@ class TestResponse(object):
             signature=None,
             )
         msg = assert_raises(
-            ResponseConditionError,
+            ResponseValidationError,
             res.is_valid,
             )
-
         eq(str(msg),
-           ('There was a problem validating a condition: Did not find NotBefore '
+           ('There was a problem validating the response: Current time is on or after NotOnOrAfter '
             + 'condition'
             ),
            )
@@ -399,7 +400,7 @@ class TestResponse(object):
             )
 
         def fake_clock():
-            return datetime(2004, 12, 05, 9, 16, 45, 462796)
+            return datetime(2004, 12, 05, 9, 16, 45, 462796,tzinfo=dateutil.tz.tzutc())
         msg = assert_raises(
             ResponseValidationError,
             res.is_valid,
@@ -421,7 +422,7 @@ class TestResponse(object):
             )
 
         def fake_clock():
-            return datetime(2004, 12, 05, 9, 30, 45, 462796)
+            return datetime(2004, 12, 05, 9, 30, 45, 462796,tzinfo=dateutil.tz.tzutc())
         msg = assert_raises(
             ResponseValidationError,
             res.is_valid,
@@ -443,7 +444,7 @@ class TestResponse(object):
             )
 
         def fake_clock():
-            return datetime(2004, 12, 05, 9, 18, 45, 462796)
+            return datetime(2004, 12, 05, 9, 18, 45, 462796,tzinfo=dateutil.tz.tzutc())
 
         fake_verifier = fudge.Fake(
             'verifier',
@@ -460,3 +461,61 @@ class TestResponse(object):
             )
 
         eq(msg, True)
+
+    @fudge.with_fakes
+    def test_is_valid_timezonedifferent(self):
+        encoded_response = base64.b64encode(test_response)
+        res = Response(
+            response=encoded_response,
+            signature='foo signature',
+            )
+
+        def fake_clock():
+            return datetime(2004, 12, 05, 4, 18, 45, 462796,tzinfo=dateutil.tz.tzstr('EST5EDT'))
+
+        fake_verifier = fudge.Fake(
+            'verifier',
+            callable=True,
+            )
+        fake_verifier.times_called(1)
+        fake_verifier.with_args(res._document, 'foo signature')
+
+        fake_verifier.returns(True)
+
+        msg = res.is_valid(
+            _clock=fake_clock,
+            _verifier=fake_verifier,
+            )
+
+        eq(msg, True)
+    @fudge.with_fakes
+    def test_is_invalid_timezonedifferent(self):
+        encoded_response = base64.b64encode(test_response)
+        res = Response(
+            response=encoded_response,
+            signature='foo signature',
+            )
+
+        def fake_clock():
+            return datetime(2004, 12, 05, 9, 18, 45, 462796,tzinfo=dateutil.tz.tzstr('EST5EDT'))
+
+        fake_verifier = fudge.Fake(
+            'verifier',
+            callable=True,
+            )
+        fake_verifier.times_called(1)
+        fake_verifier.with_args(res._document, 'foo signature')
+
+        fake_verifier.returns(True)
+
+        msg = assert_raises(
+            ResponseValidationError,
+            res.is_valid,
+            _clock=fake_clock,
+            )
+
+        eq(str(msg),
+           ('There was a problem validating the response: Current time is '
+            + 'on or after NotOnOrAfter condition'
+            ),
+           )
