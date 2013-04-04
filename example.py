@@ -57,7 +57,7 @@ class SampleAppHTTPRequestHandler(BaseHTTPRequestHandler):
             self._bad_request()
             return
 
-        url = AuthnRequest.create(**self.settings)
+        url = AuthRequest.create(**self.settings)
         self.send_response(301)
         self.send_header("Location", url)
         self.end_headers()
