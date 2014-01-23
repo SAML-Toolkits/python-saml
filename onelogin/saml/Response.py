@@ -58,6 +58,10 @@ class Response(object):
         self._signature = signature
 
     def _parse_datetime(self, dt):
+        # this little trick is used to delete the milliseconds from
+        # the datetime string since it is not supported but sent by
+        # ADFS
+        dt = dt.split('.')[0] + 'Z'
         return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ')
 
     def _get_name_id(self):
