@@ -5,10 +5,11 @@ from datetime import datetime, timedelta
 
 from onelogin.saml import SignatureVerifier
 
-namespaces=dict(
+namespaces = dict(
     samlp='urn:oasis:names:tc:SAML:2.0:protocol',
     saml='urn:oasis:names:tc:SAML:2.0:assertion',
-    )
+)
+
 
 class ResponseValidationError(Exception):
     """There was a problem validating the response"""
@@ -18,6 +19,7 @@ class ResponseValidationError(Exception):
     def __str__(self):
         return '%s: %s' % (self.__doc__, self._msg)
 
+
 class ResponseNameIDError(Exception):
     """There was a problem getting the name ID"""
     def __init__(self, msg):
@@ -26,6 +28,7 @@ class ResponseNameIDError(Exception):
     def __str__(self):
         return '%s: %s' % (self.__doc__, self._msg)
 
+
 class ResponseConditionError(Exception):
     """There was a problem validating a condition"""
     def __init__(self, msg):
@@ -33,6 +36,7 @@ class ResponseConditionError(Exception):
 
     def __str__(self):
         return '%s: %s' % (self.__doc__, self._msg)
+
 
 class Response(object):
     def __init__(
@@ -88,11 +92,11 @@ class Response(object):
         doc="The value requested in the name_identifier_format, e.g., the user's email address",
         )
 
-    def get_assertion_attribute_value(self,attribute_name):
+    def get_assertion_attribute_value(self, attribute_name):
         """
         Get the value of an AssertionAttribute, located in an Assertion/AttributeStatement/Attribute[@Name=attribute_name/AttributeValue tag
         """
-        result = self._document.xpath('/samlp:Response/saml:Assertion/saml:AttributeStatement/saml:Attribute[@Name="%s"]/saml:AttributeValue'%attribute_name,namespaces=namespaces)
+        result = self._document.xpath('/samlp:Response/saml:Assertion/saml:AttributeStatement/saml:Attribute[@Name="%s"]/saml:AttributeValue' % attribute_name, namespaces=namespaces)
         return [n.text.strip() for n in result]
 
     def is_valid(
@@ -124,7 +128,7 @@ class Response(object):
 
         if not_before is None:
             #notbefore condition is not mandatory. If it is not specified, use yesterday as not_before condition
-            not_before = (now-timedelta(1,0,0)).strftime('%Y-%m-%dT%H:%M:%SZ')
+            not_before = (now - timedelta(1, 0, 0)).strftime('%Y-%m-%dT%H:%M:%SZ')
         if not_on_or_after is None:
             raise ResponseConditionError('Did not find NotOnOrAfter condition')
 
