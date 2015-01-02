@@ -29,7 +29,7 @@ class OneLogin_Saml2_Logout_Request(object):
 
     """
 
-    def __init__(self, settings, request=None):
+    def __init__(self, settings, request=None, name_id_value=None):
         """
         Constructs the Logout Request object.
 
@@ -45,7 +45,8 @@ class OneLogin_Saml2_Logout_Request(object):
             security = self.__settings.get_security_data()
 
             uid = OneLogin_Saml2_Utils.generate_unique_id()
-            name_id_value = OneLogin_Saml2_Utils.generate_unique_id()
+            if not name_id_value:
+                name_id_value = OneLogin_Saml2_Utils.generate_unique_id()
             issue_instant = OneLogin_Saml2_Utils.parse_time_to_SAML(OneLogin_Saml2_Utils.now())
 
             cert = None

@@ -272,7 +272,7 @@ class OneLogin_Saml2_Auth(object):
             parameters['Signature'] = self.build_request_signature(saml_request, parameters['RelayState'])
         return self.redirect_to(self.get_sso_url(), parameters)
 
-    def logout(self, return_to=None):
+    def logout(self, return_to=None, name_id=None):
         """
         Initiates the SLO process.
 
@@ -288,7 +288,7 @@ class OneLogin_Saml2_Auth(object):
                 OneLogin_Saml2_Error.SAML_SINGLE_LOGOUT_NOT_SUPPORTED
             )
 
-        logout_request = OneLogin_Saml2_Logout_Request(self.__settings)
+        logout_request = OneLogin_Saml2_Logout_Request(self.__settings, name_id_value=name_id)
 
         saml_request = logout_request.get_request()
 
