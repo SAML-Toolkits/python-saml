@@ -105,7 +105,7 @@ class OneLogin_Saml2_Logout_Request(object):
         if id:
             return "<samlp:SessionIndex>%s</samlp:SessionIndex>" % id 
         else:
-            ""
+            return ""
 
     @staticmethod
     def get_id(request):
