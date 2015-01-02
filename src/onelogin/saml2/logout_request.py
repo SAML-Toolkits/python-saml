@@ -29,7 +29,7 @@ class OneLogin_Saml2_Logout_Request(object):
 
     """
 
-    def __init__(self, settings, request=None, name_id_value=None):
+    def __init__(self, settings, request=None, name_id=None, session_index=None):
         """
         Constructs the Logout Request object.
 
@@ -45,8 +45,10 @@ class OneLogin_Saml2_Logout_Request(object):
             security = self.__settings.get_security_data()
 
             uid = OneLogin_Saml2_Utils.generate_unique_id()
-            if not name_id_value:
+            if not name_id:
                 name_id_value = OneLogin_Saml2_Utils.generate_unique_id()
+            else:
+                name_id_value = name_id
             issue_instant = OneLogin_Saml2_Utils.parse_time_to_SAML(OneLogin_Saml2_Utils.now())
 
             cert = None
@@ -69,6 +71,7 @@ class OneLogin_Saml2_Logout_Request(object):
         Destination="%(single_logout_url)s">
         <saml:Issuer>%(entity_id)s</saml:Issuer>
         %(name_id)s
+        %(session_index)s
     </samlp:LogoutRequest>""" % \
                 {
                     'id': uid,
@@ -76,6 +79,7 @@ class OneLogin_Saml2_Logout_Request(object):
                     'single_logout_url': idp_data['singleLogoutService']['url'],
                     'entity_id': sp_data['entityId'],
                     'name_id': name_id,
+                    'session_index' : self._generate_session_index(session_index)
                 }
         else:
             decoded = b64decode(request)
@@ -95,6 +99,13 @@ class OneLogin_Saml2_Logout_Request(object):
         :rtype: str object
         """
         return OneLogin_Saml2_Utils.deflate_and_base64_encode(self.__logout_request)
+    
+    
+    def _generate_session_index(self,id):
+        if id:
+            return "<samlp:SessionIndex>%s</samlp:SessionIndex>" % id 
+        else:
+            ""
 
     @staticmethod
     def get_id(request):
