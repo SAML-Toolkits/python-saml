@@ -7,6 +7,7 @@ from django.template import RequestContext
 
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.errors import OneLogin_Saml2_Error
 
 
 def init_saml_auth(req):
@@ -49,7 +50,15 @@ def index(request):
         if 'samlSessionIndex' in request.session:
             session_index = request.session['samlSessionIndex']
 
-        return HttpResponseRedirect(auth.logout(name_id=name_id, session_index=session_index))
+        try:
+            # Handle Request or Response from idp.
+            redirect_url = auth.process_slo(delete_session_cb=request.session.flush)
+        except OneLogin_Saml2_Error:
+            # No Request or Response, user is initiating request.
+            # Redirect to a LogoutRequest to idp.
+            redirect_url = auth.logout(name_id=name_id, session_index=session_index)
+        finally:
+            return HttpResponseRedirect(redirect_url)
     elif 'acs' in req['get_data']:
         auth.process_response()
         errors = auth.get_errors()
