@@ -344,7 +344,7 @@ class OneLogin_Saml2_Response(object):
         attributes = {}
         attribute_nodes = self.__query_assertion('/saml:AttributeStatement/saml:Attribute')
         for attribute_node in attribute_nodes:
-            attr_name = attribute_node.get('Name')
+            attr_name = attribute_node.get(self.__settings.get_attribute_name_field())
             values = []
             for attr in attribute_node.iterchildren('{%s}AttributeValue' % OneLogin_Saml2_Constants.NSMAP['saml']):
                 values.append(attr.text)
