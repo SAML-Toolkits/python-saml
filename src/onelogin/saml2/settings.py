@@ -434,7 +434,7 @@ class OneLogin_Saml2_Settings(object):
 
         if 'attributes' in settings:
             defined_types = settings["attributes"].keys()
-            valid_types = ["nameField",]
+            valid_types = ["nameField", ]
             if not all([type in valid_types for type in defined_types]):
                 invalid_types = ", ".join(set(defined_types).difference(set(valid_types)))
                 errors.append('unexpected attribute fields: %s' % invalid_types)
@@ -556,9 +556,9 @@ class OneLogin_Saml2_Settings(object):
 
     def get_attribute_name_field(self):
         """
-        Gets the name of the field that represents the 
+        Gets the name of the field that represents the
         attribute name.  Usually Name or FriendlyName
-    
+
         :returns: Field name
         :rtype: string
         """
