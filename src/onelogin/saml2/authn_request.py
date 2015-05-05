@@ -49,9 +49,19 @@ class OneLogin_Saml2_Authn_Request(object):
 
         destination = idp_data['singleSignOnService']['url']
 
-        name_id_policy_format = sp_data['NameIDFormat']
+        # NameIDPolicy element:
+        name_id_policy_str = ''
+        name_id_policy_attrs = ''
         if 'wantNameIdEncrypted' in security and security['wantNameIdEncrypted']:
             name_id_policy_format = OneLogin_Saml2_Constants.NAMEID_ENCRYPTED
+        else:
+            name_id_policy_format = idp_data.get('NameIDPolicyFormat')
+        if name_id_policy_format:
+            name_id_policy_attrs += 'Format="%s" ' % name_id_policy_format
+        if idp_data['NameIDPolicyAllowCreate']:
+            name_id_policy_attrs += 'AllowCreate="true" '
+        if name_id_policy_attrs:
+            name_id_policy_str = '<samlp:NameIDPolicy %s/>' % name_id_policy_attrs
 
         provider_name_str = ''
         organization_data = settings.get_organization()
@@ -97,9 +107,7 @@ class OneLogin_Saml2_Authn_Request(object):
     ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
     AssertionConsumerServiceURL="%(assertion_url)s">
     <saml:Issuer>%(entity_id)s</saml:Issuer>
-    <samlp:NameIDPolicy
-        Format="%(name_id_policy)s"
-        AllowCreate="true" />
+    %(name_id_policy)s
 %(requested_authn_context_str)s
 </samlp:AuthnRequest>""" % \
             {
@@ -111,7 +119,7 @@ class OneLogin_Saml2_Authn_Request(object):
                 'destination': destination,
                 'assertion_url': sp_data['assertionConsumerService']['url'],
                 'entity_id': sp_data['entityId'],
-                'name_id_policy': name_id_policy_format,
+                'name_id_policy': name_id_policy_str,
                 'requested_authn_context_str': requested_authn_context_str,
             }
 

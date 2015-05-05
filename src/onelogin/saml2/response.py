@@ -287,7 +287,7 @@ class OneLogin_Saml2_Response(object):
             if nameid_nodes:
                 nameid = nameid_nodes[0]
         if nameid is None:
-            raise Exception('Not NameID found in the assertion of the Response')
+            return {'Value': None}
 
         nameid_data = {'Value': nameid.text}
         for attr in ['Format', 'SPNameQualifier', 'NameQualifier']:

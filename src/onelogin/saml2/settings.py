@@ -261,8 +261,19 @@ class OneLogin_Saml2_Settings(object):
             self.__sp['singleLogoutService']['binding'] = OneLogin_Saml2_Constants.BINDING_HTTP_REDIRECT
 
         # Related to nameID
-        if 'NameIDFormat' not in self.__sp:
-            self.__sp['NameIDFormat'] = OneLogin_Saml2_Constants.NAMEID_PERSISTENT
+        if 'NameIDFormats' not in self.__sp:
+            # Check if the older config setting, single NameIDFormat is present:
+            if 'NameIDFormat' in self.__sp:
+                self.__sp['NameIDFormats'] = [self.__sp['NameIDFormat']]
+            else:
+                self.__sp['NameIDFormats'] = [OneLogin_Saml2_Constants.NAMEID_PERSISTENT]
+        if 'NameIDPolicyFormat' not in self.__idp:
+            # Check for the old-style setting 'NameIDFormat' which set both NameIDFormats and NameIDPolicyFormat:
+            if 'NameIDFormat' in self.__sp:
+                self.__idp['NameIDPolicyFormat'] = self.__sp.pop('NameIDFormat')
+                self.__idp['NameIDPolicyAllowCreate'] = True
+        if 'NameIDPolicyAllowCreate' not in self.__idp:
+            self.__idp['NameIDPolicyAllowCreate'] = False  # False is the default according to the spec
         if 'nameIdEncrypted' not in self.__security:
             self.__security['nameIdEncrypted'] = False
 

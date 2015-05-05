@@ -49,7 +49,9 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         settings = OneLogin_Saml2_Settings(settings_info)
         self.assertEqual(len(settings.get_errors()), 0)
 
-        del settings_info['sp']['NameIDFormat']
+        del settings_info['sp']['NameIDFormats']
+        del settings_info['idp']['NameIDPolicyFormat']
+        del settings_info['idp']['NameIDPolicyAllowCreate']
         del settings_info['idp']['x509cert']
         settings_info['idp']['certFingerprint'] = 'afe71c28ef740bc87425be13a2263d37971daA1f9'
         settings = OneLogin_Saml2_Settings(settings_info)
@@ -507,11 +509,15 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         self.assertIn('entityId', idp_data)
         self.assertIn('singleSignOnService', idp_data)
         self.assertIn('singleLogoutService', idp_data)
+        self.assertIn('NameIDPolicyFormat', idp_data)
+        self.assertIn('NameIDPolicyAllowCreate', idp_data)
         self.assertIn('x509cert', idp_data)
 
         self.assertEqual('http://idp.example.com/', idp_data['entityId'])
         self.assertEqual('http://idp.example.com/SSOService.php', idp_data['singleSignOnService']['url'])
         self.assertEqual('http://idp.example.com/SingleLogoutService.php', idp_data['singleLogoutService']['url'])
+        self.assertEqual('urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified', idp_data['NameIDPolicyFormat'])
+        self.assertTrue(idp_data['NameIDPolicyAllowCreate'])
 
         x509cert = 'MIICgTCCAeoCCQCbOlrWDdX7FTANBgkqhkiG9w0BAQUFADCBhDELMAkGA1UEBhMCTk8xGDAWBgNVBAgTD0FuZHJlYXMgU29sYmVyZzEMMAoGA1UEBxMDRm9vMRAwDgYDVQQKEwdVTklORVRUMRgwFgYDVQQDEw9mZWlkZS5lcmxhbmcubm8xITAfBgkqhkiG9w0BCQEWEmFuZHJlYXNAdW5pbmV0dC5ubzAeFw0wNzA2MTUxMjAxMzVaFw0wNzA4MTQxMjAxMzVaMIGEMQswCQYDVQQGEwJOTzEYMBYGA1UECBMPQW5kcmVhcyBTb2xiZXJnMQwwCgYDVQQHEwNGb28xEDAOBgNVBAoTB1VOSU5FVFQxGDAWBgNVBAMTD2ZlaWRlLmVybGFuZy5ubzEhMB8GCSqGSIb3DQEJARYSYW5kcmVhc0B1bmluZXR0Lm5vMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDivbhR7P516x/S3BqKxupQe0LONoliupiBOesCO3SHbDrl3+q9IbfnfmE04rNuMcPsIxB161TdDpIesLCn7c8aPHISKOtPlAeTZSnb8QAu7aRjZq3+PbrP5uW3TcfCGPtKTytHOge/OlJbo078dVhXQ14d1EDwXJW1rRXuUt4C8QIDAQABMA0GCSqGSIb3DQEBBQUAA4GBACDVfp86HObqY+e8BUoWQ9+VMQx1ASDohBjwOsg2WykUqRXF+dLfcUH9dWR63CtZIKFDbStNomPnQz7nbK+onygwBspVEbnHuUihZq3ZUdmumQqCw4Uvs/1Uvq3orOo/WJVhTyvLgFVK2QarQ4/67OZfHd7R+POBXhophSMv1ZOo'
         formated_x509_cert = OneLogin_Saml2_Utils.format_cert(x509cert)
@@ -528,12 +534,12 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         self.assertIn('entityId', sp_data)
         self.assertIn('assertionConsumerService', sp_data)
         self.assertIn('singleLogoutService', sp_data)
-        self.assertIn('NameIDFormat', sp_data)
+        self.assertIn('NameIDFormats', sp_data)
 
         self.assertEqual('http://stuff.com/endpoints/metadata.php', sp_data['entityId'])
         self.assertEqual('http://stuff.com/endpoints/endpoints/acs.php', sp_data['assertionConsumerService']['url'])
         self.assertEqual('http://stuff.com/endpoints/endpoints/sls.php', sp_data['singleLogoutService']['url'])
-        self.assertEqual('urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified', sp_data['NameIDFormat'])
+        self.assertEqual(['urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified'], sp_data['NameIDFormats'])
 
     def testGetSecurityData(self):
         """
