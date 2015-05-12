@@ -72,6 +72,13 @@ class OneLogin_Saml2_Authn_Request(object):
         if is_passive is True:
             is_passive_str = 'IsPassive="true"'
 
+        # to keep backwards compatibility, use POST binding by default
+        # for configurations that didn't specified one, since it
+        # wasn't required previously.
+        acs_binding = sp_data['assertionConsumerService'].get(
+            'binding', OneLogin_Saml2_Constants.BINDING_HTTP_POST
+        )
+
         requested_authn_context_str = ''
         if 'requestedAuthnContext' in security.keys() and security['requestedAuthnContext'] is not False:
             if security['requestedAuthnContext'] is True:
@@ -94,7 +101,7 @@ class OneLogin_Saml2_Authn_Request(object):
     %(is_passive_str)s
     IssueInstant="%(issue_instant)s"
     Destination="%(destination)s"
-    ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+    ProtocolBinding="%(acs_binding)s"
     AssertionConsumerServiceURL="%(assertion_url)s">
     <saml:Issuer>%(entity_id)s</saml:Issuer>
     <samlp:NameIDPolicy
@@ -113,6 +120,7 @@ class OneLogin_Saml2_Authn_Request(object):
                 'entity_id': sp_data['entityId'],
                 'name_id_policy': name_id_policy_format,
                 'requested_authn_context_str': requested_authn_context_str,
+                'acs_binding': acs_binding
             }
 
         self.__authn_request = request
