@@ -52,7 +52,7 @@ class OneLogin_Saml2_Response(object):
             self.decrypted_document = self.__decrypt_assertion(decrypted_document)
 
     @staticmethod
-    def decode_response(self, response):
+    def decode_response(response):
         raise NotImplementedError()
 
     def is_valid(self, request_data, request_id=None):
