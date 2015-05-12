@@ -39,7 +39,7 @@ class OneLogin_Saml2_Response(object):
         """
         self.__settings = settings
         self.__error = None
-        self.response = b64decode(response)
+        self.response = self.__class__.decode_response(response)
         self.document = fromstring(self.response)
         self.decrypted_document = None
         self.encrypted = None
@@ -50,6 +50,10 @@ class OneLogin_Saml2_Response(object):
             decrypted_document = deepcopy(self.document)
             self.encrypted = True
             self.decrypted_document = self.__decrypt_assertion(decrypted_document)
+
+    @staticmethod
+    def decode_response(self, response):
+        raise NotImplementedError()
 
     def is_valid(self, request_data, request_id=None):
         """
@@ -458,3 +462,31 @@ class OneLogin_Saml2_Response(object):
         After execute a validation process, if fails this method returns the cause
         """
         return self.__error
+
+
+class OneLogin_Saml2_Response_Post(OneLogin_Saml2_Response):
+
+    @staticmethod
+    def decode_response(response):
+        """
+        Decodes a HTTP-POST binding response.
+
+        :param response: Encoded Response
+        :returns: Decoded Response
+        :rtype: String
+        """
+        return b64decode(response)
+
+
+class OneLogin_Saml2_Response_Redirect(OneLogin_Saml2_Response):
+
+    @staticmethod
+    def decode_response(response):
+        """
+        Decodes a HTTP-Response binding response.
+
+        :param response: Encoded Response
+        :returns: Decoded Response
+        :rtype: String
+        """
+        return OneLogin_Saml2_Utils.decode_base64_and_inflate(response)
