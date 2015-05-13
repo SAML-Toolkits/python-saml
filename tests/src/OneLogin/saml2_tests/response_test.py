@@ -9,8 +9,7 @@ from os.path import dirname, join, exists
 import unittest
 from xml.dom.minidom import parseString
 
-from onelogin.saml2.response import (
-        OneLogin_Saml2_Response_Post, OneLogin_Saml2_Response_Redirect)
+from onelogin.saml2.response import OneLogin_Saml2_Response_Post
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
