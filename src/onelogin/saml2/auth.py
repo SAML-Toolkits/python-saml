@@ -117,7 +117,7 @@ class OneLogin_Saml2_Auth(object):
         else:
             self.__errors.append('invalid_binding')
             raise OneLogin_Saml2_Error(
-                'SAML Response not found for binding %s'.format(acs_binding.split(':')[-1]),
+                'SAML Response not found for binding %s' % acs_binding.split(':')[-1],
                 OneLogin_Saml2_Error.SAML_RESPONSE_NOT_FOUND
             )
 
