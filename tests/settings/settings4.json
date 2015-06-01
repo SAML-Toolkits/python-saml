@@ -1,0 +1,58 @@
+{
+    "strict": false,
+    "debug": false,
+    "sp": {
+        "entityId": "sp.example.com",
+        "assertionConsumerService": {
+            "url": "https://sp.example.com/saml/?acs",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+        },
+        "singleLogoutService": {
+            "url": "https://sp.example.com/saml?sls",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        },
+        "NameIDFormat": "urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified",
+        "x509cert": "MIIETTCCA7agAwIBAgIJANaOuOCRgiz3MA0GCSqGSIb3DQEBBQUAMIG8MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTE9MDsGA1UEChM0WE1MIFNlY3VyaXR5IExpYnJhcnkgKGh0dHA6Ly93d3cuYWxla3NleS5jb20veG1sc2VjKTEeMBwGA1UECxMVVGVzdCBSb290IENlcnRpZmljYXRlMRYwFAYDVQQDEw1BbGVrc2V5IFNhbmluMSEwHwYJKoZIhvcNAQkBFhJ4bWxzZWNAYWxla3NleS5jb20wHhcNMDUwNzEwMDIyOTAxWhcNMTUwNzA4MDIyOTAxWjCBvDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExPTA7BgNVBAoTNFhNTCBTZWN1cml0eSBMaWJyYXJ5IChodHRwOi8vd3d3LmFsZWtzZXkuY29tL3htbHNlYykxHjAcBgNVBAsTFVRlc3QgUm9vdCBDZXJ0aWZpY2F0ZTEWMBQGA1UEAxMNQWxla3NleSBTYW5pbjEhMB8GCSqGSIb3DQEJARYSeG1sc2VjQGFsZWtzZXkuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDayaFajJxOdVU+8EjwO31S2XqNmYxxbHfiUJO3w2h57OPUkKAcKe5Gvt9hJbPTb3C4blPScOke2RexKnXS7pAXXbxFlgUlZ0QK0K2pdl559OSmrtH3mPP9BJvvDMlxkcNj9/EeD+yGd8GN/yT6PTDh8G/4lszOXL+tyKIkC4Ys/wIDAQABo4IBUzCCAU8wDAYDVR0TBAUwAwEB/zAsBglghkgBhvhCAQ0EHxYdT3BlblNTTCBHZW5lcmF0ZWQgQ2VydGlmaWNhdGUwHQYDVR0OBBYEFNpG6Wvmr9M9quUhS1LtymYo4P6FMIHxBgNVHSMEgekwgeaAFNpG6Wvmr9M9quUhS1LtymYo4P6FoYHCpIG/MIG8MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTE9MDsGA1UEChM0WE1MIFNlY3VyaXR5IExpYnJhcnkgKGh0dHA6Ly93d3cuYWxla3NleS5jb20veG1sc2VjKTEeMBwGA1UECxMVVGVzdCBSb290IENlcnRpZmljYXRlMRYwFAYDVQQDEw1BbGVrc2V5IFNhbmluMSEwHwYJKoZIhvcNAQkBFhJ4bWxzZWNAYWxla3NleS5jb22CCQDWjrjgkYIs9zANBgkqhkiG9w0BAQUFAAOBgQBUXbdOTQwArcNrbxavzARp2JGOnzo6WzTm+OFSXC0F08YwT8jWbht97e8lNNVOBU4Y/38ReZqYC9OqFofG1/O9AdQ58WL/FWg8DgP5MJPTT9kRU3FU01jUiX2+kbdnghZAOJm0ziRNxfNPwIIWPKYXyXEKQQzrnxyFey1hP7cg6A==",
+        "privateKey": "MIICXQIBAAKBgQDayaFajJxOdVU+8EjwO31S2XqNmYxxbHfiUJO3w2h57OPUkKAcKe5Gvt9hJbPTb3C4blPScOke2RexKnXS7pAXXbxFlgUlZ0QK0K2pdl559OSmrtH3mPP9BJvvDMlxkcNj9/EeD+yGd8GN/yT6PTDh8G/4lszOXL+tyKIkC4Ys/wIDAQABAoGAKfyh43+yi3gG+QIh7UBtZ5Xm5/+8rRO02hC+mHh+t09X1bY/k8gUOy1sLveOUBhF2I8LtQoIIuxkmJJedDFmI0rbHwEMT/3uWzuqVbaPSd5GP9rfHvieF2d4DoZ+iHwyzsagSIgJLe9ZKNaZymdLqMJSaRIkLwTIwUZOpMHeMwkCQQD5VyfjihPCKU5CBHQ3JTAU42Sw8hiPSPUQWPc4F8lcxhqIkC87GgjY6qD9JlRUE4E5zy+hLCNTgggXa5uS0KMTAkEA4KGScqRoiKl1s9Ei1AQX32RSMQaw0Vh46S3ms44zIfjkCjcKON79MUTL1at/2IENoFDimFZUbYhY9D4QH+cf5QJAeQzYH76kMwospR5WcYNLYYi4FLOkOsP3vdUDSKc7qh+/N/eQBohwLSdTuzMFk7/YaAFvJTcxe1RQq1YhtFg4IwJBAI04xwtQFXAlqZv9FXpZgHCvb4TnAe77QjjG5M1pzvfCtAtAAysx9dgtukCA64U/zUNG1s6TJ80c9V/ITPbhpYkCQQCjQbKZgL5E1njCMFUMkYZF53LaGOUrxC7BzObMIECDaoMQppLWm3coXdEjDCl1ZbmZXIdzZ5QwGUdSj/v7nkne"
+    },
+    "idp": {
+        "entityId": "idp.example.com",
+        "singleSignOnService": {
+            "url": "https://idp.example.com/login",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+        },
+        "singleLogoutService": {
+            "url": "https://idp.example.com/sls",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        },
+        "x509cert": "MIICgTCCAeoCCQCbOlrWDdX7FTANBgkqhkiG9w0BAQUFADCBhDELMAkGA1UEBhMCTk8xGDAWBgNVBAgTD0FuZHJlYXMgU29sYmVyZzEMMAoGA1UEBxMDRm9vMRAwDgYDVQQKEwdVTklORVRUMRgwFgYDVQQDEw9mZWlkZS5lcmxhbmcubm8xITAfBgkqhkiG9w0BCQEWEmFuZHJlYXNAdW5pbmV0dC5ubzAeFw0wNzA2MTUxMjAxMzVaFw0wNzA4MTQxMjAxMzVaMIGEMQswCQYDVQQGEwJOTzEYMBYGA1UECBMPQW5kcmVhcyBTb2xiZXJnMQwwCgYDVQQHEwNGb28xEDAOBgNVBAoTB1VOSU5FVFQxGDAWBgNVBAMTD2ZlaWRlLmVybGFuZy5ubzEhMB8GCSqGSIb3DQEJARYSYW5kcmVhc0B1bmluZXR0Lm5vMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDivbhR7P516x/S3BqKxupQe0LONoliupiBOesCO3SHbDrl3+q9IbfnfmE04rNuMcPsIxB161TdDpIesLCn7c8aPHISKOtPlAeTZSnb8QAu7aRjZq3+PbrP5uW3TcfCGPtKTytHOge/OlJbo078dVhXQ14d1EDwXJW1rRXuUt4C8QIDAQABMA0GCSqGSIb3DQEBBQUAA4GBACDVfp86HObqY+e8BUoWQ9+VMQx1ASDohBjwOsg2WykUqRXF+dLfcUH9dWR63CtZIKFDbStNomPnQz7nbK+onygwBspVEbnHuUihZq3ZUdmumQqCw4Uvs/1Uvq3orOo/WJVhTyvLgFVK2QarQ4/67OZfHd7R+POBXhophSMv1ZOo"
+    },
+    "security": {
+        "nameIdEncrypted": false,
+        "authnRequestsSigned": true,
+        "logoutRequestSigned": true,
+        "logoutResponseSigned": true,
+        "signMetadata": true,
+        "wantMessagesSigned": false,
+        "wantAssertionsSigned": false,
+        "wantNameIdEncrypted": false,
+        "requestedAuthnContext": true
+    },
+    "contactPerson": {
+        "technical": {
+            "givenName": "Example Admin",
+            "emailAddress": "admin@example.com"
+        },
+        "support": {
+            "givenName": "Example Admin",
+            "emailAddress": "admin@example.com"
+        }
+    },
+    "organization": {
+        "en-US": {
+            "name": "example.com",
+            "displayname": "example.com",
+            "url": "http://example.com"
+        }
+    }
+}

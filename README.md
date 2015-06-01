@@ -162,6 +162,10 @@ The previous line will run the tests for the whole toolkit. You can also run the
 python setup.py test --test-suite tests.src.OneLogin.saml2_tests.auth_test.OneLogin_Saml2_Auth_Test
 ```
 
+```
+python setup.py test --test-suite tests.src.OneLogin.saml2_tests.authn_request_test.OneLogin_Saml2_Authn_Request_Test
+```
+
 With the --test-suite parameter you can specify the module to test. You'll find all the module available and their class names at tests/src/OneLogin/saml2_tests/
 
 ### How it works ###

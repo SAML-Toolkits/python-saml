@@ -224,3 +224,26 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
         self.assertRegexpMatches(inflated, '<saml:Issuer>http://stuff.com/endpoints/metadata.php</saml:Issuer>')
         self.assertRegexpMatches(inflated, 'Format="urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted"')
         self.assertRegexpMatches(inflated, 'ProviderName="SP prueba"')
+
+    def testSignedHttpPostBinding(self):
+        """
+        Test to use the binding: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
+
+
+        To sign a samlp:AuthnRequest you need to have a private key set for the service provider.
+
+        """
+        filename = join(dirname(__file__), '..', '..', '..', 'settings', 'settings4.json')
+        stream = open(filename, 'r')
+        settings = json.load(stream)
+        stream.close()
+
+        settings = OneLogin_Saml2_Settings(settings)
+
+        authn_request = OneLogin_Saml2_Authn_Request(settings)
+        authn_request_encoded = authn_request.get_request()
+        decoded = b64decode(authn_request_encoded)
+        inflated = decompress(decoded, -15)
+
+        # To verify the assertion is signed correct we can use the xmlsec1 command line tool
+        # xmlsec1 --verify --id-attr:ID AuthnRequest --store-references --trusted-pem tests/certs/aleksey-xmlsec/cacert.pem --verification-time "2007-07-04 12:12:12" authn_signed_assertion.xml
