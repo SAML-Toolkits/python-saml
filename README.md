@@ -320,9 +320,9 @@ In addition to the required settings data (idp, sp), there is extra information 
 
         // In some environment you will need to set how long the published metadata of the Service Provider gonna be valid.
         // is possible to not set the 2 following parameters (or set to null) and default values will be set (2 days, 1 week)
-        // Provide the desire TimeStamp, for example 2015-06-26T20:00:00Z
+        // Provide the desired Timestamp, for example 2015-06-26T20:00:00Z
         'metadataValidUntil': null,
-        // Provide the desire Duration, for example PT518400S (6 days)
+        // Provide the desired duration, for example PT518400S (6 days)
         'metadataCacheDuration': null
     },
 
