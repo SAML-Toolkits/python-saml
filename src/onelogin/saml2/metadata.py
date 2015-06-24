@@ -57,7 +57,7 @@ class OneLogin_Saml2_Metadata(object):
             valid_until = int(datetime.now().strftime("%s")) + OneLogin_Saml2_Metadata.TIME_VALID
         if not isinstance(valid_until, basestring):
             if isinstance(valid_until, datetime):
-                valid_until_time = valid_until
+                valid_until_time = valid_until.timetuple()
             else:
                 valid_until_time = gmtime(valid_until)
             valid_until_str = strftime(r'%Y-%m-%dT%H:%M:%SZ', valid_until_time)
