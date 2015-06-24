@@ -7,6 +7,7 @@ import json
 from os.path import dirname, join, exists, sep
 import unittest
 
+from onelogin.saml2.errors import OneLogin_Saml2_Error
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
@@ -371,8 +372,24 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         if 'security' not in settings_info:
             settings_info['security'] = {}
         settings_info['security']['signMetadata'] = True
-        settings = OneLogin_Saml2_Settings(settings_info)
+        self.generateAndCheckMetadata(settings_info)
 
+        # Now try again with SP keys set directly in settings and not from files:
+        del settings_info['custom_base_path']
+        # Now the keys should not be found, so metadata generation won't work:
+        with self.assertRaises(OneLogin_Saml2_Error):
+            OneLogin_Saml2_Settings(settings_info).get_sp_metadata()
+        # Set the keys in the settings:
+        settings_info['sp']['x509cert'] = self.file_contents(join(self.data_path, 'customPath', 'certs', 'sp.crt'))
+        settings_info['sp']['privateKey'] = self.file_contents(join(self.data_path, 'customPath', 'certs', 'sp.key'))
+        self.generateAndCheckMetadata(settings_info)
+
+    def generateAndCheckMetadata(self, settings):
+        """
+        Helper method: Given some settings, generate metadata and validate it
+        """
+        if not isinstance(settings, OneLogin_Saml2_Settings):
+            settings = OneLogin_Saml2_Settings(settings)
         metadata = settings.get_sp_metadata()
         self.assertIn('<md:SPSSODescriptor', metadata)
         self.assertIn('entityID="http://stuff.com/endpoints/metadata.php"', metadata)
@@ -385,6 +402,7 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         self.assertIn('<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>', metadata)
         self.assertIn('<ds:Reference', metadata)
         self.assertIn('<ds:KeyInfo><ds:X509Data><ds:X509Certificate>', metadata)
+        return metadata
 
     def testGetSPMetadataSignedNoMetadataCert(self):
         """
@@ -411,7 +429,7 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
             settings.get_sp_metadata()
             self.assertTrue(False)
         except Exception as e:
-            self.assertIn('Private key file not found', e.message)
+            self.assertIn('Private key file not readable', e.message)
 
         settings_info['security']['signMetadata'] = {
             'keyFileName': 'sp.key',
@@ -422,7 +440,7 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
             settings.get_sp_metadata()
             self.assertTrue(False)
         except Exception as e:
-            self.assertIn('Public cert file not found', e.message)
+            self.assertIn('Public cert file not readable', e.message)
 
         settings_info['security']['signMetadata'] = 'invalid_value'
         settings = OneLogin_Saml2_Settings(settings_info)
