@@ -6,7 +6,7 @@
 
 import json
 from os.path import dirname, join, exists
-from time import gmtime, strftime
+from time import strftime
 from datetime import datetime
 import unittest
 
