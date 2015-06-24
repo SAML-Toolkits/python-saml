@@ -74,11 +74,7 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
 
         xml_4 = self.file_contents(join(self.data_path, 'responses', 'invalids', 'no_nameid.xml.base64'))
         response_4 = OneLogin_Saml2_Response(settings, xml_4)
-        try:
-            response_4.get_nameid()
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('Not NameID found in the assertion of the Response', e.message)
+        self.assertIsNone(response_4.get_nameid())
 
     def testGetNameIdData(self):
         """
@@ -116,11 +112,8 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
 
         xml_4 = self.file_contents(join(self.data_path, 'responses', 'invalids', 'no_nameid.xml.base64'))
         response_4 = OneLogin_Saml2_Response(settings, xml_4)
-        try:
-            response_4.get_nameid_data()
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('Not NameID found in the assertion of the Response', e.message)
+        data = response_4.get_nameid_data()
+        self.assertEqual(data, {'Value': None})
 
     def testCheckStatus(self):
         """

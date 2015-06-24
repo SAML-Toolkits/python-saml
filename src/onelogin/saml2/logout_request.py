@@ -64,7 +64,7 @@ class OneLogin_Saml2_Logout_Request(object):
                 cert = idp_data['x509cert']
 
             if name_id is not None:
-                nameIdFormat = sp_data['NameIDFormat']
+                nameIdFormat = idp_data['NameIDPolicyFormat']
             else:
                 name_id = idp_data['entityId']
                 nameIdFormat = OneLogin_Saml2_Constants.NAMEID_ENTITY
