@@ -347,6 +347,14 @@ In addition to the required settings data (idp, sp), there is extra information 
             "displayname": "SP test",
             "url": "http://sp.example.com"
         }
+    },
+    // When parsing user attributes in the SAMLResponse
+    // which field should be used to identify the 
+    // attribute name.  All IdPs return Name, usually
+    // as an oid, but most also return the easier 
+    // FriendlyName
+    "attributes": {
+        "nameField": "Name"
     }
 }
 ```
@@ -810,6 +818,7 @@ Configuration of the OneLogin Python Toolkit
 * ***set_strict*** Activates or deactivates the strict mode.
 * ***is_strict*** Returns if the 'strict' mode is active.
 * ***is_debug_active*** Returns if the debug is active.
+* ***get_attribute_name_field*** Returns the field that best identifies the attribute name
 
 ####OneLogin_Saml2_Metadata - metadata.py####
 

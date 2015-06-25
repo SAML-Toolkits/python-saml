@@ -79,6 +79,7 @@ class OneLogin_Saml2_Settings(object):
         self.__contacts = {}
         self.__organization = {}
         self.__errors = []
+        self.__attributes = {}
 
         self.__load_paths(base_path=custom_base_path)
         self.__update_paths(settings)
@@ -209,6 +210,8 @@ class OneLogin_Saml2_Settings(object):
                 self.__contacts = settings['contactPerson']
             if 'organization' in settings:
                 self.__organization = settings['organization']
+            if 'attributes' in settings:
+                self.__attributes = settings['attributes']
 
             self.__add_default_values()
             return True
@@ -308,6 +311,10 @@ class OneLogin_Saml2_Settings(object):
 
         if 'requestedAuthnContext' not in self.__security.keys():
             self.__security['requestedAuthnContext'] = True
+
+        # Name attributes based on the required Name field
+        if 'nameField' not in self.__attributes.keys():
+            self.__attributes['nameField'] = "Name"
 
     def check_settings(self, settings):
         """
@@ -430,6 +437,14 @@ class OneLogin_Saml2_Settings(object):
                         ('url' not in organization or len(organization['url']) == 0):
                     errors.append('organization_not_enought_data')
                     break
+
+        if 'attributes' in settings:
+            defined_types = settings["attributes"].keys()
+            valid_types = ["nameField", ]
+            if not all([type in valid_types for type in defined_types]):
+                invalid_types = ", ".join(set(defined_types).difference(set(valid_types)))
+                errors.append('unexpected attribute fields: %s' % invalid_types)
+
         # Restores the value that had the self.__sp
         if 'old_sp' in locals():
             self.__sp = old_sp
@@ -544,6 +559,16 @@ class OneLogin_Saml2_Settings(object):
         :rtype: dict
         """
         return self.__organization
+
+    def get_attribute_name_field(self):
+        """
+        Gets the name of the field that represents the
+        attribute name.  Usually Name or FriendlyName
+
+        :returns: Field name
+        :rtype: string
+        """
+        return self.__attributes["nameField"]
 
     def get_sp_metadata(self):
         """
