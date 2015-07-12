@@ -806,7 +806,7 @@ class OneLogin_Saml2_Utils(object):
         if debug:
             xmlsec.set_error_callback(print_xmlsec_errors)
 
-        # Sign the metadacta with our private key.
+        # Sign the metadata with our private key.
         signature = Signature(xmlsec.TransformExclC14N, xmlsec.TransformRsaSha1)
 
         issuer = OneLogin_Saml2_Utils.query(elem, '//saml:Issuer')
@@ -921,6 +921,12 @@ class OneLogin_Saml2_Utils(object):
 
                 if cert is None or cert == '':
                     return False
+
+                # Check if Reference URI is empty
+                reference_elem = OneLogin_Saml2_Utils.query(signature_node, '//ds:Reference')
+                if len(reference_elem) > 0:
+                    if reference_elem[0].get('URI') == '':
+                        reference_elem[0].set('URI', '#%s' % signature_node.getparent().get('ID'))
 
                 dsig_ctx = xmlsec.DSigCtx()
 
