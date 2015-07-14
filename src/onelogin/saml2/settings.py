@@ -367,6 +367,12 @@ class OneLogin_Saml2_Settings(object):
                 errors.append('sp_acs_not_found')
             elif not validate_url(sp['assertionConsumerService']['url']):
                 errors.append('sp_acs_url_invalid')
+            elif 'binding' in sp['assertionConsumerService']:
+                # checking that provided binding is a valid one for acs.
+                acs_binding = sp['assertionConsumerService']['binding']
+                if acs_binding != OneLogin_Saml2_Constants.BINDING_HTTP_POST and\
+                   acs_binding != OneLogin_Saml2_Constants.BINDING_HTTP_REDIRECT:
+                    errors.append('sp_acs_binding_invalid')
 
             if 'singleLogoutService' in sp and \
                 'url' in sp['singleLogoutService'] and \

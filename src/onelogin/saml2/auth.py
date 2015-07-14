@@ -17,7 +17,8 @@ from urllib import quote_plus
 import dm.xmlsec.binding as xmlsec
 
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
-from onelogin.saml2.response import OneLogin_Saml2_Response
+from onelogin.saml2.response import (
+    OneLogin_Saml2_Response_Post, OneLogin_Saml2_Response_Redirect)
 from onelogin.saml2.errors import OneLogin_Saml2_Error
 from onelogin.saml2.logout_response import OneLogin_Saml2_Logout_Response
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
@@ -87,9 +88,22 @@ class OneLogin_Saml2_Auth(object):
         """
         self.__errors = []
 
-        if 'post_data' in self.__request_data and 'SAMLResponse' in self.__request_data['post_data']:
-            # AuthnResponse -- HTTP_POST Binding
-            response = OneLogin_Saml2_Response(self.__settings, self.__request_data['post_data']['SAMLResponse'])
+        sp_data = self.get_settings().get_sp_data()
+        acs_binding = sp_data['assertionConsumerService'].get(
+            'binding', OneLogin_Saml2_Constants.BINDING_HTTP_POST
+        )
+
+        # finds what attribute to access given the configured binding.
+        if acs_binding == OneLogin_Saml2_Constants.BINDING_HTTP_REDIRECT:
+            response_class = OneLogin_Saml2_Response_Redirect
+            response_attr = 'get_data'
+        else:
+            response_class = OneLogin_Saml2_Response_Post
+            response_attr = 'post_data'
+
+        if response_attr in self.__request_data and 'SAMLResponse' in self.__request_data[response_attr]:
+            response = response_class(
+                self.__settings, self.__request_data[response_attr]['SAMLResponse'])
 
             if response.is_valid(self.__request_data, request_id):
                 self.__attributes = response.get_attributes()
@@ -100,11 +114,10 @@ class OneLogin_Saml2_Auth(object):
             else:
                 self.__errors.append('invalid_response')
                 self.__error_reason = response.get_error()
-
         else:
             self.__errors.append('invalid_binding')
             raise OneLogin_Saml2_Error(
-                'SAML Response not found, Only supported HTTP_POST Binding',
+                'SAML Response not found for binding %s' % acs_binding.split(':')[-1],
                 OneLogin_Saml2_Error.SAML_RESPONSE_NOT_FOUND
             )
 
