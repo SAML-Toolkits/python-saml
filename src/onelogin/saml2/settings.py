@@ -58,7 +58,7 @@ class OneLogin_Saml2_Settings(object):
 
     """
 
-    def __init__(self, settings=None, custom_base_path=None):
+    def __init__(self, settings=None, custom_base_path=None, sp_validation_only=False):
         """
         Initializes the settings:
         - Sets the paths of the different folders
@@ -70,6 +70,7 @@ class OneLogin_Saml2_Settings(object):
         :param custom_base_path: Path where are stored the settings file and the cert folder
         :type custom_base_path: string
         """
+        self.__sp_validation_only = False
         self.__paths = {}
         self.__strict = False
         self.__debug = False
@@ -325,9 +326,10 @@ class OneLogin_Saml2_Settings(object):
         if not isinstance(settings, dict) or len(settings) == 0:
             errors.append('invalid_syntax')
         else:
-            idp_erros = self.check_idp_settings(settings)
+            if not self.__sp_validation_only:
+                errors += self.check_idp_settings(settings)
             sp_errors = self.check_sp_settings(settings)
-            errors = idp_erros + sp_errors
+            errors += sp_errors
 
         return errors
 
