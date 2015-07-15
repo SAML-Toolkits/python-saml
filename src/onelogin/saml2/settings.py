@@ -372,7 +372,7 @@ class OneLogin_Saml2_Settings(object):
                 if 'security' in settings:
                     security = settings['security']
 
-                    exists_x509 = ('x509cert' in idp and 
+                    exists_x509 = ('x509cert' in idp and
                                    len(idp['x509cert']) > 0)
                     exists_fingerprint = ('certFingerprint' in idp and
                                           len(idp['certFingerprint']) > 0)
