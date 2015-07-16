@@ -963,7 +963,7 @@ class OneLogin_Saml2_Utils(object):
             return False
 
     @staticmethod
-    def validate_binary_sign(signed_query, signature, cert=None, algorithm=xmlsec.TransformRsaSha1, debug=False):
+    def validate_binary_sign(signed_query, signature, cert=None, algorithm=OneLogin_Saml2_Constants.RSA_SHA1, debug=False):
         """
         Validates signed bynary data (Used to validate GET Signature).
 
@@ -995,7 +995,17 @@ class OneLogin_Saml2_Utils(object):
             dsig_ctx.signKey = xmlsec.Key.load(file_cert.name, xmlsec.KeyDataFormatCertPem, None)
             file_cert.close()
 
-            dsig_ctx.verifyBinary(signed_query, algorithm, signature)
+            # Sign the metadata with our private key.
+            sign_algorithm_transform_map = {
+                OneLogin_Saml2_Constants.DSA_SHA1: xmlsec.TransformDsaSha1,
+                OneLogin_Saml2_Constants.RSA_SHA1: xmlsec.TransformRsaSha1,
+                OneLogin_Saml2_Constants.RSA_SHA256: xmlsec.TransformRsaSha256,
+                OneLogin_Saml2_Constants.RSA_SHA384: xmlsec.TransformRsaSha384,
+                OneLogin_Saml2_Constants.RSA_SHA512: xmlsec.TransformRsaSha512
+            }
+            sign_algorithm_transform = sign_algorithm_transform_map.get(algorithm, xmlsec.TransformRsaSha1)
+
+            dsig_ctx.verifyBinary(signed_query, sign_algorithm_transform, signature)
             return True
         except Exception:
             return False

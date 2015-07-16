@@ -120,9 +120,6 @@ class OneLogin_Saml2_Logout_Response(object):
                 else:
                     sign_alg = get_data['SigAlg']
 
-                if sign_alg != OneLogin_Saml2_Constants.RSA_SHA1:
-                    raise Exception('Invalid signAlg in the recieved Logout Response')
-
                 signed_query = 'SAMLResponse=%s' % quote_plus(get_data['SAMLResponse'])
                 if 'RelayState' in get_data:
                     signed_query = '%s&RelayState=%s' % (signed_query, quote_plus(get_data['RelayState']))
@@ -132,7 +129,7 @@ class OneLogin_Saml2_Logout_Response(object):
                     raise Exception('In order to validate the sign on the Logout Response, the x509cert of the IdP is required')
                 cert = idp_data['x509cert']
 
-                if not OneLogin_Saml2_Utils.validate_binary_sign(signed_query, b64decode(get_data['Signature']), cert):
+                if not OneLogin_Saml2_Utils.validate_binary_sign(signed_query, b64decode(get_data['Signature']), cert, sign_alg):
                     raise Exception('Signature validation failed. Logout Response rejected')
 
             return True
