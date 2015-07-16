@@ -759,7 +759,7 @@ class OneLogin_Saml2_Utils(object):
         return f_temp
 
     @staticmethod
-    def add_sign(xml, key, cert, debug=False):
+    def add_sign(xml, key, cert, debug=False, sign_algorithm=OneLogin_Saml2_Constants.RSA_SHA1):
         """
         Adds signature key and senders certificate to an element (Message or
         Assertion).
@@ -770,11 +770,14 @@ class OneLogin_Saml2_Utils(object):
         :param key: The private key
         :type: string
 
+        :param cert: The public
+        :type: string
+
         :param debug: Activate the xmlsec debug
         :type: bool
 
-        :param cert: The public
-        :type: string
+        :param sign_algorithm: Signature algorithm method
+        :type sign_algorithm: string
         """
         if xml is None or xml == '':
             raise Exception('Empty string supplied as input')
@@ -807,7 +810,16 @@ class OneLogin_Saml2_Utils(object):
             xmlsec.set_error_callback(print_xmlsec_errors)
 
         # Sign the metadata with our private key.
-        signature = Signature(xmlsec.TransformExclC14N, xmlsec.TransformRsaSha1)
+        sign_algorithm_transform_map = {
+            OneLogin_Saml2_Constants.DSA_SHA1: xmlsec.TransformDsaSha1,
+            OneLogin_Saml2_Constants.RSA_SHA1: xmlsec.TransformRsaSha1,
+            OneLogin_Saml2_Constants.RSA_SHA256: xmlsec.TransformRsaSha256,
+            OneLogin_Saml2_Constants.RSA_SHA384: xmlsec.TransformRsaSha384,
+            OneLogin_Saml2_Constants.RSA_SHA512: xmlsec.TransformRsaSha512
+        }
+        sign_algorithm_transform = sign_algorithm_transform_map.get(sign_algorithm, xmlsec.TransformRsaSha1)
+
+        signature = Signature(xmlsec.TransformExclC14N, sign_algorithm_transform)
 
         issuer = OneLogin_Saml2_Utils.query(elem, '//saml:Issuer')
         if len(issuer) > 0:

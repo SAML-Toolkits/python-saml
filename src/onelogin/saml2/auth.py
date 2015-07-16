@@ -152,8 +152,8 @@ class OneLogin_Saml2_Auth(object):
 
                 security = self.__settings.get_security_data()
                 if 'logoutResponseSigned' in security and security['logoutResponseSigned']:
-                    parameters['SigAlg'] = OneLogin_Saml2_Constants.RSA_SHA1
-                    parameters['Signature'] = self.build_response_signature(logout_response, parameters.get('RelayState', None))
+                    parameters['SigAlg'] = security['signatureAlgorithm']
+                    parameters['Signature'] = self.build_response_signature(logout_response, parameters.get('RelayState', None), security['signatureAlgorithm'])
 
                 return self.redirect_to(self.get_slo_url(), parameters)
         else:
@@ -274,8 +274,8 @@ class OneLogin_Saml2_Auth(object):
 
         security = self.__settings.get_security_data()
         if security.get('authnRequestsSigned', False):
-            parameters['SigAlg'] = OneLogin_Saml2_Constants.RSA_SHA1
-            parameters['Signature'] = self.build_request_signature(saml_request, parameters['RelayState'])
+            parameters['SigAlg'] = security['signatureAlgorithm']
+            parameters['Signature'] = self.build_request_signature(saml_request, parameters['RelayState'], security['signatureAlgorithm'])
         return self.redirect_to(self.get_sso_url(), parameters)
 
     def logout(self, return_to=None, name_id=None, session_index=None):
@@ -315,8 +315,8 @@ class OneLogin_Saml2_Auth(object):
 
         security = self.__settings.get_security_data()
         if security.get('logoutRequestSigned', False):
-            parameters['SigAlg'] = OneLogin_Saml2_Constants.RSA_SHA1
-            parameters['Signature'] = self.build_request_signature(saml_request, parameters['RelayState'])
+            parameters['SigAlg'] = security['signatureAlgorithm']
+            parameters['Signature'] = self.build_request_signature(saml_request, parameters['RelayState'], security['signatureAlgorithm'])
         return self.redirect_to(slo_url, parameters)
 
     def get_sso_url(self):
@@ -342,7 +342,7 @@ class OneLogin_Saml2_Auth(object):
             url = idp_data['singleLogoutService']['url']
         return url
 
-    def build_request_signature(self, saml_request, relay_state):
+    def build_request_signature(self, saml_request, relay_state, sign_algorithm=OneLogin_Saml2_Constants.RSA_SHA1):
         """
         Builds the Signature of the SAML Request.
 
@@ -351,10 +351,13 @@ class OneLogin_Saml2_Auth(object):
 
         :param relay_state: The target URL the user should be redirected to
         :type relay_state: string
-        """
-        return self.__build_signature(saml_request, relay_state, 'SAMLRequest')
 
-    def build_response_signature(self, saml_response, relay_state):
+        :param sign_algorithm: Signature algorithm method
+        :type sign_algorithm: string
+        """
+        return self.__build_signature(saml_request, relay_state, 'SAMLRequest', sign_algorithm)
+
+    def build_response_signature(self, saml_response, relay_state, sign_algorithm=OneLogin_Saml2_Constants.RSA_SHA1):
         """
         Builds the Signature of the SAML Response.
         :param saml_request: The SAML Response
@@ -362,10 +365,13 @@ class OneLogin_Saml2_Auth(object):
 
         :param relay_state: The target URL the user should be redirected to
         :type relay_state: string
-        """
-        return self.__build_signature(saml_response, relay_state, 'SAMLResponse')
 
-    def __build_signature(self, saml_data, relay_state, saml_type):
+        :param sign_algorithm: Signature algorithm method
+        :type sign_algorithm: string
+        """
+        return self.__build_signature(saml_response, relay_state, 'SAMLResponse', sign_algorithm)
+
+    def __build_signature(self, saml_data, relay_state, saml_type, sign_algorithm=OneLogin_Saml2_Constants.RSA_SHA1):
         """
         Builds the Signature
         :param saml_data: The SAML Data
@@ -376,6 +382,9 @@ class OneLogin_Saml2_Auth(object):
 
         :param saml_type: The target URL the user should be redirected to
         :type saml_type: string  SAMLRequest | SAMLResponse
+
+        :param sign_algorithm: Signature algorithm method
+        :type sign_algorithm: string
         """
         assert saml_type in ['SAMLRequest', 'SAMLResponse']
 
@@ -395,10 +404,20 @@ class OneLogin_Saml2_Auth(object):
 
         saml_data_str = '%s=%s' % (saml_type, quote_plus(saml_data))
         relay_state_str = 'RelayState=%s' % quote_plus(relay_state)
-        alg_str = 'SigAlg=%s' % quote_plus(OneLogin_Saml2_Constants.RSA_SHA1)
+        alg_str = 'SigAlg=%s' % quote_plus(sign_algorithm)
 
         sign_data = [saml_data_str, relay_state_str, alg_str]
         msg = '&'.join(sign_data)
 
-        signature = dsig_ctx.signBinary(str(msg), xmlsec.TransformRsaSha1)
+        # Sign the metadata with our private key.
+        sign_algorithm_transform_map = {
+            OneLogin_Saml2_Constants.DSA_SHA1: xmlsec.TransformDsaSha1,
+            OneLogin_Saml2_Constants.RSA_SHA1: xmlsec.TransformRsaSha1,
+            OneLogin_Saml2_Constants.RSA_SHA256: xmlsec.TransformRsaSha256,
+            OneLogin_Saml2_Constants.RSA_SHA384: xmlsec.TransformRsaSha384,
+            OneLogin_Saml2_Constants.RSA_SHA512: xmlsec.TransformRsaSha512
+        }
+        sign_algorithm_transform = sign_algorithm_transform_map.get(sign_algorithm, xmlsec.TransformRsaSha1)
+
+        signature = dsig_ctx.signBinary(str(msg), sign_algorithm_transform)
         return b64encode(signature)

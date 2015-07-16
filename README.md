@@ -323,7 +323,15 @@ In addition to the required settings data (idp, sp), there is extra information 
         // Provide the desired Timestamp, for example 2015-06-26T20:00:00Z
         'metadataValidUntil': null,
         // Provide the desired duration, for example PT518400S (6 days)
-        'metadataCacheDuration': null
+        'metadataCacheDuration': null,
+
+        // Algorithm that the toolkit will use on signing process. Options:
+        //    'http://www.w3.org/2000/09/xmldsig#rsa-sha1'
+        //    'http://www.w3.org/2000/09/xmldsig#dsa-sha1'
+        //    'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
+        //    'http://www.w3.org/2001/04/xmldsig-more#rsa-sha384'
+        //    'http://www.w3.org/2001/04/xmldsig-more#rsa-sha512'
+        'signatureAlgorithm' => 'http://www.w3.org/2000/09/xmldsig#rsa-sha1'
     },
 
     // Contact information template, it is recommended to suply a
