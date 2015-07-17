@@ -39,7 +39,7 @@ def prepare_bottle_request(req):
     }
 
 
-@app.route('/acs', method='POST')
+@app.route('/acs/', method='POST')
 @jinja2_view('index.html', template_lookup=['templates'])
 def index():
     req = prepare_bottle_request(request)

@@ -4,7 +4,7 @@
     "sp": {
         "entityId": "https://<sp_domain>/metadata/",
         "assertionConsumerService": {
-            "url": "https://<sp_domain>/?acs",
+            "url": "https://<sp_domain/acs/",
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
         },
         "singleLogoutService": {

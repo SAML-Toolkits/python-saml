@@ -57,7 +57,7 @@ Key features:
  * **Easy to use** - Programmer will be allowed to code high-level and 
    low-level programming, 2 easy to use APIs are available.
  * **Tested** - Thoroughly tested.
- * **Popular** - OneLogin's customers use it. Add easy support to your django/flask web projects.
+ * **Popular** - OneLogin's customers use it. Add easy support to your django/flask/bottle web projects.
 
 
 Installation
@@ -108,7 +108,7 @@ Getting started
 
 ### Knowing the toolkit ###
 
-The new OneLogin SAML Toolkit contains different folders (certs, lib, demo-django, demo-flask and tests) and some files.
+The new OneLogin SAML Toolkit contains different folders (certs, lib, demo-django, demo-flask, demo-bottle and tests) and some files.
 
 Let's start describing them:
 
@@ -139,6 +139,11 @@ If you want to create self-signed certs, you can do it at the https://www.samlto
 ```bash
 openssl req -new -x509 -days 3652 -nodes -out sp.crt -keyout saml.key
 ```
+
+#### demo-bottle ####
+
+This folder contains a Bottle project that will be used as demo to show how to add SAML support to the Bottle Framework. index.py contains all the logic of the demo project, 'templates' is the Bottle templates of the project and 'saml' is a folder that contains the 'certs' folder that could be used to store the x509 public and private key, and the saml toolkit settings (settings.json and advanced_settings.json).
+
 
 #### demo-flask ####
 
@@ -176,7 +181,7 @@ There are two ways to provide the settings information:
 
 * Use a json object with the setting data and provide it directly to the constructor of the class (if your toolkit integation requires certs, remember to provide the 'custom_base_path' as part of the settings or as a parameter in the constructor.
 
-In the demo-django and in the demo-flask folders you will find a 'saml' folder, inside there is a 'certs' folder and a settings.json and a advanced_settings.json files. Those files contain the settings for the saml toolkit. Copy them in your project and set the correct values.
+In the demo-django, demo-flask and demo-bottle folders you will find a 'saml' folder, inside there is a 'certs' folder and a settings.json and a advanced_settings.json files. Those files contain the settings for the saml toolkit. Copy them in your project and set the correct values.
 
 This is the settings.json file:
 
