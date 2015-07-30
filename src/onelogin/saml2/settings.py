@@ -70,7 +70,7 @@ class OneLogin_Saml2_Settings(object):
         :param custom_base_path: Path where are stored the settings file and the cert folder
         :type custom_base_path: string
         """
-        self.__sp_validation_only = False
+        self.__sp_validation_only = sp_validation_only
         self.__paths = {}
         self.__strict = False
         self.__debug = False
