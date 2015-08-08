@@ -252,6 +252,10 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
         decoded = b64decode(authn_request_encoded)
         inflated = decompress(decoded, -15)
 
+        sample_output_directory = join(dirname(__file__), '..', '..', '..', 'sample_output')
+        if not os.path.exists(sample_output_directory):
+            os.makedirs(sample_output_directory)
+
         with open(join(dirname(__file__), '..', '..', '..', 'sample_output/authn_signed_assertion.xml'), 'wb') as f:
             f.write(inflated)
 
