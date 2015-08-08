@@ -3,6 +3,7 @@
 # Copyright (c) 2014, OneLogin, Inc.
 # All rights reserved.
 
+import os
 from base64 import b64decode
 import json
 from os.path import dirname, join, exists
@@ -19,7 +20,6 @@ from lxml.etree import fromstring
 import dm.xmlsec.binding as xmlsec
 
 class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
-
 
     def loadSettingsJSON(self):
         filename = join(dirname(__file__), '..', '..', '..', 'settings', 'settings1.json')
