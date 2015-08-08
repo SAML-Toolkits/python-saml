@@ -15,9 +15,12 @@ from zlib import compress
 
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
+from onelogin.saml2.errors import OneLogin_Saml2_Error
 
 import dm.xmlsec.binding as xmlsec
 from dm.xmlsec.binding.tmpl import Signature
+
+from lxml.etree import tostring, fromstring
 
 log = logging.getLogger(__name__)
 
@@ -133,7 +136,6 @@ class OneLogin_Saml2_Authn_Request(object):
 
             signature = Signature(xmlsec.TransformExclC14N, xmlsec.TransformRsaSha1)
 
-            from lxml.etree import parse, tostring, fromstring
             doc = fromstring(request)
 
             # ID attributes different from xml:id must be made known by the application through a call

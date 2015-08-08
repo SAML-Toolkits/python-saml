@@ -15,7 +15,7 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
-from lxml.etree import parse, tostring, fromstring
+from lxml.etree import fromstring
 import dm.xmlsec.binding as xmlsec
 
 class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
@@ -249,6 +249,9 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
         authn_request_encoded = authn_request.get_request()
         decoded = b64decode(authn_request_encoded)
         inflated = decompress(decoded, -15)
+
+        with open(join(dirname(__file__), '..', '..', '..', 'sample_output/authn_signed_assertion.xml'), 'wb') as f:
+            f.write(inflated)
 
         # Turn the inflated xml (which is just a string) into a in memory XML document
         doc = fromstring(inflated)
