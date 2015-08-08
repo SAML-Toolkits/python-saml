@@ -57,7 +57,7 @@ Key features:
  * **Easy to use** - Programmer will be allowed to code high-level and 
    low-level programming, 2 easy to use APIs are available.
  * **Tested** - Thoroughly tested.
- * **Popular** - OneLogin's customers use it. Add easy support to your django/flask web projects.
+ * **Popular** - OneLogin's customers use it. Add easy support to your django/flask/bottle web projects.
 
 
 Installation
@@ -108,7 +108,7 @@ Getting started
 
 ### Knowing the toolkit ###
 
-The new OneLogin SAML Toolkit contains different folders (certs, lib, demo-django, demo-flask and tests) and some files.
+The new OneLogin SAML Toolkit contains different folders (certs, lib, demo-django, demo-flask, demo-bottle and tests) and some files.
 
 Let's start describing them:
 
@@ -139,6 +139,11 @@ If you want to create self-signed certs, you can do it at the https://www.samlto
 ```bash
 openssl req -new -x509 -days 3652 -nodes -out sp.crt -keyout saml.key
 ```
+
+#### demo-bottle ####
+
+This folder contains a Bottle project that will be used as demo to show how to add SAML support to the Bottle Framework. index.py contains all the logic of the demo project, 'templates' is the Bottle templates of the project and 'saml' is a folder that contains the 'certs' folder that could be used to store the x509 public and private key, and the saml toolkit settings (settings.json and advanced_settings.json).
+
 
 #### demo-flask ####
 
@@ -180,7 +185,7 @@ There are two ways to provide the settings information:
 
 * Use a json object with the setting data and provide it directly to the constructor of the class (if your toolkit integation requires certs, remember to provide the 'custom_base_path' as part of the settings or as a parameter in the constructor.
 
-In the demo-django and in the demo-flask folders you will find a 'saml' folder, inside there is a 'certs' folder and a settings.json and a advanced_settings.json files. Those files contain the settings for the saml toolkit. Copy them in your project and set the correct values.
+In the demo-django, demo-flask and demo-bottle folders you will find a 'saml' folder, inside there is a 'certs' folder and a settings.json and a advanced_settings.json files. Those files contain the settings for the saml toolkit. Copy them in your project and set the correct values.
 
 This is the settings.json file:
 
@@ -321,6 +326,21 @@ In addition to the required settings data (idp, sp), there is extra information 
         // Set true or don't present thi parameter and you will get an AuthContext 'exact' 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport'
         // Set an array with the possible auth context values: array ('urn:oasis:names:tc:SAML:2.0:ac:classes:Password', 'urn:oasis:names:tc:SAML:2.0:ac:classes:X509'),
         'requestedAuthnContext': true,
+
+        // In some environment you will need to set how long the published metadata of the Service Provider gonna be valid.
+        // is possible to not set the 2 following parameters (or set to null) and default values will be set (2 days, 1 week)
+        // Provide the desired Timestamp, for example 2015-06-26T20:00:00Z
+        'metadataValidUntil': null,
+        // Provide the desired duration, for example PT518400S (6 days)
+        'metadataCacheDuration': null,
+
+        // Algorithm that the toolkit will use on signing process. Options:
+        //    'http://www.w3.org/2000/09/xmldsig#rsa-sha1'
+        //    'http://www.w3.org/2000/09/xmldsig#dsa-sha1'
+        //    'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
+        //    'http://www.w3.org/2001/04/xmldsig-more#rsa-sha384'
+        //    'http://www.w3.org/2001/04/xmldsig-more#rsa-sha512'
+        'signatureAlgorithm' => 'http://www.w3.org/2000/09/xmldsig#rsa-sha1'
     },
 
     // Contact information template, it is recommended to suply a
@@ -492,6 +512,12 @@ else:
 The get_sp_metadata will return the metadata signed or not based on the security info of the advanced_settings.json ('signMetadata').
 
 Before the XML metadata is exposed, a check takes place to ensure that the info to be provided is valid.
+
+Instead of use the Auth object, you can directly use
+```
+saml_settings = OneLogin_Saml2_Settings(settings=None, custom_base_path=None, sp_validation_only=True)
+```
+to get the settings object and with the sp_validation_only=True parameter we will avoid the IdP Settings validation.
 
 ***Attribute Consumer Service(ACS)***
 
@@ -784,6 +810,8 @@ Configuration of the OneLogin Python Toolkit
 
 * `__init__`  Initializes the settings: Sets the paths of the different folders and Loads settings info from settings file or array/object provided.
 * ***check_settings*** Checks the settings info.
+* ***check_idp_settings*** Checks the IdP settings info.
+* ***check_sp_settings*** Checks the SP settings info.
 * ***get_errors*** Returns an array with the errors, the array is empty when the settings is ok.
 * ***get_sp_metadata*** Gets the SP metadata. The XML representation.
 * ***validate_metadata*** Validates an XML SP Metadata.

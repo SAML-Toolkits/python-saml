@@ -58,7 +58,7 @@ class OneLogin_Saml2_Settings(object):
 
     """
 
-    def __init__(self, settings=None, custom_base_path=None):
+    def __init__(self, settings=None, custom_base_path=None, sp_validation_only=False):
         """
         Initializes the settings:
         - Sets the paths of the different folders
@@ -70,6 +70,7 @@ class OneLogin_Saml2_Settings(object):
         :param custom_base_path: Path where are stored the settings file and the cert folder
         :type custom_base_path: string
         """
+        self.__sp_validation_only = sp_validation_only
         self.__paths = {}
         self.__strict = False
         self.__debug = False
@@ -262,9 +263,15 @@ class OneLogin_Saml2_Settings(object):
 
         # Related to nameID
         if 'NameIDFormat' not in self.__sp:
-            self.__sp['NameIDFormat'] = OneLogin_Saml2_Constants.NAMEID_PERSISTENT
+            self.__sp['NameIDFormat'] = OneLogin_Saml2_Constants.NAMEID_UNSPECIFIED
         if 'nameIdEncrypted' not in self.__security:
             self.__security['nameIdEncrypted'] = False
+
+        # Metadata format
+        if 'metadataValidUntil' not in self.__security.keys():
+            self.__security['metadataValidUntil'] = None  # None means use default
+        if 'metadataCacheDuration' not in self.__security.keys():
+            self.__security['metadataCacheDuration'] = None  # None means use default
 
         # Sign provided
         if 'authnRequestsSigned' not in self.__security.keys():
@@ -287,6 +294,10 @@ class OneLogin_Saml2_Settings(object):
             self.__security['wantAssertionsEncrypted'] = False
         if 'wantNameIdEncrypted' not in self.__security.keys():
             self.__security['wantNameIdEncrypted'] = False
+
+        # Signature Algorithm
+        if 'signatureAlgorithm' not in self.__security.keys():
+            self.__security['signatureAlgorithm'] = OneLogin_Saml2_Constants.RSA_SHA1
 
         if 'x509cert' not in self.__idp:
             self.__idp['x509cert'] = ''
@@ -318,115 +329,156 @@ class OneLogin_Saml2_Settings(object):
         errors = []
         if not isinstance(settings, dict) or len(settings) == 0:
             errors.append('invalid_syntax')
-            return errors
-
-        if 'idp' not in settings or len(settings['idp']) == 0:
-            errors.append('idp_not_found')
         else:
-            idp = settings['idp']
-            if 'entityId' not in idp or len(idp['entityId']) == 0:
-                errors.append('idp_entityId_not_found')
+            if not self.__sp_validation_only:
+                errors += self.check_idp_settings(settings)
+            sp_errors = self.check_sp_settings(settings)
+            errors += sp_errors
 
-            if 'singleSignOnService' not in idp or \
-                'url' not in idp['singleSignOnService'] or \
-                    len(idp['singleSignOnService']['url']) == 0:
-                errors.append('idp_sso_not_found')
-            elif not validate_url(idp['singleSignOnService']['url']):
-                errors.append('idp_sso_url_invalid')
+        return errors
 
-            if 'singleLogoutService' in idp and \
-                'url' in idp['singleLogoutService'] and \
-                len(idp['singleLogoutService']['url']) > 0 and \
-                    not validate_url(idp['singleLogoutService']['url']):
-                errors.append('idp_slo_url_invalid')
+    def check_idp_settings(self, settings):
+        """
+        Checks the IdP settings info.
 
-        if 'sp' not in settings or len(settings['sp']) == 0:
-            errors.append('sp_not_found')
+        :param settings: Dict with settings data
+        :type settings: dict
+
+        :returns: Errors found on the IdP settings data
+        :rtype: list
+        """
+        assert isinstance(settings, dict)
+
+        errors = []
+        if not isinstance(settings, dict) or len(settings) == 0:
+            errors.append('invalid_syntax')
         else:
-            # check_sp_certs uses self.__sp so I add it
-            old_sp = self.__sp
-            self.__sp = settings['sp']
+            if 'idp' not in settings or len(settings['idp']) == 0:
+                errors.append('idp_not_found')
+            else:
+                idp = settings['idp']
+                if 'entityId' not in idp or len(idp['entityId']) == 0:
+                    errors.append('idp_entityId_not_found')
 
-            sp = settings['sp']
-            security = {}
-            if 'security' in settings:
-                security = settings['security']
+                if 'singleSignOnService' not in idp or \
+                    'url' not in idp['singleSignOnService'] or \
+                        len(idp['singleSignOnService']['url']) == 0:
+                    errors.append('idp_sso_not_found')
+                elif not validate_url(idp['singleSignOnService']['url']):
+                    errors.append('idp_sso_url_invalid')
 
-            if 'entityId' not in sp or len(sp['entityId']) == 0:
-                errors.append('sp_entityId_not_found')
+                if 'singleLogoutService' in idp and \
+                    'url' in idp['singleLogoutService'] and \
+                    len(idp['singleLogoutService']['url']) > 0 and \
+                        not validate_url(idp['singleLogoutService']['url']):
+                    errors.append('idp_slo_url_invalid')
 
-            if 'assertionConsumerService' not in sp or \
-                'url' not in sp['assertionConsumerService'] or \
-                    len(sp['assertionConsumerService']['url']) == 0:
-                errors.append('sp_acs_not_found')
-            elif not validate_url(sp['assertionConsumerService']['url']):
-                errors.append('sp_acs_url_invalid')
+                if 'security' in settings:
+                    security = settings['security']
 
-            if 'singleLogoutService' in sp and \
-                'url' in sp['singleLogoutService'] and \
-                len(sp['singleLogoutService']['url']) > 0 and \
-                    not validate_url(sp['singleLogoutService']['url']):
-                errors.append('sp_sls_url_invalid')
+                    exists_x509 = ('x509cert' in idp and
+                                   len(idp['x509cert']) > 0)
+                    exists_fingerprint = ('certFingerprint' in idp and
+                                          len(idp['certFingerprint']) > 0)
 
-            if 'signMetadata' in security and isinstance(security['signMetadata'], dict):
-                if 'keyFileName' not in security['signMetadata'] or \
-                        'certFileName' not in security['signMetadata']:
-                    errors.append('sp_signMetadata_invalid')
+                    want_assert_sign = 'wantAssertionsSigned' in security.keys() and security['wantAssertionsSigned']
+                    want_mes_signed = 'wantMessagesSigned' in security.keys() and security['wantMessagesSigned']
+                    nameid_enc = 'nameIdEncrypted' in security.keys() and security['nameIdEncrypted']
 
-            authn_sign = 'authnRequestsSigned' in security.keys() and security['authnRequestsSigned']
-            logout_req_sign = 'logoutRequestSigned' in security.keys() and security['logoutRequestSigned']
-            logout_res_sign = 'logoutResponseSigned' in security.keys() and security['logoutResponseSigned']
-            want_assert_enc = 'wantAssertionsEncrypted' in security.keys() and security['wantAssertionsEncrypted']
-            want_nameid_enc = 'wantNameIdEncrypted' in security.keys() and security['wantNameIdEncrypted']
+                    if (want_assert_sign or want_mes_signed) and \
+                            not(exists_x509 or exists_fingerprint):
+                        errors.append('idp_cert_or_fingerprint_not_found_and_required')
+                    if nameid_enc and not exists_x509:
+                        errors.append('idp_cert_not_found_and_required')
 
-            if not self.check_sp_certs():
-                if authn_sign or logout_req_sign or logout_res_sign or \
-                   want_assert_enc or want_nameid_enc:
-                    errors.append('sp_cert_not_found_and_required')
+        return errors
 
-            exists_x509 = ('idp' in settings and
-                           'x509cert' in settings['idp'] and
-                           len(settings['idp']['x509cert']) > 0)
-            exists_fingerprint = ('idp' in settings and
-                                  'certFingerprint' in settings['idp'] and
-                                  len(settings['idp']['certFingerprint']) > 0)
+    def check_sp_settings(self, settings):
+        """
+        Checks the SP settings info.
 
-            want_assert_sign = 'wantAssertionsSigned' in security.keys() and security['wantAssertionsSigned']
-            want_mes_signed = 'wantMessagesSigned' in security.keys() and security['wantMessagesSigned']
-            nameid_enc = 'nameIdEncrypted' in security.keys() and security['nameIdEncrypted']
+        :param settings: Dict with settings data
+        :type settings: dict
 
-            if (want_assert_sign or want_mes_signed) and \
-                    not(exists_x509 or exists_fingerprint):
-                errors.append('idp_cert_or_fingerprint_not_found_and_required')
-            if nameid_enc and not exists_x509:
-                errors.append('idp_cert_not_found_and_required')
+        :returns: Errors found on the SP settings data
+        :rtype: list
+        """
+        assert isinstance(settings, dict)
 
-        if 'contactPerson' in settings:
-            types = settings['contactPerson'].keys()
-            valid_types = ['technical', 'support', 'administrative', 'billing', 'other']
-            for c_type in types:
-                if c_type not in valid_types:
-                    errors.append('contact_type_invalid')
-                    break
+        errors = []
+        if not isinstance(settings, dict) or len(settings) == 0:
+            errors.append('invalid_syntax')
+        else:
+            if 'sp' not in settings or len(settings['sp']) == 0:
+                errors.append('sp_not_found')
+            else:
+                # check_sp_certs uses self.__sp so I add it
+                old_sp = self.__sp
+                self.__sp = settings['sp']
 
-            for c_type in settings['contactPerson']:
-                contact = settings['contactPerson'][c_type]
-                if ('givenName' not in contact or len(contact['givenName']) == 0) or \
-                        ('emailAddress' not in contact or len(contact['emailAddress']) == 0):
-                    errors.append('contact_not_enought_data')
-                    break
+                sp = settings['sp']
+                security = {}
+                if 'security' in settings:
+                    security = settings['security']
 
-        if 'organization' in settings:
-            for org in settings['organization']:
-                organization = settings['organization'][org]
-                if ('name' not in organization or len(organization['name']) == 0) or \
-                    ('displayname' not in organization or len(organization['displayname']) == 0) or \
-                        ('url' not in organization or len(organization['url']) == 0):
-                    errors.append('organization_not_enought_data')
-                    break
-        # Restores the value that had the self.__sp
-        if 'old_sp' in locals():
-            self.__sp = old_sp
+                if 'entityId' not in sp or len(sp['entityId']) == 0:
+                    errors.append('sp_entityId_not_found')
+
+                if 'assertionConsumerService' not in sp or \
+                    'url' not in sp['assertionConsumerService'] or \
+                        len(sp['assertionConsumerService']['url']) == 0:
+                    errors.append('sp_acs_not_found')
+                elif not validate_url(sp['assertionConsumerService']['url']):
+                    errors.append('sp_acs_url_invalid')
+
+                if 'singleLogoutService' in sp and \
+                    'url' in sp['singleLogoutService'] and \
+                    len(sp['singleLogoutService']['url']) > 0 and \
+                        not validate_url(sp['singleLogoutService']['url']):
+                    errors.append('sp_sls_url_invalid')
+
+                if 'signMetadata' in security and isinstance(security['signMetadata'], dict):
+                    if 'keyFileName' not in security['signMetadata'] or \
+                            'certFileName' not in security['signMetadata']:
+                        errors.append('sp_signMetadata_invalid')
+
+                authn_sign = 'authnRequestsSigned' in security.keys() and security['authnRequestsSigned']
+                logout_req_sign = 'logoutRequestSigned' in security.keys() and security['logoutRequestSigned']
+                logout_res_sign = 'logoutResponseSigned' in security.keys() and security['logoutResponseSigned']
+                want_assert_enc = 'wantAssertionsEncrypted' in security.keys() and security['wantAssertionsEncrypted']
+                want_nameid_enc = 'wantNameIdEncrypted' in security.keys() and security['wantNameIdEncrypted']
+
+                if not self.check_sp_certs():
+                    if authn_sign or logout_req_sign or logout_res_sign or \
+                       want_assert_enc or want_nameid_enc:
+                        errors.append('sp_cert_not_found_and_required')
+
+            if 'contactPerson' in settings:
+                types = settings['contactPerson'].keys()
+                valid_types = ['technical', 'support', 'administrative', 'billing', 'other']
+                for c_type in types:
+                    if c_type not in valid_types:
+                        errors.append('contact_type_invalid')
+                        break
+
+                for c_type in settings['contactPerson']:
+                    contact = settings['contactPerson'][c_type]
+                    if ('givenName' not in contact or len(contact['givenName']) == 0) or \
+                            ('emailAddress' not in contact or len(contact['emailAddress']) == 0):
+                        errors.append('contact_not_enought_data')
+                        break
+
+            if 'organization' in settings:
+                for org in settings['organization']:
+                    organization = settings['organization'][org]
+                    if ('name' not in organization or len(organization['name']) == 0) or \
+                        ('displayname' not in organization or len(organization['displayname']) == 0) or \
+                            ('url' not in organization or len(organization['url']) == 0):
+                        errors.append('organization_not_enought_data')
+                        break
+            # Restores the value that had the self.__sp
+            if 'old_sp' in locals():
+                self.__sp = old_sp
 
         return errors
 
@@ -548,7 +600,9 @@ class OneLogin_Saml2_Settings(object):
         """
         metadata = OneLogin_Saml2_Metadata.builder(
             self.__sp, self.__security['authnRequestsSigned'],
-            self.__security['wantAssertionsSigned'], None, None,
+            self.__security['wantAssertionsSigned'],
+            self.__security['metadataValidUntil'],
+            self.__security['metadataCacheDuration'],
             self.get_contacts(), self.get_organization()
         )
         cert = self.get_sp_cert()
@@ -557,9 +611,21 @@ class OneLogin_Saml2_Settings(object):
         # Sign metadata
         if 'signMetadata' in self.__security and self.__security['signMetadata'] is not False:
             if self.__security['signMetadata'] is True:
-                key_file_name = 'sp.key'
-                cert_file_name = 'sp.crt'
+                # Use the SP's normal key to sign the metadata:
+                if not cert:
+                    raise OneLogin_Saml2_Error(
+                        'Cannot sign metadata: missing SP public key certificate.',
+                        OneLogin_Saml2_Error.PUBLIC_CERT_FILE_NOT_FOUND
+                    )
+                cert_metadata = cert
+                key_metadata = self.get_sp_key()
+                if not key_metadata:
+                    raise OneLogin_Saml2_Error(
+                        'Cannot sign metadata: missing SP private key.',
+                        OneLogin_Saml2_Error.PRIVATE_KEY_FILE_NOT_FOUND
+                    )
             else:
+                # Use a custom key to sign the metadata:
                 if ('keyFileName' not in self.__security['signMetadata'] or
                         'certFileName' not in self.__security['signMetadata']):
                     raise OneLogin_Saml2_Error(
@@ -568,30 +634,28 @@ class OneLogin_Saml2_Settings(object):
                     )
                 key_file_name = self.__security['signMetadata']['keyFileName']
                 cert_file_name = self.__security['signMetadata']['certFileName']
-            key_metadata_file = self.__paths['cert'] + key_file_name
-            cert_metadata_file = self.__paths['cert'] + cert_file_name
+                key_metadata_file = self.__paths['cert'] + key_file_name
+                cert_metadata_file = self.__paths['cert'] + cert_file_name
 
-            if not exists(key_metadata_file):
-                raise OneLogin_Saml2_Error(
-                    'Private key file not found: %s',
-                    OneLogin_Saml2_Error.PRIVATE_KEY_FILE_NOT_FOUND,
-                    key_metadata_file
-                )
+                try:
+                    with open(key_metadata_file, 'r') as f_metadata_key:
+                        key_metadata = f_metadata_key.read()
+                except IOError:
+                    raise OneLogin_Saml2_Error(
+                        'Private key file not readable: %s',
+                        OneLogin_Saml2_Error.PRIVATE_KEY_FILE_NOT_FOUND,
+                        key_metadata_file
+                    )
 
-            if not exists(cert_metadata_file):
-                raise OneLogin_Saml2_Error(
-                    'Public cert file not found: %s',
-                    OneLogin_Saml2_Error.PUBLIC_CERT_FILE_NOT_FOUND,
-                    cert_metadata_file
-                )
-
-            f_metadata_key = open(key_metadata_file, 'r')
-            key_metadata = f_metadata_key.read()
-            f_metadata_key.close()
-
-            f_metadata_cert = open(cert_metadata_file, 'r')
-            cert_metadata = f_metadata_cert.read()
-            f_metadata_cert.close()
+                try:
+                    with open(cert_metadata_file, 'r') as f_metadata_cert:
+                        cert_metadata = f_metadata_cert.read()
+                except IOError:
+                    raise OneLogin_Saml2_Error(
+                        'Public cert file not readable: %s',
+                        OneLogin_Saml2_Error.PUBLIC_CERT_FILE_NOT_FOUND,
+                        cert_metadata_file
+                    )
 
             metadata = OneLogin_Saml2_Metadata.sign_metadata(metadata, key_metadata, cert_metadata)
 
