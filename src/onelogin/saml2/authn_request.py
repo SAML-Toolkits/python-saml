@@ -24,8 +24,8 @@ from lxml.etree import tostring, fromstring
 
 log = logging.getLogger(__name__)
 
-class OneLogin_Saml2_Authn_Request(object):
 
+class OneLogin_Saml2_Authn_Request(object):
 
     """
 

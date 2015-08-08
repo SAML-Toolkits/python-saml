@@ -19,6 +19,7 @@ from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from lxml.etree import fromstring
 import dm.xmlsec.binding as xmlsec
 
+
 class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
 
     def loadSettingsJSON(self):
