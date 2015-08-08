@@ -19,6 +19,7 @@ from lxml.etree import fromstring
 import dm.xmlsec.binding as xmlsec
 
 class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
+
     def loadSettingsJSON(self):
         filename = join(dirname(__file__), '..', '..', '..', 'settings', 'settings1.json')
         if exists(filename):
@@ -234,7 +235,7 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
         To sign a samlp:AuthnRequest you need to have a private key set for the service provider.
 
         To verify the assertion is signed correct you can also use the xmlsec1 command line tool:
-        
+
         xmlsec1 --verify --id-attr:ID AuthnRequest --trusted-pem tests/certs/example.com/example.crt authn_signed_assertion.xml
 
         """

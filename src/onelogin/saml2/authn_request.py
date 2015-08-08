@@ -25,6 +25,7 @@ from lxml.etree import tostring, fromstring
 log = logging.getLogger(__name__)
 
 class OneLogin_Saml2_Authn_Request(object):
+
     """
 
     This class handles an AuthNRequest. It builds an
@@ -125,9 +126,8 @@ class OneLogin_Saml2_Authn_Request(object):
                 'requested_authn_context_str': requested_authn_context_str,
             }
 
-
         # Only the urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST binding gets the enveloped signature
-        if settings.get_idp_data()['singleSignOnService'].get('binding', None) == 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' and security['authnRequestsSigned'] == True:
+        if settings.get_idp_data()['singleSignOnService'].get('binding', None) == 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' and security['authnRequestsSigned'] is True:
 
             log.debug("Generating AuthnRequest using urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST binding")
 
@@ -144,14 +144,13 @@ class OneLogin_Saml2_Authn_Request(object):
 
             doc.insert(0, signature)
 
-            ref = signature.addReference(xmlsec.TransformSha1,uri="#%s" % uid)
+            ref = signature.addReference(xmlsec.TransformSha1, uri="#%s" % uid)
             ref.addTransform(xmlsec.TransformEnveloped)
             ref.addTransform(xmlsec.TransformExclC14N)
 
             key_info = signature.ensureKeyInfo()
             key_info.addKeyName()
             key_info.addX509Data()
-
 
             # Load the key into the xmlsec context
             key = settings.get_sp_key()
@@ -186,9 +185,16 @@ class OneLogin_Saml2_Authn_Request(object):
         # the following prints if we get something with relation to the application
 
         info = []
-        if errorObject != "unknown": info.append("obj=" + errorObject)
-        if errorSubject != "unknown": info.append("subject=" + errorSubject)
-        if msg.strip(): info.append("msg=" + msg)
+
+        if errorObject != "unknown":
+            info.append("obj=" + errorObject)
+
+        if errorSubject != "unknown":
+            info.append("subject=" + errorSubject)
+
+        if msg.strip():
+            info.append("msg=" + msg)
+
         if info:
             print "%s:%d(%s)" % (filename, line, func), " ".join(info)
 
