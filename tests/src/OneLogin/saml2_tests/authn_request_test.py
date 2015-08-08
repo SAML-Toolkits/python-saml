@@ -15,6 +15,8 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
+from lxml.etree import parse, tostring, fromstring
+import dm.xmlsec.binding as xmlsec
 
 class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
     def loadSettingsJSON(self):
@@ -229,21 +231,43 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
         """
         Test to use the binding: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
 
-
         To sign a samlp:AuthnRequest you need to have a private key set for the service provider.
 
+        To verify the assertion is signed correct you can also use the xmlsec1 command line tool:
+        
+        xmlsec1 --verify --id-attr:ID AuthnRequest --trusted-pem tests/certs/example.com/example.crt authn_signed_assertion.xml
+
         """
-        filename = join(dirname(__file__), '..', '..', '..', 'settings', 'settings4.json')
+        filename = join(dirname(__file__), '..', '..', '..', 'settings', 'example_settings_http_post_binding.json')
         stream = open(filename, 'r')
         settings = json.load(stream)
         stream.close()
 
         settings = OneLogin_Saml2_Settings(settings)
 
-        authn_request = OneLogin_Saml2_Authn_Request(settings)
+        authn_request = OneLogin_Saml2_Authn_Request(settings)        
         authn_request_encoded = authn_request.get_request()
         decoded = b64decode(authn_request_encoded)
         inflated = decompress(decoded, -15)
 
-        # To verify the assertion is signed correct we can use the xmlsec1 command line tool
-        # xmlsec1 --verify --id-attr:ID AuthnRequest --store-references --trusted-pem tests/certs/aleksey-xmlsec/cacert.pem --verification-time "2007-07-04 12:12:12" authn_signed_assertion.xml
+        # Turn the inflated xml (which is just a string) into a in memory XML document
+        doc = fromstring(inflated)
+
+        # Verification of enveloped signature
+        node = doc.find(".//{%s}Signature" % xmlsec.DSigNs)
+        key_file = join(dirname(__file__), '..', '..', '..', 'certs/example.com', 'example.pubkey')
+
+        dsigCtx = xmlsec.DSigCtx()
+
+        signKey = xmlsec.Key.load(key_file, xmlsec.KeyDataFormatPem, None)
+        signKey.name = 'example.pubkey'
+
+        # Note: the assignment below effectively copies the key
+        dsigCtx.signKey = signKey
+
+        # Add ID attributes different from xml:id
+        # See the Notes on https://pypi.python.org/pypi/dm.xmlsec.binding/1.3.2
+        xmlsec.addIDs(doc, ["ID"])
+
+        # This raises an exception if the document does not verify
+        dsigCtx.verify(node)

@@ -8,6 +8,7 @@ All rights reserved.
 AuthNRequest class of OneLogin's Python Toolkit.
 
 """
+import logging
 
 from base64 import b64encode
 from zlib import compress
@@ -17,6 +18,8 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants
 
 import dm.xmlsec.binding as xmlsec
 from dm.xmlsec.binding.tmpl import Signature
+
+log = logging.getLogger(__name__)
 
 class OneLogin_Saml2_Authn_Request(object):
     """
@@ -123,9 +126,10 @@ class OneLogin_Saml2_Authn_Request(object):
         # Only the urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST binding gets the enveloped signature
         if settings.get_idp_data()['singleSignOnService'].get('binding', None) == 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' and security['authnRequestsSigned'] == True:
 
+            log.debug("Generating AuthnRequest using urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST binding")
+
             xmlsec.initialize()
             xmlsec.set_error_callback(self.print_xmlsec_errors)
-
 
             signature = Signature(xmlsec.TransformExclC14N, xmlsec.TransformRsaSha1)
 
@@ -135,7 +139,6 @@ class OneLogin_Saml2_Authn_Request(object):
             # ID attributes different from xml:id must be made known by the application through a call
             # to the addIds(node, ids) function defined by xmlsec.
             xmlsec.addIDs(doc, ['ID'])
-
 
             doc.insert(0, signature)
 
@@ -157,11 +160,6 @@ class OneLogin_Saml2_Authn_Request(object):
 
             sign_key = xmlsec.Key.loadMemory(key, xmlsec.KeyDataFormatPem, None)
 
-
-            print key
-            print settings.get_sp_cert()
-            print tostring(doc)
-
             from tempfile import NamedTemporaryFile
             cert_file = NamedTemporaryFile(delete=True)
             cert_file.write(settings.get_sp_cert())
@@ -169,14 +167,14 @@ class OneLogin_Saml2_Authn_Request(object):
 
             sign_key.loadCert(cert_file.name, xmlsec.KeyDataFormatPem)
 
-
             dsig_ctx.signKey = sign_key
 
             # Note: the assignment below effectively copies the key
             dsig_ctx.sign(signature)
-            print tostring(doc)
 
             self.__authn_request = tostring(doc)
+            log.debug("Generated AuthnRequest: {}".format(self.__authn_request))
+
         else:
             self.__authn_request = request
 

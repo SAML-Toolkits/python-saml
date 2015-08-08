@@ -1,0 +1,59 @@
+{
+    "comment": "This settings file uses the HTTP-POST binding for the assertionConsumerService.",
+    "strict": false,
+    "debug": false,
+    "sp": {
+        "entityId": "sp.example.com",
+        "assertionConsumerService": {
+            "url": "https://sp.example.com/saml/?acs",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+        },
+        "singleLogoutService": {
+            "url": "https://sp.example.com/saml?sls",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        },
+        "NameIDFormat": "urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified",
+        "x509cert": "MIIDuTCCAqGgAwIBAgIJALO8tfVURFsvMA0GCSqGSIb3DQEBCwUAMHMxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2NvMSEwHwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQxFDASBgNVBAMMC2V4YW1wbGUuY29tMB4XDTE1MDgwODE4NDQ1OVoXDTI1MDgwNTE4NDQ1OVowczELMAkGA1UEBhMCVVMxEzARBgNVBAgMCkNhbGlmb3JuaWExFjAUBgNVBAcMDVNhbiBGcmFuY2lzY28xITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDEUMBIGA1UEAwwLZXhhbXBsZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDrkTb+VmDnhRUyuCO+i6fWJIey9ilwLMw+o/7TSM8qqB5PCZbVnePmd97PbhakVRqoYFfNpbMbD1QjFXXICkolVVS2tmRGsGlE9n1/P9egnVmrfByRrVViJd4EEG3FYqKmpfGaPXUhJGqsYXXdv7Zi3ZcC+pKDrMjiQfv/MlZsHcZ1FBbOk5KSe/b8RpzktbF4AqhjiO/XjpskUIVMlUcyqDlTkLYxU1uNIU9RJEY0/9Kbm/VT3SMFjhpMTbU14DmGARLXsLZiejs/c6O6Yvz1CJf8pCzUBR8SsUD0FUYgm3R1NBqAgNPMJeNDUAx6qlu98RYjEnyBVyKT/0Th0BgtAgMBAAGjUDBOMB0GA1UdDgQWBBRghqUeLjDqMaJikgHWgxYQnQm1azAfBgNVHSMEGDAWgBRghqUeLjDqMaJikgHWgxYQnQm1azAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAs0h0MFMDme/07Gj5TJkaxQLWiacNhqmqEa3Mt1C3k2Wva6OwAAqMMWcAQMdmACg8Qk0xjLBizs7go7QvkmV+RNbHDBdD0p00GRrBj1XTPR4VJiJJvOmY2G7A084lx0M9nOGHtQRLgs116TNOTMHz3rPDeN0SdQJien1AAKa4JhcWtuC0yBlPXtx9nQ4TSrCTgOEOnYfYjh+WKD/ZGUeYzmNlT9Sl6aPjjbpSBMzZzckhxDAdQrveTKb75z8BFr+60X3f76qCO7xsoCCUJfybsgiUZvp6s7qcAkJNnWeIKWao5XEkAOvr6Kry/oncaUNm6Q1LRKgXmB8FiIx3i3xdP",
+        "privateKey": "MIIEpgIBAAKCAQEA65E2/lZg54UVMrgjvoun1iSHsvYpcCzMPqP+00jPKqgeTwmW1Z3j5nfez24WpFUaqGBXzaWzGw9UIxV1yApKJVVUtrZkRrBpRPZ9fz/XoJ1Zq3wcka1VYiXeBBBtxWKipqXxmj11ISRqrGF13b+2Yt2XAvqSg6zI4kH7/zJWbB3GdRQWzpOSknv2/Eac5LWxeAKoY4jv146bJFCFTJVHMqg5U5C2MVNbjSFPUSRGNP/Sm5v1U90jBY4aTE21NeA5hgES17C2Yno7P3OjumL89QiX/KQs1AUfErFA9BVGIJt0dTQagIDTzCXjQ1AMeqpbvfEWIxJ8gVcik/9E4dAYLQIDAQABAoIBAQDGz40ZRK+OVkxYvP4138nrunLogEbizHwoVeJIUYe+mZrS2+X4LcRdC0f5yxDC6qyP9JfGERXDPcGlxoPcK4r+TTEs72xcGKEPufSaw7fpb0NxrlKyRBbuucTRq0fpseBSQ3VP1pSXPxPknnCKkTWN5TSBKBclmFsGUegrLkGwBiakiIYy7TrNSzQ7tFI/jOHP58b1oN4sWQMrqyBIADQgR1G+r+iRjrKiMQ0HFrn3cBIh/pOb9e/R/PzuzjluKR21cbUL9U2VBmIDmku/JdoVef8vadWO8wF+AsMkHbT6EpWqJnmzm9Yc1d7OnGdFYiqJOfx5jwe0hO4IWEV1Mz1BAoGBAPd7wjNAr69/BE2zo4gUYJiELQsvF+cD00kr4wjkYuuwlJkfrGX5ywxkpE0o2wzc2FirviHQizDmv0L9NfkEO+Qy9XfOYL1kJ2oV9Yw/Mp1dcDyap4bg+NTcx65PQJJTB0fr3DGBWAWFko2hTKOTbgF+4DO8lO41H2GqpkSoUQSdAoGBAPOsepUxnMAKnQKCjJ/pMgf+vtMYg8VkAtvLrd8bRCmHWKhrBHObojorQx2fGic22Sb/B8jFzK6Y61Q9LiBJDLoU3acgkq76x0C71e6YwvGVXSgw6FRuTIsmt10PzqOFfUFnBfq2t92PYnJXJyx8RtFRl0Z1aiSqmxzpvon/9mTRAoGBAMOYGEARm8iEBo6yr0hZco6XyFHSgn2eVFq8SM86UcQc5xSuJ77g0U2WLRSeeaGM2aAa/EYVYCzh8b+sCAArDHqqm754aZTFlzEM8ehJ+mLM+murf0PmgkMZyudE06/R1ytMidbGdx7GFrHBDaUqXALql5/MJ5ise4ThLk+NB5sxAoGBALMoOESjYoWMCB7FT5FvSjq4oSLh3lhuDO//lAn6qSYDfjrt3CsH3cH49vK7fOYiHIzga5/BVpl0k2mvRc+1Bed22fU8LLz8Yy2ELWms5X/r+r9HHjqdkiepQp3otlxiFFLW5X2NhCgheRdqXsIFaagS3i+OuojU6xDaBx69lDJRAoGBAJFMcGCk280m3s3IqoiXOsyOdcvQ6EKOltJrA1PIyI6S8KeWW1su66hnxa2ffAw34uiKA0WscyzFCOdXpohOxCnWx0eANpWpQieP41izNYmUURWa5+r1qr0BfgdzOPAn2Wa0bUBHBGM7g5XrwLtvaUkFdy6USHXXzN08oPT8Wx1A"        
+    },
+    "idp": {
+        "entityId": "idp.example.com",
+        "singleSignOnService": {
+            "url": "https://idp.example.com/login",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+        },
+        "singleLogoutService": {
+            "url": "https://idp.example.com/sls",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        },
+        "x509cert": "MIIDuTCCAqGgAwIBAgIJALO8tfVURFsvMA0GCSqGSIb3DQEBCwUAMHMxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2NvMSEwHwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQxFDASBgNVBAMMC2V4YW1wbGUuY29tMB4XDTE1MDgwODE4NDQ1OVoXDTI1MDgwNTE4NDQ1OVowczELMAkGA1UEBhMCVVMxEzARBgNVBAgMCkNhbGlmb3JuaWExFjAUBgNVBAcMDVNhbiBGcmFuY2lzY28xITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDEUMBIGA1UEAwwLZXhhbXBsZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDrkTb+VmDnhRUyuCO+i6fWJIey9ilwLMw+o/7TSM8qqB5PCZbVnePmd97PbhakVRqoYFfNpbMbD1QjFXXICkolVVS2tmRGsGlE9n1/P9egnVmrfByRrVViJd4EEG3FYqKmpfGaPXUhJGqsYXXdv7Zi3ZcC+pKDrMjiQfv/MlZsHcZ1FBbOk5KSe/b8RpzktbF4AqhjiO/XjpskUIVMlUcyqDlTkLYxU1uNIU9RJEY0/9Kbm/VT3SMFjhpMTbU14DmGARLXsLZiejs/c6O6Yvz1CJf8pCzUBR8SsUD0FUYgm3R1NBqAgNPMJeNDUAx6qlu98RYjEnyBVyKT/0Th0BgtAgMBAAGjUDBOMB0GA1UdDgQWBBRghqUeLjDqMaJikgHWgxYQnQm1azAfBgNVHSMEGDAWgBRghqUeLjDqMaJikgHWgxYQnQm1azAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAs0h0MFMDme/07Gj5TJkaxQLWiacNhqmqEa3Mt1C3k2Wva6OwAAqMMWcAQMdmACg8Qk0xjLBizs7go7QvkmV+RNbHDBdD0p00GRrBj1XTPR4VJiJJvOmY2G7A084lx0M9nOGHtQRLgs116TNOTMHz3rPDeN0SdQJien1AAKa4JhcWtuC0yBlPXtx9nQ4TSrCTgOEOnYfYjh+WKD/ZGUeYzmNlT9Sl6aPjjbpSBMzZzckhxDAdQrveTKb75z8BFr+60X3f76qCO7xsoCCUJfybsgiUZvp6s7qcAkJNnWeIKWao5XEkAOvr6Kry/oncaUNm6Q1LRKgXmB8FiIx3i3xdP"
+    },
+    "security": {
+        "nameIdEncrypted": false,
+        "authnRequestsSigned": true,
+        "logoutRequestSigned": true,
+        "logoutResponseSigned": true,
+        "signMetadata": true,
+        "wantMessagesSigned": false,
+        "wantAssertionsSigned": false,
+        "wantNameIdEncrypted": false,
+        "requestedAuthnContext": true
+    },
+    "contactPerson": {
+        "technical": {
+            "givenName": "Example Admin",
+            "emailAddress": "admin@example.com"
+        },
+        "support": {
+            "givenName": "Example Admin",
+            "emailAddress": "admin@example.com"
+        }
+    },
+    "organization": {
+        "en-US": {
+            "name": "example.com",
+            "displayname": "example.com",
+            "url": "http://example.com"
+        }
+    }
+}
