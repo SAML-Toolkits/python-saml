@@ -20,6 +20,7 @@ import dm.xmlsec.binding as xmlsec
 
 class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
 
+
     def loadSettingsJSON(self):
         filename = join(dirname(__file__), '..', '..', '..', 'settings', 'settings1.json')
         if exists(filename):
@@ -246,7 +247,7 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
 
         settings = OneLogin_Saml2_Settings(settings)
 
-        authn_request = OneLogin_Saml2_Authn_Request(settings)        
+        authn_request = OneLogin_Saml2_Authn_Request(settings)
         authn_request_encoded = authn_request.get_request()
         decoded = b64decode(authn_request_encoded)
         inflated = decompress(decoded, -15)

@@ -26,6 +26,7 @@ log = logging.getLogger(__name__)
 
 class OneLogin_Saml2_Authn_Request(object):
 
+
     """
 
     This class handles an AuthNRequest. It builds an
