@@ -543,6 +543,28 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         hostname = OneLogin_Saml2_Utils.get_self_host(request_data)
         self.assertIn(u'http://%s/index.html' % hostname, parsed_query['RelayState'])
 
+    def testLoginHttpPostBinding(self):
+        """
+        Tests the login method of the OneLogin_Saml2_Auth class
+        Case Login with no parameters. An AuthnRequest is built into a form.
+        """
+
+        filename = join(dirname(__file__), '..', '..', '..', 'settings', 'example_settings_http_post_binding.json')
+        stream = open(filename, 'r')
+        settings_info = json.load(stream)
+        stream.close()
+
+        request_data = self.get_request()
+        auth = OneLogin_Saml2_Auth(request_data, old_settings=settings_info)
+
+        html = auth.login()
+
+        print html
+
+        sso_url = settings_info['idp']['singleSignOnService']['url']
+        self.assertIn(sso_url, html)
+
+
     def testLoginWithRelayState(self):
         """
         Tests the login method of the OneLogin_Saml2_Auth class

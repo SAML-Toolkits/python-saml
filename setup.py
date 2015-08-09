@@ -36,6 +36,7 @@ setup(
         'dm.xmlsec.binding==1.3.2',
         'isodate==0.5.0',
         'defusedxml==0.4.1',
+		'Jinja2==2.7.3',
     ],
     extras_require={
         'test': (
