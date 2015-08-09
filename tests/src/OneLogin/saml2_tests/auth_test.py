@@ -559,11 +559,8 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
 
         html = auth.login()
 
-        print html
-
         sso_url = settings_info['idp']['singleSignOnService']['url']
         self.assertIn(sso_url, html)
-
 
     def testLoginWithRelayState(self):
         """
