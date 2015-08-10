@@ -30,6 +30,7 @@ from onelogin.saml2.authn_request import OneLogin_Saml2_Authn_Request
 
 log = logging.getLogger(__name__)
 
+
 class OneLogin_Saml2_Auth(object):
     """
 
@@ -291,9 +292,9 @@ class OneLogin_Saml2_Auth(object):
             template = Template(template_text)
 
             context = {
-                'sso_url' : self.get_sso_url(),
-                'saml_request' : saml_request,
-                'relay_state' : parameters['RelayState']
+                'sso_url': self.get_sso_url(),
+                'saml_request': saml_request,
+                'relay_state': parameters['RelayState']
             }
 
             html = template.render(context)
