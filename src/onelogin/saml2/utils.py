@@ -611,7 +611,8 @@ class OneLogin_Saml2_Utils(object):
         name_id_container.setAttribute("xmlns:saml", OneLogin_Saml2_Constants.NS_SAML)
 
         name_id = doc.createElement('saml:NameID')
-        name_id.setAttribute('SPNameQualifier', sp_nq)
+        if sp_nq is not None:
+            name_id.setAttribute('SPNameQualifier', sp_nq)
         name_id.setAttribute('Format', sp_format)
         name_id.appendChild(doc.createTextNode(value))
         name_id_container.appendChild(name_id)
