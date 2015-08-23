@@ -117,6 +117,39 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
         self.assertIn(OneLogin_Saml2_Constants.AC_PASSWORD_PROTECTED, inflated)
         self.assertIn(OneLogin_Saml2_Constants.AC_X509, inflated)
 
+    def testCreateRequestAuthContextComparision(self):
+        """
+        Tests the OneLogin_Saml2_Authn_Request Constructor.
+        The creation of a deflated SAML Request with defined AuthnContextComparison
+        """
+        saml_settings = self.loadSettingsJSON()
+        settings = OneLogin_Saml2_Settings(saml_settings)
+        authn_request = OneLogin_Saml2_Authn_Request(settings)
+        authn_request_encoded = authn_request.get_request()
+        decoded = b64decode(authn_request_encoded)
+        inflated = decompress(decoded, -15)
+        self.assertRegexpMatches(inflated, '^<samlp:AuthnRequest')
+        self.assertIn(OneLogin_Saml2_Constants.AC_PASSWORD, inflated)
+        self.assertNotIn(OneLogin_Saml2_Constants.AC_X509, inflated)
+
+        saml_settings['security']['requestedAuthnContext'] = True
+        settings = OneLogin_Saml2_Settings(saml_settings)
+        authn_request = OneLogin_Saml2_Authn_Request(settings)
+        authn_request_encoded = authn_request.get_request()
+        decoded = b64decode(authn_request_encoded)
+        inflated = decompress(decoded, -15)
+        self.assertRegexpMatches(inflated, '^<samlp:AuthnRequest')
+        self.assertIn('RequestedAuthnContext Comparison="exact"', inflated)
+
+        saml_settings['security']['requestedAuthnContextComparison'] = 'minimun'
+        settings = OneLogin_Saml2_Settings(saml_settings)
+        authn_request = OneLogin_Saml2_Authn_Request(settings)
+        authn_request_encoded = authn_request.get_request()
+        decoded = b64decode(authn_request_encoded)
+        inflated = decompress(decoded, -15)
+        self.assertRegexpMatches(inflated, '^<samlp:AuthnRequest')
+        self.assertIn('RequestedAuthnContext Comparison="minimun"', inflated)
+
     def testCreateRequestForceAuthN(self):
         """
         Tests the OneLogin_Saml2_Authn_Request Constructor.
