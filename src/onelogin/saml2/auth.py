@@ -54,6 +54,7 @@ class OneLogin_Saml2_Auth(object):
         self.__attributes = []
         self.__nameid = None
         self.__session_index = None
+        self.__session_expiration = None
         self.__authenticated = False
         self.__errors = []
         self.__error_reason = None
@@ -95,6 +96,7 @@ class OneLogin_Saml2_Auth(object):
                 self.__attributes = response.get_attributes()
                 self.__nameid = response.get_nameid()
                 self.__session_index = response.get_session_index()
+                self.__session_expiration = response.get_session_not_on_or_after()
                 self.__authenticated = True
 
             else:
@@ -212,6 +214,14 @@ class OneLogin_Saml2_Auth(object):
         :rtype: string
         """
         return self.__session_index
+
+    def get_session_expiration(self):
+        """
+        Returns the SessionNotOnOrAfter from the AuthnStatement.
+        :returns: The SessionNotOnOrAfter of the assertion
+        :rtype: DateTime|null
+        """
+        return self.__session_expiration
 
     def get_errors(self):
         """
