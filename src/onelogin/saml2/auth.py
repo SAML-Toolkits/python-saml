@@ -412,11 +412,10 @@ class OneLogin_Saml2_Auth(object):
         dsig_ctx = xmlsec.DSigCtx()
         dsig_ctx.signKey = xmlsec.Key.loadMemory(key, xmlsec.KeyDataFormatPem, None)
 
-        saml_data_str = '%s=%s' % (saml_type, quote_plus(saml_data))
-        relay_state_str = 'RelayState=%s' % quote_plus(relay_state)
-        alg_str = 'SigAlg=%s' % quote_plus(sign_algorithm)
-
-        sign_data = [saml_data_str, relay_state_str, alg_str]
+        sign_data = ['%s=%s' % (saml_type, quote_plus(saml_data))]
+        if relay_state:
+            sign_data.append('RelayState=%s' % quote_plus(relay_state))
+        sign_data.append('SigAlg=%s' % quote_plus(sign_algorithm))
         msg = '&'.join(sign_data)
 
         # Sign the metadata with our private key.
