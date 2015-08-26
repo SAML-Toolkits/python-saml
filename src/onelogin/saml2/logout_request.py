@@ -308,10 +308,24 @@ class OneLogin_Saml2_Logout_Request(object):
                 else:
                     sign_alg = get_data['SigAlg']
 
-                signed_query = 'SAMLRequest=%s' % quote_plus(get_data['SAMLRequest'])
+                def get_encoded_parameter(name, default=None):
+                    """Return an url encoded get parameter value
+
+                    Prefer to extract the original encoded value directly from query_string since url
+                    encoding is not canonical. The encoding used by ADFS 3.0 is not compatible with
+                    python's quote_plus (ADFS produces lower case hex numbers and quote_plus produces
+                    upper case hex numbers)
+                    """
+                    if name not in get_data:
+                        return quote_plus(default)
+                    if 'query_string' in request_data:
+                        return OneLogin_Saml2_Utils.extract_raw_query_parameter(request_data['query_string'], name)
+                    return quote_plus(get_data[name])
+
+                signed_query = 'SAMLRequest=%s' % get_encoded_parameter('SAMLRequest')
                 if 'RelayState' in get_data:
-                    signed_query = '%s&RelayState=%s' % (signed_query, quote_plus(get_data['RelayState']))
-                signed_query = '%s&SigAlg=%s' % (signed_query, quote_plus(sign_alg))
+                    signed_query += '&RelayState=%s' % get_encoded_parameter('RelayState')
+                signed_query += '&SigAlg=%s' % get_encoded_parameter('SigAlg', sign_alg)
 
                 if 'x509cert' not in idp_data or idp_data['x509cert'] is None:
                     raise Exception('In order to validate the sign on the Logout Request, the x509cert of the IdP is required')

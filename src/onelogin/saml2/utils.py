@@ -1010,3 +1010,11 @@ class OneLogin_Saml2_Utils(object):
             return True
         except Exception:
             return False
+
+    @staticmethod
+    def extract_raw_query_parameter(query_string, parameter, default=''):
+        m = re.search('%s=([^&]+)' % parameter, query_string)
+        if m:
+            return m.group(1)
+        else:
+            return default
