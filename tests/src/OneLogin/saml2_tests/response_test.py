@@ -421,25 +421,6 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         except Exception as e:
             self.assertEqual('Timing issues (please check your clock settings)', e.message)
 
-    def testIsInValidNoStatement(self):
-        """
-        Tests the is_valid method of the OneLogin_Saml2_Response
-        Case no statement
-        """
-        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
-        xml = self.file_contents(join(self.data_path, 'responses', 'invalids', 'no_signature.xml.base64'))
-        response = OneLogin_Saml2_Response(settings, xml)
-        response.is_valid(self.get_request_data())
-        self.assertEqual('No Signature found. SAML Response rejected', response.get_error())
-
-        settings.set_strict(True)
-        response_2 = OneLogin_Saml2_Response(settings, xml)
-        try:
-            valid = response_2.is_valid(self.get_request_data())
-            self.assertFalse(valid)
-        except Exception as e:
-            self.assertEqual('There is no AttributeStatement on the Response', e.message)
-
     def testIsInValidNoKey(self):
         """
         Tests the is_valid method of the OneLogin_Saml2_Response
