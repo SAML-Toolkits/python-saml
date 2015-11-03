@@ -1,4 +1,4 @@
-# java-saml changelog
+# python-saml changelog
 
 ### 2.1.5 (Nov 3, 2015)
 * [#86](https://github.com/onelogin/python-saml/pull/86) Make idp settings optional (Usefull when validating SP metadata)
