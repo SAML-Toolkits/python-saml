@@ -3,6 +3,7 @@
 # Copyright (c) 2014, OneLogin, Inc.
 # All rights reserved.
 
+import os
 from base64 import b64decode
 import json
 from os.path import dirname, join, exists
@@ -15,8 +16,12 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
+from lxml.etree import fromstring
+import dm.xmlsec.binding as xmlsec
+
 
 class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
+
     def loadSettingsJSON(self):
         filename = join(dirname(__file__), '..', '..', '..', 'settings', 'settings1.json')
         if exists(filename):
@@ -257,3 +262,55 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
         self.assertRegexpMatches(inflated, '<saml:Issuer>http://stuff.com/endpoints/metadata.php</saml:Issuer>')
         self.assertRegexpMatches(inflated, 'Format="urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted"')
         self.assertRegexpMatches(inflated, 'ProviderName="SP prueba"')
+
+    def testSignedHttpPostBinding(self):
+        """
+        Test to use the binding: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
+
+        To sign a samlp:AuthnRequest you need to have a private key set for the service provider.
+
+        To verify the assertion is signed correct you can also use the xmlsec1 command line tool:
+
+        xmlsec1 --verify --id-attr:ID AuthnRequest --trusted-pem tests/certs/example.com/example.crt authn_signed_assertion.xml
+
+        """
+        filename = join(dirname(__file__), '..', '..', '..', 'settings', 'example_settings_http_post_binding.json')
+        stream = open(filename, 'r')
+        settings = json.load(stream)
+        stream.close()
+
+        settings = OneLogin_Saml2_Settings(settings)
+
+        authn_request = OneLogin_Saml2_Authn_Request(settings)
+        authn_request_encoded = authn_request.get_request()
+        decoded = b64decode(authn_request_encoded)
+        inflated = decompress(decoded, -15)
+
+        sample_output_directory = join(dirname(__file__), '..', '..', '..', 'sample_output')
+        if not os.path.exists(sample_output_directory):
+            os.makedirs(sample_output_directory)
+
+        with open(join(dirname(__file__), '..', '..', '..', 'sample_output/authn_signed_assertion.xml'), 'wb') as f:
+            f.write(inflated)
+
+        # Turn the inflated xml (which is just a string) into a in memory XML document
+        doc = fromstring(inflated)
+
+        # Verification of enveloped signature
+        node = doc.find(".//{%s}Signature" % xmlsec.DSigNs)
+        key_file = join(dirname(__file__), '..', '..', '..', 'certs/example.com', 'example.pubkey')
+
+        dsigCtx = xmlsec.DSigCtx()
+
+        signKey = xmlsec.Key.load(key_file, xmlsec.KeyDataFormatPem, None)
+        signKey.name = 'example.pubkey'
+
+        # Note: the assignment below effectively copies the key
+        dsigCtx.signKey = signKey
+
+        # Add ID attributes different from xml:id
+        # See the Notes on https://pypi.python.org/pypi/dm.xmlsec.binding/1.3.2
+        xmlsec.addIDs(doc, ["ID"])
+
+        # This raises an exception if the document does not verify
+        dsigCtx.verify(node)
