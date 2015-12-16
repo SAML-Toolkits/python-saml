@@ -90,21 +90,17 @@ class OneLogin_Saml2_Metadata(object):
 
         str_organization = ''
         if len(organization) > 0:
-            organization_info = []
+            organization_names = []
+            organization_displaynames = []
+            organization_urls = []
             for (lang, info) in organization.items():
-                org = """    <md:Organization>
-        <md:OrganizationName xml:lang="%(lang)s">%(name)s</md:OrganizationName>
-        <md:OrganizationDisplayName xml:lang="%(lang)s">%(display_name)s</md:OrganizationDisplayName>
-        <md:OrganizationURL xml:lang="%(lang)s">%(url)s</md:OrganizationURL>
-    </md:Organization>""" % \
-                    {
-                        'lang': lang,
-                        'name': info['name'],
-                        'display_name': info['displayname'],
-                        'url': info['url'],
-                    }
-                organization_info.append(org)
-            str_organization = '\n'.join(organization_info)
+                organization_names.append("""        <md:OrganizationName xml:lang="%s">%s</md:OrganizationName>""" % (lang, info['name']))
+                organization_displaynames.append("""        <md:OrganizationDisplayName xml:lang="%s">%s</md:OrganizationDisplayName>""" % (lang, info['displayname']))
+                organization_urls.append("""        <md:OrganizationURL xml:lang="%s">%s</md:OrganizationURL>""" % (lang, info['url']))
+            org_data = '\n'.join(organization_names) + '\n' + '\n'.join(organization_displaynames) + '\n' + '\n'.join(organization_urls)
+            str_organization = """    <md:Organization>
+%(org)s
+    </md:Organization>""" % {'org': org_data}
 
         str_contacts = ''
         if len(contacts) > 0:
@@ -149,7 +145,6 @@ class OneLogin_Saml2_Metadata(object):
                 'organization': str_organization,
                 'contacts': str_contacts,
             }
-
         return metadata
 
     @staticmethod
