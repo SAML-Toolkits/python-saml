@@ -284,6 +284,8 @@ This is the settings.json file:
         // represent the requested subject.
         // Take a look on src/onelogin/saml2/constants.py to see the NameIdFormat that are supported.
         "NameIDFormat": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
+        // List of IdPs (entityIds) allowed to authenticate the request (SAML2 Scoping)
+        "scopingIdpList": ["https://<idp_domain>"],
         // Usually x509cert and privateKey of the SP are provided by files placed at
         // the certs folder. But we can also provide them with the following parameters
         "x509cert": "",
