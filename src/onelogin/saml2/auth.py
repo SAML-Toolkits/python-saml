@@ -49,7 +49,6 @@ class OneLogin_Saml2_Auth(object):
         :type custom_base_path: string
         """
         self.__request_data = request_data
-        self.__settings = OneLogin_Saml2_Settings(old_settings, custom_base_path)
         self.__attributes = []
         self.__nameid = None
         self.__nameid_format = None
@@ -64,6 +63,11 @@ class OneLogin_Saml2_Auth(object):
         self.__last_assertion_not_on_or_after = None
         self.__last_request = None
         self.__last_response = None
+
+        if isinstance(old_settings, OneLogin_Saml2_Settings):
+            self.__settings = old_settings
+        else:
+            self.__settings = OneLogin_Saml2_Settings(old_settings, custom_base_path)
 
     def get_settings(self):
         """
