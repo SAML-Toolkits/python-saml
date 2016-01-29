@@ -157,7 +157,13 @@ Read more at https://pythonhosted.org/an_example_pypi_project/setuptools.html
 
 Contains the unit test of the toolkit.
 
-In order to execute the test you only need to load the virtualenv with the toolkit installed on it and execute:
+In order to execute the test you need to load the virtualenv with the toolkit installed on it and execute:
+```
+pip install -e ".[test]"
+```
+that will install dependences that the test requires.
+
+and later execute:
 ```
 python setup.py test
 ```
