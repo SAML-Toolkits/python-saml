@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/onelogin/python-saml/badge.png)](https://coveralls.io/r/onelogin/python-saml)
 [![PyPi Version](https://img.shields.io/pypi/v/python-saml.svg)](https://pypi.python.org/pypi/python-saml)
 ![PyPi Downloads](https://img.shields.io/pypi/dm/python-saml.svg)
-[Python versions](https://img.shields.io/pypi/pyversions/coverage.svg)
+![Python versions](https://img.shields.io/pypi/pyversions/python-saml.svg)
 
 Add SAML support to your Python software using this library.
 Forget those complicated libraries and use that open source library provided
