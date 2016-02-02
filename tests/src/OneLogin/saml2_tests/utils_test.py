@@ -8,6 +8,8 @@ import json
 from lxml import etree
 from os.path import dirname, join, exists
 import unittest
+from teamcity import is_running_under_teamcity
+from teamcity.unittestpy import TeamcityTestRunner
 from xml.dom.minidom import Document, parseString
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
@@ -899,3 +901,11 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
 
         no_key = b64decode(self.file_contents(join(self.data_path, 'responses', 'invalids', 'no_key.xml.base64')))
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(no_key, cert))
+
+
+if __name__ == '__main__':
+    if is_running_under_teamcity():
+        runner = TeamcityTestRunner()
+    else:
+        runner = unittest.TextTestRunner()
+        unittest.main(testRunner=runner)

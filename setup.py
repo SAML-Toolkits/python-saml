@@ -38,7 +38,8 @@ setup(
     ],
     extras_require={
         'test': (
-            'coverage==3.7.1',
+            'teamcity-messages==1.17',
+            'coverage==4.0.3',
             'freezegun==0.3.5',
             'pylint==1.3.1',
             'pep8==1.5.7',

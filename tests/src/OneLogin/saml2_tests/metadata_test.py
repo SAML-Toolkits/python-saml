@@ -9,6 +9,8 @@ from os.path import dirname, join, exists
 from time import strftime
 from datetime import datetime
 import unittest
+from teamcity import is_running_under_teamcity
+from teamcity.unittestpy import TeamcityTestRunner
 
 from onelogin.saml2.metadata import OneLogin_Saml2_Metadata
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
@@ -222,3 +224,11 @@ class OneLogin_Saml2_Metadata_Test(unittest.TestCase):
             self.assertFalse(True)
         except Exception as e:
             self.assertIn('Error parsing metadata', e.message)
+
+
+if __name__ == '__main__':
+    if is_running_under_teamcity():
+        runner = TeamcityTestRunner()
+    else:
+        runner = unittest.TextTestRunner()
+        unittest.main(testRunner=runner)

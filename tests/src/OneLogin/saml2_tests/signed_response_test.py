@@ -7,6 +7,8 @@ from base64 import b64encode
 import json
 from os.path import dirname, join, exists
 import unittest
+from teamcity import is_running_under_teamcity
+from teamcity.unittestpy import TeamcityTestRunner
 
 from onelogin.saml2.response import OneLogin_Saml2_Response
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
@@ -52,3 +54,11 @@ class OneLogin_Saml2_SignedResponse_Test(unittest.TestCase):
         response = OneLogin_Saml2_Response(settings, b64encode(message))
 
         self.assertEquals('someone@example.com', response.get_nameid())
+
+
+if __name__ == '__main__':
+    if is_running_under_teamcity():
+        runner = TeamcityTestRunner()
+    else:
+        runner = unittest.TextTestRunner()
+        unittest.main(testRunner=runner)

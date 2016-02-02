@@ -6,6 +6,8 @@
 import json
 from os.path import dirname, join, exists
 import unittest
+from teamcity import is_running_under_teamcity
+from teamcity.unittestpy import TeamcityTestRunner
 from urlparse import urlparse, parse_qs
 from xml.dom.minidom import parseString
 
@@ -381,3 +383,11 @@ class OneLogin_Saml2_Logout_Response_Test(unittest.TestCase):
 
         response_3 = OneLogin_Saml2_Logout_Response(settings, message_3)
         self.assertTrue(response_3.is_valid(request_data))
+
+
+if __name__ == '__main__':
+    if is_running_under_teamcity():
+        runner = TeamcityTestRunner()
+    else:
+        runner = unittest.TextTestRunner()
+        unittest.main(testRunner=runner)

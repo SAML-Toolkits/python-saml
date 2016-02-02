@@ -7,6 +7,8 @@ from base64 import b64decode, b64encode
 import json
 from os.path import dirname, join, exists
 import unittest
+from teamcity import is_running_under_teamcity
+from teamcity.unittestpy import TeamcityTestRunner
 from urlparse import urlparse, parse_qs
 
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
@@ -858,3 +860,11 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
             auth2.build_response_signature(message, relay_state)
         except Exception as e:
             self.assertIn("Trying to sign the SAMLResponse but can't load the SP private key", e.message)
+
+
+if __name__ == '__main__':
+    if is_running_under_teamcity():
+        runner = TeamcityTestRunner()
+    else:
+        runner = unittest.TextTestRunner()
+        unittest.main(testRunner=runner)

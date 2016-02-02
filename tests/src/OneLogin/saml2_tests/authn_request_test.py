@@ -7,6 +7,8 @@ from base64 import b64decode
 import json
 from os.path import dirname, join, exists
 import unittest
+from teamcity import is_running_under_teamcity
+from teamcity.unittestpy import TeamcityTestRunner
 from urlparse import urlparse, parse_qs
 from zlib import decompress
 
@@ -257,3 +259,11 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
         self.assertRegexpMatches(inflated, '<saml:Issuer>http://stuff.com/endpoints/metadata.php</saml:Issuer>')
         self.assertRegexpMatches(inflated, 'Format="urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted"')
         self.assertRegexpMatches(inflated, 'ProviderName="SP prueba"')
+
+
+if __name__ == '__main__':
+    if is_running_under_teamcity():
+        runner = TeamcityTestRunner()
+    else:
+        runner = unittest.TextTestRunner()
+        unittest.main(testRunner=runner)

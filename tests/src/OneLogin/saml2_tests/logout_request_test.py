@@ -7,6 +7,8 @@ from base64 import b64encode
 import json
 from os.path import dirname, join, exists
 import unittest
+from teamcity import is_running_under_teamcity
+from teamcity.unittestpy import TeamcityTestRunner
 from urlparse import urlparse, parse_qs
 from xml.dom.minidom import parseString
 
@@ -438,3 +440,11 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
             self.assertFalse(valid)
         except Exception as e:
             self.assertIn('In order to validate the sign on the Logout Request, the x509cert of the IdP is required', e.message)
+
+
+if __name__ == '__main__':
+    if is_running_under_teamcity():
+        runner = TeamcityTestRunner()
+    else:
+        runner = unittest.TextTestRunner()
+        unittest.main(testRunner=runner)
