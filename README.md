@@ -2,8 +2,9 @@
 
 [![Build Status](https://api.travis-ci.org/onelogin/python-saml.png?branch=master)](http://travis-ci.org/onelogin/python-saml)
 [![Coverage Status](https://coveralls.io/repos/onelogin/python-saml/badge.png)](https://coveralls.io/r/onelogin/python-saml)
-[![PyPi Version](https://pypip.in/v/python-saml/badge.png)](https://pypi.python.org/pypi/python-saml)
-![PyPi Downloads](https://pypip.in/d/python-saml/badge.png)
+[![PyPi Version](https://img.shields.io/pypi/v/python-saml.svg)](https://pypi.python.org/pypi/python-saml)
+![PyPi Downloads](https://img.shields.io/pypi/dm/python-saml.svg)
+[Python versions](https://img.shields.io/pypi/pyversions/coverage.svg)
 
 Add SAML support to your Python software using this library.
 Forget those complicated libraries and use that open source library provided
