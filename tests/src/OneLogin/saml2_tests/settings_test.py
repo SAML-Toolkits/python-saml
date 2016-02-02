@@ -15,8 +15,8 @@ from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 
 class OneLogin_Saml2_Settings_Test(unittest.TestCase):
-    data_path = join(dirname(__file__), '..', '..', '..', 'data')
-    settings_path = join(dirname(__file__), '..', '..', '..', 'settings')
+    data_path = join(dirname(dirname(dirname(dirname(__file__)))), 'data')
+    settings_path = join(dirname(dirname(dirname(dirname(__file__)))), 'settings')
 
     def loadSettingsJSON(self):
         filename = join(self.settings_path, 'settings1.json')
@@ -121,7 +121,7 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         Tests the OneLogin_Saml2_Settings Constructor.
         Case load setting from file
         """
-        custom_base_path = join(dirname(__file__), '..', '..', '..', 'settings')
+        custom_base_path = join(dirname(dirname(dirname(dirname(__file__)))), 'settings')
         settings = OneLogin_Saml2_Settings(custom_base_path=custom_base_path)
         self.assertEqual(len(settings.get_errors()), 0)
 
@@ -131,7 +131,7 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         except Exception as e:
             self.assertIn('Settings file not found', e.message)
 
-        custom_base_path = join(dirname(__file__), '..', '..', '..', 'data', 'customPath')
+        custom_base_path = join(dirname(dirname(dirname(dirname(__file__)))), 'data', 'customPath')
         settings_3 = OneLogin_Saml2_Settings(custom_base_path=custom_base_path)
         self.assertEqual(len(settings_3.get_errors()), 0)
 

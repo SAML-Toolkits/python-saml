@@ -20,7 +20,7 @@ from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
     def loadSettingsJSON(self):
-        filename = join(dirname(__file__), '..', '..', '..', 'settings', 'settings1.json')
+        filename = join(dirname(dirname(dirname(dirname(__file__)))), 'settings', 'settings1.json')
         if exists(filename):
             stream = open(filename, 'r')
             settings = json.load(stream)

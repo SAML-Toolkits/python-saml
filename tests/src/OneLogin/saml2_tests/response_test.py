@@ -20,13 +20,13 @@ from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 
 class OneLogin_Saml2_Response_Test(unittest.TestCase):
-    data_path = join(dirname(__file__), '..', '..', '..', 'data')
+    data_path = join(dirname(dirname(dirname(dirname(__file__)))), 'data')
 
     def loadSettingsJSON(self, filename=None):
         if filename:
-            filename = join(dirname(__file__), '..', '..', '..', 'settings', filename)
+            filename = join(dirname(dirname(dirname(dirname(__file__)))), 'settings', filename)
         else:
-            filename = join(dirname(__file__), '..', '..', '..', 'settings', 'settings1.json')
+            filename = join(dirname(dirname(dirname(dirname(__file__)))), 'settings', 'settings1.json')
         if exists(filename):
             stream = open(filename, 'r')
             settings = json.load(stream)

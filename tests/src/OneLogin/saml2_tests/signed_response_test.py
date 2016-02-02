@@ -15,10 +15,11 @@ from onelogin.saml2.settings import OneLogin_Saml2_Settings
 
 
 class OneLogin_Saml2_SignedResponse_Test(unittest.TestCase):
-    data_path = join(dirname(__file__), '..', '..', '..', 'data')
+    data_path = join(dirname(dirname(dirname(dirname(__file__)))), 'data')
+    settings_path = join(dirname(dirname(dirname(dirname(__file__)))), 'settings')
 
     def loadSettingsJSON(self):
-        filename = join(dirname(__file__), '..', '..', '..', 'settings', 'settings1.json')
+        filename = join(self.settings_path, 'settings1.json')
         if exists(filename):
             stream = open(filename, 'r')
             settings = json.load(stream)

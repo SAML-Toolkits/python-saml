@@ -12,7 +12,7 @@ Setting class of OneLogin's Python Toolkit.
 from datetime import datetime
 import json
 import re
-from os.path import dirname, exists, join, sep
+from os.path import dirname, exists, join, sep, abspath
 from xml.dom.minidom import Document
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
@@ -115,7 +115,7 @@ class OneLogin_Saml2_Settings(object):
         Sets the paths of the different folders
         """
         if base_path is None:
-            base_path = dirname(dirname(dirname(__file__)))
+            base_path = dirname(dirname(dirname(abspath(__file__))))
         if not base_path.endswith(sep):
             base_path += sep
         self.__paths = {
@@ -134,7 +134,7 @@ class OneLogin_Saml2_Settings(object):
 
         if 'custom_base_path' in settings:
             base_path = settings['custom_base_path']
-            base_path = join(dirname(__file__), base_path)
+            base_path = join(dirname(abspath(__file__)), base_path)
             self.__load_paths(base_path)
 
     def get_base_path(self):
