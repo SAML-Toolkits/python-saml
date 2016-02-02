@@ -908,4 +908,4 @@ if __name__ == '__main__':
         runner = TeamcityTestRunner()
     else:
         runner = unittest.TextTestRunner()
-        unittest.main(testRunner=runner)
+    unittest.main(testRunner=runner)
