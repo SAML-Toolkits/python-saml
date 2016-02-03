@@ -80,6 +80,7 @@ class OneLogin_Saml2_Constants(object):
     NSMAP = {
         'samlp': NS_SAMLP,
         'saml': NS_SAML,
+        'md': NS_MD,
         'ds': NS_DS,
         'xenc': NS_XENC
     }

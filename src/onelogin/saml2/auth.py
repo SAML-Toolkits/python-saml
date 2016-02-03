@@ -58,6 +58,7 @@ class OneLogin_Saml2_Auth(object):
         self.__authenticated = False
         self.__errors = []
         self.__error_reason = None
+        self.__last_request_id = None
 
     def get_settings(self):
         """
@@ -151,6 +152,8 @@ class OneLogin_Saml2_Auth(object):
                 parameters = {'SAMLResponse': logout_response}
                 if 'RelayState' in self.__request_data['get_data']:
                     parameters['RelayState'] = self.__request_data['get_data']['RelayState']
+                else:
+                    parameters['RelayState'] = OneLogin_Saml2_Utils.get_self_url_no_query(self.__request_data)
 
                 security = self.__settings.get_security_data()
                 if 'logoutResponseSigned' in security and security['logoutResponseSigned']:
@@ -257,6 +260,13 @@ class OneLogin_Saml2_Auth(object):
             value = self.__attributes[name]
         return value
 
+    def get_last_request_id(self):
+        """
+        :returns: The ID of the last Request SAML message generated.
+        :rtype: string
+        """
+        return self.__last_request_id
+
     def login(self, return_to=None, force_authn=False, is_passive=False):
         """
         Initiates the SSO process.
@@ -273,6 +283,8 @@ class OneLogin_Saml2_Auth(object):
         :returns: Redirection url
         """
         authn_request = OneLogin_Saml2_Authn_Request(self.__settings, force_authn, is_passive)
+
+        self.__last_request_id = authn_request.get_id()
 
         saml_request = authn_request.get_request()
         parameters = {'SAMLRequest': saml_request}
@@ -314,6 +326,8 @@ class OneLogin_Saml2_Auth(object):
             name_id = self.__nameid
 
         logout_request = OneLogin_Saml2_Logout_Request(self.__settings, name_id=name_id, session_index=session_index)
+
+        self.__last_request_id = logout_request.id
 
         saml_request = logout_request.get_request()
 
