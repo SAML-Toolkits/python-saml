@@ -347,7 +347,23 @@ class OneLogin_Saml2_Response(object):
             attr_name = attribute_node.get('Name')
             values = []
             for attr in attribute_node.iterchildren('{%s}AttributeValue' % OneLogin_Saml2_Constants.NSMAP['saml']):
-                values.append(attr.text)
+                # Remove any whitespace (which may be present where attributes are
+                # nested inside NameID children).
+                if attr.text:
+                    text = attr.text.strip()
+                    if text:
+                        values.append(text)
+
+                # Parse any nested NameID children
+                for nameid in attr.iterchildren('{%s}NameID' % OneLogin_Saml2_Constants.NSMAP['saml']):
+                    values.append({
+                        'NameID': {
+                            'Format': nameid.get('Format'),
+                            'NameQualifier': nameid.get('NameQualifier'),
+                            'value': nameid.text
+                        }
+                    })
+
             attributes[attr_name] = values
         return attributes
 
