@@ -1198,6 +1198,33 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
         response = OneLogin_Saml2_Response(settings, xml)
         self.assertTrue(response.is_valid(self.get_request_data()))
 
+    def testIsValidWithoutInResponseTo(self):
+        """
+        If assertion contains InResponseTo but not the Response tag, we should
+        not compare the assertion InResponseTo value to None.
+        """
+
+        # prepare strict settings
+        settings_info = self.loadSettingsJSON()
+        settings_info['strict'] = True
+        settings_info['idp']['entityId'] = 'https://pitbulk.no-ip.org/simplesaml/saml2/idp/metadata.php'
+        settings_info['sp']['entityId'] = 'https://pitbulk.no-ip.org/newonelogin/demo1/metadata.php'
+
+        settings = OneLogin_Saml2_Settings(settings_info)
+
+        xml = self.file_contents(join(self.data_path, 'responses', 'valid_response_without_inresponseto.xml.base64'))
+        response = OneLogin_Saml2_Response(settings, xml)
+
+        not_on_or_after = datetime.strptime('2014-02-19T09:37:01Z', '%Y-%m-%dT%H:%M:%SZ')
+        not_on_or_after -= timedelta(seconds=150)
+
+        with freeze_time(not_on_or_after):
+            self.assertTrue(response.is_valid({
+                'https': 'on',
+                'http_host': 'pitbulk.no-ip.org',
+                'script_name': 'newonelogin/demo1/index.php?acs'
+            }))
+
 
 if __name__ == '__main__':
     if is_running_under_teamcity():
