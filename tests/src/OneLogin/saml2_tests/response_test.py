@@ -1218,6 +1218,12 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
         response = OneLogin_Saml2_Response(settings, xml)
         self.assertTrue(response.is_valid(self.get_request_data()))
 
+    def testIsValidSignWithEmptyReferenceURIAndIdPCert(self):
+        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
+        xml = self.file_contents(join(self.data_path, 'responses', 'valid_response_with_unsigned_assertion.xml.base64'))
+        response = OneLogin_Saml2_Response(settings, xml)
+        self.assertTrue(response.is_valid(self.get_request_data()))
+
     def testIsValidWithoutInResponseTo(self):
         """
         If assertion contains InResponseTo but not the Response tag, we should

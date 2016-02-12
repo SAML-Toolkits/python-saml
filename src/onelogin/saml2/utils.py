@@ -1051,14 +1051,14 @@ class OneLogin_Saml2_Utils(object):
                     if fingerprint == x509_fingerprint_value:
                         cert = OneLogin_Saml2_Utils.format_cert(x509_cert_value)
 
+                # Check if Reference URI is empty
+                reference_elem = OneLogin_Saml2_Utils.query(signature_node, '//ds:Reference')
+                if len(reference_elem) > 0:
+                    if reference_elem[0].get('URI') == '':
+                        reference_elem[0].set('URI', '#%s' % signature_node.getparent().get('ID'))
+
             if cert is None or cert == '':
                 return False
-
-            # Check if Reference URI is empty
-            reference_elem = OneLogin_Saml2_Utils.query(signature_node, '//ds:Reference')
-            if len(reference_elem) > 0:
-                if reference_elem[0].get('URI') == '':
-                    reference_elem[0].set('URI', '#%s' % signature_node.getparent().get('ID'))
 
             dsig_ctx = xmlsec.DSigCtx()
 
