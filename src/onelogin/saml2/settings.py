@@ -440,7 +440,7 @@ class OneLogin_Saml2_Settings(object):
                 elif not validate_url(sp['assertionConsumerService']['url']):
                     errors.append('sp_acs_url_invalid')
 
-                if len(sp['attributeConsumingService']):
+                if 'attributeConsumingService' in sp and len(sp['attributeConsumingService']):
                     # so we have a attributeConsumingService element...
 
                     # serviceName and requestedAttrib are required
