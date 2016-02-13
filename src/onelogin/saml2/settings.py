@@ -257,6 +257,10 @@ class OneLogin_Saml2_Settings(object):
         if 'binding' not in self.__sp['assertionConsumerService'].keys():
             self.__sp['assertionConsumerService']['binding'] = OneLogin_Saml2_Constants.BINDING_HTTP_POST
 
+        # attributeConsumingService is optional
+        if 'attributeConsumingService' not in self.__sp:
+            self.__sp['attributeConsumingService'] = []
+
         if 'singleLogoutService' not in self.__sp.keys():
             self.__sp['singleLogoutService'] = {}
         if 'binding' not in self.__sp['singleLogoutService']:
@@ -435,6 +439,51 @@ class OneLogin_Saml2_Settings(object):
                     errors.append('sp_acs_not_found')
                 elif not validate_url(sp['assertionConsumerService']['url']):
                     errors.append('sp_acs_url_invalid')
+
+                if len(sp['attributeConsumingService']):
+                    # so we have a attributeConsumingService element...
+
+                    # serviceName and requestedAttrib are required
+                    attribute_consuming_service = sp['attributeConsumingService']
+                    for attrib in attribute_consuming_service:
+                        if 'serviceName' not in attrib:
+                            errors.append('sp_attributeConsumingService_serviceName_not_found')
+                        if 'requestedAttributes' not in attrib:
+                            errors.append('sp_attributeConsumingService_requestedAttributes_not_found')
+
+                        # verify that tags are of the correct types
+                        try:
+                            if type(attrib['isDefault']) != bool:
+                                errors.append('sp_attributeConsumingService_isDefault_type_invalid')
+                        except KeyError:
+                            # isDefault attribute is optional
+                            pass
+
+                        if 'serviceName' in attrib and not isinstance(attrib['serviceName'], basestring):
+                            errors.append('sp_attributeConsumingService_serviceName_type_invalid')
+
+                        try:
+                            if not isinstance(attrib['serviceDescription'], basestring):
+                                errors.append('sp_attributeConsumingService_serviceDescription_type_invalid')
+                        except KeyError:
+                            # serviceDescription attribute is optional
+                            pass
+
+                        if 'requestedAttributes' in attrib:
+                            if type(attrib['requestedAttributes']) != list:
+                                errors.append('sp_attributeConsumingService_requestedAttributes_type_invalid')
+
+                            for req_attrib in attrib['requestedAttributes']:
+                                if 'name' not in req_attrib:
+                                    errors.append('sp_attributeConsumingService_requestedAttributes_name_not_found')
+                                if 'name' in req_attrib and not req_attrib['name'].strip():
+                                    # name cannot be empty
+                                    errors.append('sp_attributeConsumingService_requestedAttributes_name_invalid')
+                                if 'attributeValue' in req_attrib and type(req_attrib['attributeValue']) != list:
+                                    errors.append('sp_attributeConsumingService_requestedAttributes_attributeValue_type_invalid')
+                                if 'isRequired' in req_attrib and type(req_attrib['isRequired']) != bool:
+                                    errors.append('sp_attributeConsumingService_requestedAttributes_isRequired_type_invalid')
+
 
                 if 'singleLogoutService' in sp and \
                     'url' in sp['singleLogoutService'] and \
