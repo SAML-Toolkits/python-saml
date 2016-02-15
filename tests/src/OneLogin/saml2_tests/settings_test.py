@@ -704,6 +704,30 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         settings_3 = OneLogin_Saml2_Settings(settings_info)
         self.assertTrue(settings_3.is_debug_active())
 
+    def testCustomValidateSign(self):
+        """
+        Test custom validate_sign settings can only be a function.
+        """
+        settings_info = self.loadSettingsJSON()
+
+        # set invalid cutsom validate_sign method
+        settings_info['validate_sign'] = 'not a function'
+
+        # check it can't load
+        with self.assertRaisesRegexp(OneLogin_Saml2_Error,
+                                     'Invalid dict settings: validate_sign_not_a_function'):
+            OneLogin_Saml2_Settings(settings_info)
+
+        def validate_sign(doc, cert, *args, **kwargs):
+            return True
+
+        # set valid cutsom validate_sign method
+        settings_info['validate_sign'] = validate_sign
+
+        # check it can load
+        settings = OneLogin_Saml2_Settings(settings_info)
+        self.assertEqual(settings.get_validate_sign(), validate_sign)
+
 
 if __name__ == '__main__':
     if is_running_under_teamcity():

@@ -1225,6 +1225,39 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
                 'script_name': 'newonelogin/demo1/index.php?acs'
             }))
 
+    def testCustomValidateSign(self):
+        """
+        Test custom signature validation when specify validate_sign in settings.
+        """
+
+        xml = self.file_contents(join(self.data_path, 'responses', 'valid_response.xml.base64'))
+
+        def validate_sign(doc, cert, *args, **kwargs):
+            return cert == OneLogin_Saml2_Utils.format_cert('WeNeedCustomValidateSign')
+
+        # normal settings
+        settings_info = self.loadSettingsJSON()
+        settings = OneLogin_Saml2_Settings(settings_info)
+
+        # should be valid as always
+        response = OneLogin_Saml2_Response(settings, xml)
+        self.assertTrue(response.is_valid(self.get_request_data()))
+
+        # settings with custom validate_sign method
+        settings_info['validate_sign'] = validate_sign
+        settings = OneLogin_Saml2_Settings(settings_info)
+
+        # not valid according our custom valid_sign method
+        response = OneLogin_Saml2_Response(settings, xml)
+        self.assertFalse(response.is_valid(self.get_request_data()))
+
+        settings_info['idp']['x509cert'] = 'WeNeedCustomValidateSign'
+        settings = OneLogin_Saml2_Settings(settings_info)
+
+        # valid with our custom valid_sign method
+        response = OneLogin_Saml2_Response(settings, xml)
+        self.assertTrue(response.is_valid(self.get_request_data()))
+
 
 if __name__ == '__main__':
     if is_running_under_teamcity():
