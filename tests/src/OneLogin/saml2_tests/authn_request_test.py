@@ -255,7 +255,7 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
         inflated = decompress(decoded, -15)
 
         self.assertRegexpMatches(inflated, '^<samlp:AuthnRequest')
-        self.assertRegexpMatches(inflated, 'AssertionConsumerServiceURL="http://stuff.com/endpoints/endpoints/acs.php">')
+        self.assertRegexpMatches(inflated, 'AssertionConsumerServiceURL="http://stuff.com/endpoints/endpoints/acs.php"(\s)*>')
         self.assertRegexpMatches(inflated, '<saml:Issuer>http://stuff.com/endpoints/metadata.php</saml:Issuer>')
         self.assertRegexpMatches(inflated, 'Format="urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted"')
         self.assertRegexpMatches(inflated, 'ProviderName="SP prueba"')

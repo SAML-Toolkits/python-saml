@@ -21,6 +21,9 @@ class OneLogin_Saml2_Constants(object):
     # Value added to the current time in time condition validations
     ALLOWED_CLOCK_DRIFT = 300
 
+    XML = 'http://www.w3.org/XML/1998/namespace'
+    XSI = 'http://www.w3.org/2001/XMLSchema-instance'
+
     # NameID Formats
     NAMEID_EMAIL_ADDRESS = 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'
     NAMEID_X509_SUBJECT_NAME = 'urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName'
