@@ -10,6 +10,13 @@ Add SAML support to your Python software using this library.
 Forget those complicated libraries and use that open source library provided
 and supported by OneLogin Inc.
 
+This version supports Python2, exists an alternative version compatible with Python 3: [python3-saml](https://github.com/onelogin/python3-saml)
+
+#### Warning ####
+
+`Please if you are using python-saml < v2.1.6. Update it!
+v2.1.6 includes a security patch that will prevent signature wrapping attacks, older versions are vulnerable.` :exclamation:
+
 
 Why add SAML support to my software?
 ------------------------------------
