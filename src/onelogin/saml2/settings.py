@@ -484,7 +484,6 @@ class OneLogin_Saml2_Settings(object):
                                 if 'isRequired' in req_attrib and type(req_attrib['isRequired']) != bool:
                                     errors.append('sp_attributeConsumingService_requestedAttributes_isRequired_type_invalid')
 
-
                 if 'singleLogoutService' in sp and \
                     'url' in sp['singleLogoutService'] and \
                     len(sp['singleLogoutService']['url']) > 0 and \
