@@ -2,7 +2,7 @@
 
 ### 2.1.6 (Feb 15, 2016)
 * Prevent signature wrapping attack!!
-* [#111](https://github.com/onelogin/python-saml/pull/111 Add support for nested `NameID` children inside `AttributeValue`s
+* [#111](https://github.com/onelogin/python-saml/pull/111) Add support for nested `NameID` children inside `AttributeValue`s
 * ALOWED Misspell
 * Improve how we obtain the settings path.
 * Update docs adding reference to test depencence installation
