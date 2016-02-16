@@ -18,13 +18,13 @@ from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 
 class OneLogin_Saml2_Utils_Test(unittest.TestCase):
-    data_path = join(dirname(__file__), '..', '..', '..', 'data')
+    data_path = join(dirname(dirname(dirname(dirname(__file__)))), 'data')
 
     def loadSettingsJSON(self, filename=None):
         if filename:
-            filename = join(dirname(__file__), '..', '..', '..', 'settings', filename)
+            filename = join(dirname(dirname(dirname(dirname(__file__)))), 'settings', filename)
         else:
-            filename = join(dirname(__file__), '..', '..', '..', 'settings', 'settings1.json')
+            filename = join(dirname(dirname(dirname(dirname(__file__)))), 'settings', 'settings1.json')
         if exists(filename):
             stream = open(filename, 'r')
             settings = json.load(stream)
@@ -822,13 +822,13 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
 
         # expired cert
         xml_metadata_signed = self.file_contents(join(self.data_path, 'metadata', 'signed_metadata_settings1.xml'))
-        self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_metadata_signed, cert))
+        self.assertTrue(OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed, cert))
         # expired cert, verified it
-        self.assertFalse(OneLogin_Saml2_Utils.validate_sign(xml_metadata_signed, cert, validatecert=True))
+        self.assertFalse(OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed, cert, validatecert=True))
 
         xml_metadata_signed_2 = self.file_contents(join(self.data_path, 'metadata', 'signed_metadata_settings2.xml'))
-        self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_metadata_signed_2, cert_2))
-        self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_metadata_signed_2, None, fingerprint_2))
+        self.assertTrue(OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed_2, cert_2))
+        self.assertTrue(OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed_2, None, fingerprint_2))
 
         xml_response_msg_signed = b64decode(self.file_contents(join(self.data_path, 'responses', 'signed_message_response.xml.base64')))
 
@@ -884,7 +884,7 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
 
         invalid_fingerprint = 'afe71c34ef740bc87434be13a2263d31271da1f9'
         # Wrong fingerprint
-        self.assertFalse(OneLogin_Saml2_Utils.validate_sign(xml_metadata_signed_2, None, invalid_fingerprint))
+        self.assertFalse(OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed_2, None, invalid_fingerprint))
 
         dom_2 = parseString(xml_response_double_signed_2)
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(dom_2, cert_2))
@@ -892,15 +892,21 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         # Modified message
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(dom_2, cert_2))
 
+        # Try to validate directly the Assertion
         dom_3 = parseString(xml_response_double_signed_2)
         assert_elem_3 = dom_3.firstChild.firstChild.nextSibling.nextSibling.nextSibling
-        self.assertTrue(OneLogin_Saml2_Utils.validate_sign(assert_elem_3, cert_2))
+        self.assertFalse(OneLogin_Saml2_Utils.validate_sign(assert_elem_3, cert_2))
 
+        # Wrong scheme
         no_signed = b64decode(self.file_contents(join(self.data_path, 'responses', 'invalids', 'no_signature.xml.base64')))
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(no_signed, cert))
 
         no_key = b64decode(self.file_contents(join(self.data_path, 'responses', 'invalids', 'no_key.xml.base64')))
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(no_key, cert))
+
+        # Signature Wrapping attack
+        wrapping_attack1 = b64decode(self.file_contents(join(self.data_path, 'responses', 'invalids', 'signature_wrapping_attack.xml.base64')))
+        self.assertFalse(OneLogin_Saml2_Utils.validate_sign(wrapping_attack1, cert))
 
 
 if __name__ == '__main__':
