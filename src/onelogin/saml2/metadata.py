@@ -182,7 +182,7 @@ class OneLogin_Saml2_Metadata(object):
             str_contacts = '\n'.join(contacts_info)
 
         metadata = """<?xml version="1.0"?>
-<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" %(saml_namespace)s
                      %(valid)s
                      %(cache)s
                      entityID="%(entity_id)s">
@@ -207,6 +207,7 @@ class OneLogin_Saml2_Metadata(object):
                 'sls': sls,
                 'organization': str_organization,
                 'contacts': str_contacts,
+                'saml_namespace': 'xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"' if attr_consuming_service else ''
             }
 
         # i'm not sure why the above xml was build by hand. Building via lxml is way easier,
