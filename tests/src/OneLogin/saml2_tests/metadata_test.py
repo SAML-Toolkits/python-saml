@@ -171,8 +171,6 @@ isRequired="false"/><md:RequestedAttribute Name="urn:oid:0.9.2342.19200300.100.1
 NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="uid" \
 isRequired="false"/></md:AttributeConsumingService>', metadata)
 
-
-
     def testSignMetadata(self):
         """
         Tests the signMetadata method of the OneLogin_Saml2_Metadata

@@ -298,9 +298,8 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
             self.assertIn('sp_entityId_not_found', e.message)
             self.assertIn('sp_acs_not_found', e.message)
 
-        #AttributeConsumingService tests
-
-        #serviceName, requestedAttributes are required
+        # AttributeConsumingService tests
+        # serviceName, requestedAttributes are required
         settings_info['sp']['attributeConsumingService'] = [
             {
                 "isDefault": False,
@@ -320,11 +319,11 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
                 "isDefault": "False",
                 "serviceName": {},
                 "serviceDescription": ["Test Service"],
-                "requestedAttributes": [ {
-                        "nameFormat": "urn:oasis:names:tc:SAML:2.0:attrname-format:uri",
-                        "friendlyName": "givenName",
-                        "isRequired": "False"
-                    }
+                "requestedAttributes": [{
+                    "nameFormat": "urn:oasis:names:tc:SAML:2.0:attrname-format:uri",
+                    "friendlyName": "givenName",
+                    "isRequired": "False"
+                }
                 ]
             }
         ]
@@ -337,7 +336,6 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
             self.assertIn('sp_attributeConsumingService_serviceDescription_type_invalid', e.message)
             self.assertIn('sp_attributeConsumingService_serviceName_type_invalid', e.message)
             self.assertIn('sp_attributeConsumingService_isDefault_type_invalid', e.message)
-
 
         settings_info['idp']['entityID'] = 'entityId'
         settings_info['idp']['singleSignOnService'] = {}
