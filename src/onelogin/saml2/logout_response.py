@@ -141,7 +141,7 @@ class OneLogin_Saml2_Logout_Response(object):
                 print err.__str__()
             return False
 
-    def __query(self, query):
+    def _query(self, query):
         """
         Extracts a node from the DOMDocument (Logout Response Menssage)
         :param query: Xpath Expresion

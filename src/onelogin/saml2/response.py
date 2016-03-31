@@ -395,7 +395,7 @@ class OneLogin_Saml2_Response(object):
                 return False
         return True
 
-    def __query_assertion(self, xpath_expr):
+    def _query_assertion(self, xpath_expr):
         """
         Extracts nodes that match the query from the Assertion
 
@@ -429,7 +429,7 @@ class OneLogin_Saml2_Response(object):
         final_query += xpath_expr
         return self._query(final_query)
 
-    def __query(self, query):
+    def _query(self, query):
         """
         Extracts nodes that match the query from the Response
 
@@ -445,7 +445,7 @@ class OneLogin_Saml2_Response(object):
             document = self.document
         return OneLogin_Saml2_Utils.query(document, query)
 
-    def __decrypt_assertion(self, dom):
+    def _decrypt_assertion(self, dom):
         """
         Decrypts the Assertion
 

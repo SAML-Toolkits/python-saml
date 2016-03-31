@@ -395,7 +395,7 @@ class OneLogin_Saml2_Auth(object):
         """
         return self._build_signature(saml_response, relay_state, 'SAMLResponse', sign_algorithm)
 
-    def __build_signature(self, saml_data, relay_state, saml_type, sign_algorithm=OneLogin_Saml2_Constants.RSA_SHA1):
+    def _build_signature(self, saml_data, relay_state, saml_type, sign_algorithm=OneLogin_Saml2_Constants.RSA_SHA1):
         """
         Builds the Signature
         :param saml_data: The SAML Data
