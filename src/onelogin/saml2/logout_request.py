@@ -45,14 +45,14 @@ class OneLogin_Saml2_Logout_Request(object):
         :param session_index: SessionIndex that identifies the session of the user.
         :type session_index: string
         """
-        self.__settings = settings
-        self.__error = None
+        self._settings = settings
+        self._error = None
         self.id = None
 
         if request is None:
-            sp_data = self.__settings.get_sp_data()
-            idp_data = self.__settings.get_idp_data()
-            security = self.__settings.get_security_data()
+            sp_data = self._settings.get_sp_data()
+            idp_data = self._settings.get_idp_data()
+            security = self._settings.get_security_data()
 
             uid = OneLogin_Saml2_Utils.generate_unique_id()
             self.id = uid
@@ -112,7 +112,7 @@ class OneLogin_Saml2_Logout_Request(object):
                 logout_request = decoded
             self.id = self.get_id(logout_request)
 
-        self.__logout_request = logout_request
+        self._logout_request = logout_request
 
     def get_request(self):
         """
@@ -120,7 +120,7 @@ class OneLogin_Saml2_Logout_Request(object):
         :return: Deflated base64 encoded Logout Request
         :rtype: str object
         """
-        return OneLogin_Saml2_Utils.deflate_and_base64_encode(self.__logout_request)
+        return OneLogin_Saml2_Utils.deflate_and_base64_encode(self._logout_request)
 
     @staticmethod
     def get_id(request):
@@ -252,11 +252,11 @@ class OneLogin_Saml2_Logout_Request(object):
         :return: If the Logout Request is or not valid
         :rtype: boolean
         """
-        self.__error = None
+        self._error = None
         try:
-            dom = fromstring(self.__logout_request)
+            dom = fromstring(self._logout_request)
 
-            idp_data = self.__settings.get_idp_data()
+            idp_data = self._settings.get_idp_data()
             idp_entity_id = idp_data['entityId']
 
             if 'get_data' in request_data.keys():
@@ -264,12 +264,12 @@ class OneLogin_Saml2_Logout_Request(object):
             else:
                 get_data = {}
 
-            if self.__settings.is_strict():
-                res = OneLogin_Saml2_Utils.validate_xml(dom, 'saml-schema-protocol-2.0.xsd', self.__settings.is_debug_active())
+            if self._settings.is_strict():
+                res = OneLogin_Saml2_Utils.validate_xml(dom, 'saml-schema-protocol-2.0.xsd', self._settings.is_debug_active())
                 if not isinstance(res, Document):
                     raise Exception('Invalid SAML Logout Request. Not match the saml-schema-protocol-2.0.xsd')
 
-                security = self.__settings.get_security_data()
+                security = self._settings.get_security_data()
 
                 current_url = OneLogin_Saml2_Utils.get_self_url_no_query(request_data)
 
@@ -323,8 +323,8 @@ class OneLogin_Saml2_Logout_Request(object):
             return True
         except Exception as err:
             # pylint: disable=R0801sign_alg
-            self.__error = err.__str__()
-            debug = self.__settings.is_debug_active()
+            self._error = err.__str__()
+            debug = self._settings.is_debug_active()
             if debug:
                 print err.__str__()
             return False
@@ -333,4 +333,4 @@ class OneLogin_Saml2_Logout_Request(object):
         """
         After execute a validation process, if fails this method returns the cause
         """
-        return self.__error
+        return self._error
