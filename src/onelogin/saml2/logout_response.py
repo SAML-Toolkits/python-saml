@@ -38,12 +38,12 @@ class OneLogin_Saml2_Logout_Response(object):
             * (string)                    response. An UUEncoded SAML Logout
                                                     response from the IdP.
         """
-        self.__settings = settings
-        self.__error = None
+        self._settings = settings
+        self._error = None
 
         if response is not None:
-            self.__logout_response = OneLogin_Saml2_Utils.decode_base64_and_inflate(response)
-            self.document = parseString(self.__logout_response)
+            self._logout_response = OneLogin_Saml2_Utils.decode_base64_and_inflate(response)
+            self.document = parseString(self._logout_response)
 
     def get_issuer(self):
         """
@@ -52,7 +52,7 @@ class OneLogin_Saml2_Logout_Response(object):
         :rtype: string
         """
         issuer = None
-        issuer_nodes = self.__query('/samlp:LogoutResponse/saml:Issuer')
+        issuer_nodes = self._query('/samlp:LogoutResponse/saml:Issuer')
         if len(issuer_nodes) == 1:
             issuer = issuer_nodes[0].text
         return issuer
@@ -63,7 +63,7 @@ class OneLogin_Saml2_Logout_Response(object):
         :return: The Status
         :rtype: string
         """
-        entries = self.__query('/samlp:LogoutResponse/samlp:Status/samlp:StatusCode')
+        entries = self._query('/samlp:LogoutResponse/samlp:Status/samlp:StatusCode')
         if len(entries) == 0:
             return None
         status = entries[0].attrib['Value']
@@ -77,18 +77,18 @@ class OneLogin_Saml2_Logout_Response(object):
         :return: Returns if the SAML LogoutResponse is or not valid
         :rtype: boolean
         """
-        self.__error = None
+        self._error = None
         try:
-            idp_data = self.__settings.get_idp_data()
+            idp_data = self._settings.get_idp_data()
             idp_entity_id = idp_data['entityId']
             get_data = request_data['get_data']
 
-            if self.__settings.is_strict():
-                res = OneLogin_Saml2_Utils.validate_xml(self.document, 'saml-schema-protocol-2.0.xsd', self.__settings.is_debug_active())
+            if self._settings.is_strict():
+                res = OneLogin_Saml2_Utils.validate_xml(self.document, 'saml-schema-protocol-2.0.xsd', self._settings.is_debug_active())
                 if not isinstance(res, Document):
                     raise Exception('Invalid SAML Logout Request. Not match the saml-schema-protocol-2.0.xsd')
 
-                security = self.__settings.get_security_data()
+                security = self._settings.get_security_data()
 
                 # Check if the InResponseTo of the Logout Response matchs the ID of the Logout Request (requestId) if provided
                 if request_id is not None and self.document.documentElement.hasAttribute('InResponseTo'):
@@ -135,8 +135,8 @@ class OneLogin_Saml2_Logout_Response(object):
             return True
         # pylint: disable=R0801
         except Exception as err:
-            self.__error = err.__str__()
-            debug = self.__settings.is_debug_active()
+            self._error = err.__str__()
+            debug = self._settings.is_debug_active()
             if debug:
                 print err.__str__()
             return False
@@ -159,8 +159,8 @@ class OneLogin_Saml2_Logout_Response(object):
         :param in_response_to: InResponseTo value for the Logout Response.
         :type in_response_to: string
         """
-        sp_data = self.__settings.get_sp_data()
-        idp_data = self.__settings.get_idp_data()
+        sp_data = self._settings.get_sp_data()
+        idp_data = self._settings.get_idp_data()
 
         uid = OneLogin_Saml2_Utils.generate_unique_id()
         issue_instant = OneLogin_Saml2_Utils.parse_time_to_SAML(OneLogin_Saml2_Utils.now())
@@ -186,7 +186,7 @@ class OneLogin_Saml2_Logout_Response(object):
                 'entity_id': sp_data['entityId'],
             }
 
-        self.__logout_response = logout_response
+        self._logout_response = logout_response
 
     def get_response(self):
         """
@@ -194,10 +194,10 @@ class OneLogin_Saml2_Logout_Response(object):
         :return: Logout Response deflated and base64 encoded
         :rtype: string
         """
-        return OneLogin_Saml2_Utils.deflate_and_base64_encode(self.__logout_response)
+        return OneLogin_Saml2_Utils.deflate_and_base64_encode(self._logout_response)
 
     def get_error(self):
         """
         After execute a validation process, if fails this method returns the cause
         """
-        return self.__error
+        return self._error

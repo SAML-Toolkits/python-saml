@@ -37,14 +37,14 @@ class OneLogin_Saml2_Authn_Request(object):
         :param is_passive: Optional argument. When true the AuthNReuqest will set the Ispassive='true'.
         :type is_passive: bool
         """
-        self.__settings = settings
+        self._settings = settings
 
-        sp_data = self.__settings.get_sp_data()
-        idp_data = self.__settings.get_idp_data()
-        security = self.__settings.get_security_data()
+        sp_data = self._settings.get_sp_data()
+        idp_data = self._settings.get_idp_data()
+        security = self._settings.get_security_data()
 
         uid = OneLogin_Saml2_Utils.generate_unique_id()
-        self.__id = uid
+        self._id = uid
         issue_instant = OneLogin_Saml2_Utils.parse_time_to_SAML(OneLogin_Saml2_Utils.now())
 
         destination = idp_data['singleSignOnService']['url']
@@ -119,7 +119,7 @@ class OneLogin_Saml2_Authn_Request(object):
                 'requested_authn_context_str': requested_authn_context_str,
             }
 
-        self.__authn_request = request
+        self._authn_request = request
 
     def get_request(self):
         """
@@ -127,7 +127,7 @@ class OneLogin_Saml2_Authn_Request(object):
         :return: Unsigned AuthnRequest
         :rtype: str object
         """
-        deflated_request = compress(self.__authn_request)[2:-4]
+        deflated_request = compress(self._authn_request)[2:-4]
         return b64encode(deflated_request)
 
     def get_id(self):
@@ -136,4 +136,4 @@ class OneLogin_Saml2_Authn_Request(object):
         :return: AuthNRequest ID
         :rtype: string
         """
-        return self.__id
+        return self._id
