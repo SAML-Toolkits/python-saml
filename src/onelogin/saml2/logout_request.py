@@ -29,7 +29,7 @@ class OneLogin_Saml2_Logout_Request(object):
 
     """
 
-    def __init__(self, settings, request=None, name_id=None, session_index=None):
+    def __init__(self, settings, request=None, name_id=None, session_index=None, nq=None):
         """
         Constructs the Logout Request object.
 
@@ -44,6 +44,9 @@ class OneLogin_Saml2_Logout_Request(object):
 
         :param session_index: SessionIndex that identifies the session of the user.
         :type session_index: string
+
+        :param nq: IDP Name Qualifier
+        :type: string
         """
         self.__settings = settings
         self.__error = None
