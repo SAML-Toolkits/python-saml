@@ -8,12 +8,10 @@ All rights reserved.
 AuthNRequest class of OneLogin's Python Toolkit.
 
 """
-
 from base64 import b64encode
-from zlib import compress
 
-from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
+from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 
 class OneLogin_Saml2_Authn_Request(object):
@@ -121,14 +119,19 @@ class OneLogin_Saml2_Authn_Request(object):
 
         self.__authn_request = request
 
-    def get_request(self):
+    def get_request(self, deflate=True):
         """
         Returns unsigned AuthnRequest.
-        :return: Unsigned AuthnRequest
+        :param deflate: It makes the deflate process optional
+        :type: bool
+        :return: AuthnRequest maybe deflated and base64 encoded
         :rtype: str object
         """
-        deflated_request = compress(self.__authn_request)[2:-4]
-        return b64encode(deflated_request)
+        if deflate:
+            request = OneLogin_Saml2_Utils.deflate_and_base64_encode(self.__authn_request)
+        else:
+            request = b64encode(self.__authn_request)
+        return request
 
     def get_id(self):
         """
