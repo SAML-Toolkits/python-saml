@@ -86,6 +86,12 @@ class OneLogin_Saml2_Authn_Request(object):
                     requested_authn_context_str += '<saml:AuthnContextClassRef>%s</saml:AuthnContextClassRef>' % authn_context
                 requested_authn_context_str += '    </samlp:RequestedAuthnContext>'
 
+        attr_consuming_service_str = ''
+        if 'attributeConsumingService' in sp_data and sp_data['attributeConsumingService']:
+            # TODO: Do we have to account for the case when we have multiple attributeconsumers?
+            # like will the index be > 1?
+            attr_consuming_service_str = 'AttributeConsumingServiceIndex="1"'
+
         request = """<samlp:AuthnRequest
     xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
     xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
@@ -97,7 +103,8 @@ class OneLogin_Saml2_Authn_Request(object):
     IssueInstant="%(issue_instant)s"
     Destination="%(destination)s"
     ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
-    AssertionConsumerServiceURL="%(assertion_url)s">
+    AssertionConsumerServiceURL="%(assertion_url)s"
+    %(attr_consuming_service_str)s>
     <saml:Issuer>%(entity_id)s</saml:Issuer>
     <samlp:NameIDPolicy
         Format="%(name_id_policy)s"
@@ -115,6 +122,7 @@ class OneLogin_Saml2_Authn_Request(object):
                 'entity_id': sp_data['entityId'],
                 'name_id_policy': name_id_policy_format,
                 'requested_authn_context_str': requested_authn_context_str,
+                'attr_consuming_service_str': attr_consuming_service_str
             }
 
         self.__authn_request = request
