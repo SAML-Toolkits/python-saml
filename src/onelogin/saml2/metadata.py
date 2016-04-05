@@ -12,7 +12,6 @@ Metadata class of OneLogin's Python Toolkit.
 from time import gmtime, strftime
 from datetime import datetime
 from defusedxml.minidom import parseString
-from lxml import etree
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
@@ -27,63 +26,6 @@ class OneLogin_Saml2_Metadata(object):
 
     TIME_VALID = 172800   # 2 days
     TIME_CACHED = 604800  # 1 week
-
-    @staticmethod
-    def add_attribute_consuming_service(root, attr_consuming_service):
-        """Helper function to add the AttributeConsumingService nodes"""
-        attrib_index = 1
-        spso_node = root.find('{%s}SPSSODescriptor' % OneLogin_Saml2_Constants.NS_MD)
-
-        # iterate through all the consuming services listed
-        for acs in attr_consuming_service:
-            acs_node = etree.SubElement(spso_node, "{%s}AttributeConsumingService" % OneLogin_Saml2_Constants.NS_MD)
-            acs_node.set('index', str(attrib_index))
-            try:
-                acs_node.set('isDefault', str(acs['isDefault']).lower())
-            except KeyError:
-                pass
-
-            svc_name = etree.SubElement(acs_node, "{%s}ServiceName" % OneLogin_Saml2_Constants.NS_MD)
-            svc_name.set('{%s}lang' % OneLogin_Saml2_Constants.XML, 'en')
-            svc_name.text = acs['serviceName']
-            try:
-                svc_description = etree.SubElement(acs_node, "{%s}ServiceDescription" % OneLogin_Saml2_Constants.NS_MD)
-                svc_description.set('{%s}lang' % OneLogin_Saml2_Constants.XML, 'en')
-                svc_description.text = acs['serviceDescription']
-            except KeyError:
-                # serviceDescription is optional
-                pass
-
-            # iterate through all the requested attributes of each service
-            for req_attribs in acs['requestedAttributes']:
-
-                requested_attribute = etree.SubElement(acs_node, "{%s}RequestedAttribute" % OneLogin_Saml2_Constants.NS_MD)
-                # construct the permissible attrib values, if present
-                try:
-                    for attrib_val in req_attribs['attributeValue']:
-                        val = etree.SubElement(requested_attribute, "{%s}AttributeValue" % OneLogin_Saml2_Constants.NS_SAML)
-                        val.text = attrib_val
-                except KeyError:
-                    # it's fine, attributeValue is an optional element
-                    pass
-
-                requested_attribute.set('Name', req_attribs['name'])
-                try:
-                    requested_attribute.set('NameFormat', req_attribs['nameFormat'])
-                except KeyError:
-                    pass
-
-                try:
-                    requested_attribute.set('FriendlyName', req_attribs['friendlyName'])
-                except KeyError:
-                    pass
-
-                try:
-                    requested_attribute.set('isRequired', str(req_attribs['isRequired']).lower())
-                except KeyError:
-                    pass
-
-            attrib_index += 1
 
     @staticmethod
     def builder(sp, authnsign=False, wsign=False, valid_until=None, cache_duration=None, contacts=None, organization=None):
@@ -134,10 +76,54 @@ class OneLogin_Saml2_Metadata(object):
         if organization is None:
             organization = {}
 
-        try:
-            attr_consuming_service = sp['attributeConsumingService']
-        except KeyError:
-            attr_consuming_service = []
+        str_attribute_consuming_service = ''
+
+        if 'attributeConsumingService' in sp and len(sp['attributeConsumingService']):
+            attr_cs_desc_str = ''
+            if "serviceDescription" in sp['attributeConsumingService']:
+                attr_cs_desc_str = """            <md:ServiceDescription xml:lang="en">%s</md:ServiceDescription>
+""" % sp['attributeConsumingService']['serviceDescription']
+
+            requested_attribute_data = []
+            for req_attribs in sp['attributeConsumingService']['requestedAttributes']:
+                req_attr_nameformat_str = req_attr_friendlyname_str = req_attr_isrequired_str = ''
+                req_attr_aux_str = ' \>'
+
+                if 'nameFormat' in req_attribs.keys() and req_attribs['nameFormat']:
+                    req_attr_nameformat_str = " NameFormat=\"%s\"" % req_attribs['nameFormat']
+                if 'friendlyName' in req_attribs.keys() and req_attribs['friendlyName']:
+                    req_attr_nameformat_str = " FriendlyName=\"%s\"" % req_attribs['friendlyName']
+                if 'isRequired' in req_attribs.keys() and req_attribs['isRequired']:
+                    req_attr_isrequired_str = " isRequired=\"%s\"" % req_attribs['isRequired']
+                if 'attributeValue' in req_attribs.keys() and req_attribs['attributeValue']:
+                    req_attr_aux_str = """ >
+            <saml:AttributeValue xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion>%(attributeValue)</saml:AttributeValue>
+</md:RequestedAttribute>""" % \
+                        {
+                            'attributeValue': req_attribs['attributeValue']
+                        }
+
+                requested_attribute = """            <md:RequestedAttribute Name="%(req_attr_name)s"%(req_attr_nameformat_str)s%(req_attr_isrequired_str)s%(req_attr_aux_str)s""" % \
+                    {
+                        'req_attr_name': req_attribs['name'],
+                        'req_attr_nameformat_str': req_attr_nameformat_str,
+                        'req_attr_friendlyname_str': req_attr_friendlyname_str,
+                        'req_attr_isrequired_str': req_attr_isrequired_str,
+                        'req_attr_aux_str': req_attr_aux_str
+                    }
+
+                requested_attribute_data.append(requested_attribute)
+
+            str_attribute_consuming_service = """        <md:AttributeConsumingService index="1">
+            <md:ServiceName xml:lang="en">%(service_name)s</md:ServiceName>
+%(attr_cs_desc)s%(requested_attribute_str)s
+        </md:AttributeConsumingService>
+""" % \
+                {
+                    'service_name': sp['attributeConsumingService']['serviceName'],
+                    'attr_cs_desc': attr_cs_desc_str,
+                    'requested_attribute_str': '\n'.join(requested_attribute_data)
+                }
 
         sls = ''
         if 'singleLogoutService' in sp and 'url' in sp['singleLogoutService']:
@@ -163,7 +149,7 @@ class OneLogin_Saml2_Metadata(object):
             org_data = '\n'.join(organization_names) + '\n' + '\n'.join(organization_displaynames) + '\n' + '\n'.join(organization_urls)
             str_organization = """    <md:Organization>
 %(org)s
-    </md:Organization>""" % {'org': org_data}
+    </md:Organization>\n""" % {'org': org_data}
 
         str_contacts = ''
         if len(contacts) > 0:
@@ -179,10 +165,10 @@ class OneLogin_Saml2_Metadata(object):
                         'email': info['emailAddress'],
                     }
                 contacts_info.append(contact)
-            str_contacts = '\n'.join(contacts_info)
+            str_contacts = '\n'.join(contacts_info) + '\n'
 
         metadata = """<?xml version="1.0"?>
-<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" %(saml_namespace)s
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
                      %(valid)s
                      %(cache)s
                      entityID="%(entity_id)s">
@@ -191,10 +177,8 @@ class OneLogin_Saml2_Metadata(object):
         <md:AssertionConsumerService Binding="%(binding)s"
                                      Location="%(location)s"
                                      index="1" />
-    </md:SPSSODescriptor>
-%(organization)s
-%(contacts)s
-</md:EntityDescriptor>""" % \
+%(attribute_consuming_service)s    </md:SPSSODescriptor>
+%(organization)s%(contacts)s</md:EntityDescriptor>""" % \
             {
                 'valid': ('validUntil="%s"' % valid_until_str) if valid_until_str else '',
                 'cache': ('cacheDuration="%s"' % cache_duration_str) if cache_duration_str else '',
@@ -207,16 +191,9 @@ class OneLogin_Saml2_Metadata(object):
                 'sls': sls,
                 'organization': str_organization,
                 'contacts': str_contacts,
-                'saml_namespace': 'xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"' if attr_consuming_service else ''
+                'attribute_consuming_service': str_attribute_consuming_service
             }
-
-        # i'm not sure why the above xml was build by hand. Building via lxml is way easier,
-        # especially for conditional attributes etc..
-        # So as a work around, i'm creating a xml dom, insert the attibute_consumer_service
-        # nodes into it and then return the serialized xml
-        root = etree.fromstring(metadata)
-        OneLogin_Saml2_Metadata.add_attribute_consuming_service(root, attr_consuming_service)
-        return etree.tostring(root, pretty_print=True)
+        return metadata
 
     @staticmethod
     def sign_metadata(metadata, key, cert, sign_algorithm=OneLogin_Saml2_Constants.RSA_SHA1):

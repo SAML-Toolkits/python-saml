@@ -88,8 +88,6 @@ class OneLogin_Saml2_Authn_Request(object):
 
         attr_consuming_service_str = ''
         if 'attributeConsumingService' in sp_data and sp_data['attributeConsumingService']:
-            # TODO: Do we have to account for the case when we have multiple attributeconsumers?
-            # like will the index be > 1?
             attr_consuming_service_str = 'AttributeConsumingServiceIndex="1"'
 
         request = """<samlp:AuthnRequest

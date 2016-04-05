@@ -255,7 +255,7 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
         inflated = decompress(decoded, -15)
 
         self.assertRegexpMatches(inflated, '^<samlp:AuthnRequest')
-        self.assertRegexpMatches(inflated, 'AssertionConsumerServiceURL="http://stuff.com/endpoints/endpoints/acs.php"(\s)*>')
+        self.assertRegexpMatches(inflated, 'AssertionConsumerServiceURL="http://stuff.com/endpoints/endpoints/acs.php"')
         self.assertRegexpMatches(inflated, '<saml:Issuer>http://stuff.com/endpoints/metadata.php</saml:Issuer>')
         self.assertRegexpMatches(inflated, 'Format="urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted"')
         self.assertRegexpMatches(inflated, 'ProviderName="SP prueba"')
@@ -264,15 +264,18 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
         """
         Tests that the attributeConsumingServiceIndex is present as an attribute
         """
+        saml_settings = self.loadSettingsJSON()
+        settings = OneLogin_Saml2_Settings(saml_settings)
+
+        authn_request = OneLogin_Saml2_Authn_Request(settings)
+        authn_request_encoded = authn_request.get_request()
+        decoded = b64decode(authn_request_encoded)
+        inflated = decompress(decoded, -15)
+
+        self.assertNotIn('AttributeConsumingServiceIndex="1"', inflated)
 
         saml_settings = self.loadSettingsJSON('settings4.json')
         settings = OneLogin_Saml2_Settings(saml_settings)
-        settings._OneLogin_Saml2_Settings__organization = {
-            u'en-US': {
-                u'url': u'http://sp.example.com',
-                u'name': u'sp_test'
-            }
-        }
 
         authn_request = OneLogin_Saml2_Authn_Request(settings)
         authn_request_encoded = authn_request.get_request()

@@ -300,12 +300,9 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
 
         # AttributeConsumingService tests
         # serviceName, requestedAttributes are required
-        settings_info['sp']['attributeConsumingService'] = [
-            {
-                "isDefault": False,
-                "serviceDescription": "Test Service"
-            }
-        ]
+        settings_info['sp']['attributeConsumingService'] = {
+            "serviceDescription": "Test Service"
+        }
         try:
             OneLogin_Saml2_Settings(settings_info)
             self.assertTrue(False)
@@ -314,19 +311,16 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
             self.assertIn('sp_attributeConsumingService_requestedAttributes_not_found', e.message)
 
         # requestedAttributes/name is required
-        settings_info['sp']['attributeConsumingService'] = [
-            {
-                "isDefault": "False",
-                "serviceName": {},
-                "serviceDescription": ["Test Service"],
-                "requestedAttributes": [{
-                    "nameFormat": "urn:oasis:names:tc:SAML:2.0:attrname-format:uri",
-                    "friendlyName": "givenName",
-                    "isRequired": "False"
-                }
-                ]
+        settings_info['sp']['attributeConsumingService'] = {
+            "serviceName": {},
+            "serviceDescription": ["Test Service"],
+            "requestedAttributes": [{
+                "nameFormat": "urn:oasis:names:tc:SAML:2.0:attrname-format:uri",
+                "friendlyName": "givenName",
+                "isRequired": "False"
             }
-        ]
+            ]
+        }
         try:
             OneLogin_Saml2_Settings(settings_info)
             self.assertTrue(False)
@@ -335,7 +329,6 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
             self.assertIn('sp_attributeConsumingService_requestedAttributes_isRequired_type_invalid', e.message)
             self.assertIn('sp_attributeConsumingService_serviceDescription_type_invalid', e.message)
             self.assertIn('sp_attributeConsumingService_serviceName_type_invalid', e.message)
-            self.assertIn('sp_attributeConsumingService_isDefault_type_invalid', e.message)
 
         settings_info['idp']['entityID'] = 'entityId'
         settings_info['idp']['singleSignOnService'] = {}

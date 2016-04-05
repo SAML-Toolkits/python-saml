@@ -227,17 +227,17 @@ This is the settings.json file:
         // attributeConsumingService. nameFormat, attributeValue and
         // friendlyName can be ommited
         "attributeConsumingService": {
-            "ServiceName": "SP test",
-            "serviceDescription": "Test Service",
-            "requestedAttributes": [
-                {
-                    "name": "",
-                    "isRequired": false,
-                    "nameFormat": "",
-                    "friendlyName": "",
-                    "attributeValue": ""
-                }
-            ]
+                "ServiceName": "SP test",
+                "serviceDescription": "Test Service",
+                "requestedAttributes": [
+                    {
+                        "name": "",
+                        "isRequired": false,
+                        "nameFormat": "",
+                        "friendlyName": "",
+                        "attributeValue": ""
+                    }
+                ]
         },
         // Specifies info about where and how the <Logout Response> message MUST be
         // returned to the requester, in this case our SP. 
