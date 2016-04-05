@@ -50,7 +50,7 @@ class OneLogin_Saml2_Metadata(object):
         :param contacts: Contacts info
         :type contacts: dict
 
-        :param organization: Organization ingo
+        :param organization: Organization info
         :type organization: dict
         """
         if valid_until is None:
@@ -76,6 +76,55 @@ class OneLogin_Saml2_Metadata(object):
         if organization is None:
             organization = {}
 
+        str_attribute_consuming_service = ''
+
+        if 'attributeConsumingService' in sp and len(sp['attributeConsumingService']):
+            attr_cs_desc_str = ''
+            if "serviceDescription" in sp['attributeConsumingService']:
+                attr_cs_desc_str = """            <md:ServiceDescription xml:lang="en">%s</md:ServiceDescription>
+""" % sp['attributeConsumingService']['serviceDescription']
+
+            requested_attribute_data = []
+            for req_attribs in sp['attributeConsumingService']['requestedAttributes']:
+                req_attr_nameformat_str = req_attr_friendlyname_str = req_attr_isrequired_str = ''
+                req_attr_aux_str = ' \>'
+
+                if 'nameFormat' in req_attribs.keys() and req_attribs['nameFormat']:
+                    req_attr_nameformat_str = " NameFormat=\"%s\"" % req_attribs['nameFormat']
+                if 'friendlyName' in req_attribs.keys() and req_attribs['friendlyName']:
+                    req_attr_nameformat_str = " FriendlyName=\"%s\"" % req_attribs['friendlyName']
+                if 'isRequired' in req_attribs.keys() and req_attribs['isRequired']:
+                    req_attr_isrequired_str = " isRequired=\"%s\"" % req_attribs['isRequired']
+                if 'attributeValue' in req_attribs.keys() and req_attribs['attributeValue']:
+                    req_attr_aux_str = """ >
+            <saml:AttributeValue xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion>%(attributeValue)</saml:AttributeValue>
+</md:RequestedAttribute>""" % \
+                        {
+                            'attributeValue': req_attribs['attributeValue']
+                        }
+
+                requested_attribute = """            <md:RequestedAttribute Name="%(req_attr_name)s"%(req_attr_nameformat_str)s%(req_attr_isrequired_str)s%(req_attr_aux_str)s""" % \
+                    {
+                        'req_attr_name': req_attribs['name'],
+                        'req_attr_nameformat_str': req_attr_nameformat_str,
+                        'req_attr_friendlyname_str': req_attr_friendlyname_str,
+                        'req_attr_isrequired_str': req_attr_isrequired_str,
+                        'req_attr_aux_str': req_attr_aux_str
+                    }
+
+                requested_attribute_data.append(requested_attribute)
+
+            str_attribute_consuming_service = """        <md:AttributeConsumingService index="1">
+            <md:ServiceName xml:lang="en">%(service_name)s</md:ServiceName>
+%(attr_cs_desc)s%(requested_attribute_str)s
+        </md:AttributeConsumingService>
+""" % \
+                {
+                    'service_name': sp['attributeConsumingService']['serviceName'],
+                    'attr_cs_desc': attr_cs_desc_str,
+                    'requested_attribute_str': '\n'.join(requested_attribute_data)
+                }
+
         sls = ''
         if 'singleLogoutService' in sp and 'url' in sp['singleLogoutService']:
             sls = """        <md:SingleLogoutService Binding="%(binding)s"
@@ -100,7 +149,7 @@ class OneLogin_Saml2_Metadata(object):
             org_data = '\n'.join(organization_names) + '\n' + '\n'.join(organization_displaynames) + '\n' + '\n'.join(organization_urls)
             str_organization = """    <md:Organization>
 %(org)s
-    </md:Organization>""" % {'org': org_data}
+    </md:Organization>\n""" % {'org': org_data}
 
         str_contacts = ''
         if len(contacts) > 0:
@@ -116,7 +165,7 @@ class OneLogin_Saml2_Metadata(object):
                         'email': info['emailAddress'],
                     }
                 contacts_info.append(contact)
-            str_contacts = '\n'.join(contacts_info)
+            str_contacts = '\n'.join(contacts_info) + '\n'
 
         metadata = """<?xml version="1.0"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
@@ -128,10 +177,8 @@ class OneLogin_Saml2_Metadata(object):
         <md:AssertionConsumerService Binding="%(binding)s"
                                      Location="%(location)s"
                                      index="1" />
-    </md:SPSSODescriptor>
-%(organization)s
-%(contacts)s
-</md:EntityDescriptor>""" % \
+%(attribute_consuming_service)s    </md:SPSSODescriptor>
+%(organization)s%(contacts)s</md:EntityDescriptor>""" % \
             {
                 'valid': ('validUntil="%s"' % valid_until_str) if valid_until_str else '',
                 'cache': ('cacheDuration="%s"' % cache_duration_str) if cache_duration_str else '',
@@ -144,6 +191,7 @@ class OneLogin_Saml2_Metadata(object):
                 'sls': sls,
                 'organization': str_organization,
                 'contacts': str_contacts,
+                'attribute_consuming_service': str_attribute_consuming_service
             }
         return metadata
 
