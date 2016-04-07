@@ -167,7 +167,7 @@ class OneLogin_Saml2_Response(object):
                         continue
                     else:
                         irt = sc_data.get('InResponseTo', None)
-                        if irt != in_response_to:
+                        if in_response_to and irt and irt != in_response_to:
                             continue
                         recipient = sc_data.get('Recipient', None)
                         if recipient and current_url not in recipient:
@@ -460,6 +460,7 @@ class OneLogin_Saml2_Response(object):
         :rtype: Element
         """
         key = self.__settings.get_sp_key()
+        debug = self.__settings.is_debug_active()
 
         if not key:
             raise Exception('No private key available, check settings')
@@ -488,7 +489,7 @@ class OneLogin_Saml2_Response(object):
                             keyinfo.append(encrypted_key[0])
 
                 encrypted_data = encrypted_data_nodes[0]
-                OneLogin_Saml2_Utils.decrypt_element(encrypted_data, key)
+                OneLogin_Saml2_Utils.decrypt_element(encrypted_data, key, debug)
         return dom
 
     def get_error(self):

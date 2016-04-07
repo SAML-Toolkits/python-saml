@@ -9,7 +9,7 @@ Logout Response class of OneLogin's Python Toolkit.
 
 """
 
-from base64 import b64decode
+from base64 import b64encode, b64decode
 from defusedxml.lxml import fromstring
 
 from urllib import quote_plus
@@ -188,13 +188,19 @@ class OneLogin_Saml2_Logout_Response(object):
 
         self.__logout_response = logout_response
 
-    def get_response(self):
+    def get_response(self, deflate=True):
         """
-        Returns a Logout Response object.
-        :return: Logout Response deflated and base64 encoded
+        Returns the Logout Response defated, base64encoded
+        :param deflate: It makes the deflate process optional
+        :type: bool
+        :return: Logout Response maybe deflated and base64 encoded
         :rtype: string
         """
-        return OneLogin_Saml2_Utils.deflate_and_base64_encode(self.__logout_response)
+        if deflate:
+            response = OneLogin_Saml2_Utils.deflate_and_base64_encode(self.__logout_response)
+        else:
+            response = b64encode(self.__logout_response)
+        return response
 
     def get_error(self):
         """

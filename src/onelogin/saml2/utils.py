@@ -584,7 +584,7 @@ class OneLogin_Saml2_Utils(object):
         return formated_fingerprint.lower()
 
     @staticmethod
-    def generate_name_id(value, sp_nq, sp_format, cert=None, debug=False):
+    def generate_name_id(value, sp_nq, sp_format, cert=None, debug=False, nq=None):
         """
         Generates a nameID.
 
@@ -603,6 +603,9 @@ class OneLogin_Saml2_Utils(object):
         :param debug: Activate the xmlsec debug
         :type: bool
 
+        :param nq: IDP Name Qualifier
+        :type: string
+
         :returns: DOMElement | XMLSec nameID
         :rtype: string
         """
@@ -613,6 +616,8 @@ class OneLogin_Saml2_Utils(object):
         name_id = doc.createElement('saml:NameID')
         if sp_nq is not None:
             name_id.setAttribute('SPNameQualifier', sp_nq)
+        if nq is not None:
+            name_id.setAttribute('NameQualifier', nq)
         name_id.setAttribute('Format', sp_format)
         name_id.appendChild(doc.createTextNode(value))
         name_id_container.appendChild(name_id)

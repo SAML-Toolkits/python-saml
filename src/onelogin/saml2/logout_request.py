@@ -10,7 +10,7 @@ Logout Request class of OneLogin's Python Toolkit.
 """
 
 from zlib import decompress
-from base64 import b64decode
+from base64 import b64encode, b64decode
 from lxml import etree
 from defusedxml.lxml import fromstring
 from urllib import quote_plus
@@ -29,7 +29,7 @@ class OneLogin_Saml2_Logout_Request(object):
 
     """
 
-    def __init__(self, settings, request=None, name_id=None, session_index=None):
+    def __init__(self, settings, request=None, name_id=None, session_index=None, nq=None):
         """
         Constructs the Logout Request object.
 
@@ -44,6 +44,9 @@ class OneLogin_Saml2_Logout_Request(object):
 
         :param session_index: SessionIndex that identifies the session of the user.
         :type session_index: string
+
+        :param nq: IDP Name Qualifier
+        :type: string
         """
         self.__settings = settings
         self.__error = None
@@ -114,13 +117,19 @@ class OneLogin_Saml2_Logout_Request(object):
 
         self.__logout_request = logout_request
 
-    def get_request(self):
+    def get_request(self, deflate=True):
         """
         Returns the Logout Request defated, base64encoded
-        :return: Deflated base64 encoded Logout Request
+        :param deflate: It makes the deflate process optional
+        :type: bool
+        :return: Logout Request maybe deflated and base64 encoded
         :rtype: str object
         """
-        return OneLogin_Saml2_Utils.deflate_and_base64_encode(self.__logout_request)
+        if deflate:
+            request = OneLogin_Saml2_Utils.deflate_and_base64_encode(self.__logout_request)
+        else:
+            request = b64encode(self.__logout_request)
+        return request
 
     @staticmethod
     def get_id(request):

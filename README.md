@@ -223,6 +223,22 @@ This is the settings.json file:
             // HTTP-POST binding only.
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
         },
+        // If you need to specify requested attributes, set a 
+        // attributeConsumingService. nameFormat, attributeValue and
+        // friendlyName can be ommited
+        "attributeConsumingService": {
+                "ServiceName": "SP test",
+                "serviceDescription": "Test Service",
+                "requestedAttributes": [
+                    {
+                        "name": "",
+                        "isRequired": false,
+                        "nameFormat": "",
+                        "friendlyName": "",
+                        "attributeValue": ""
+                    }
+                ]
+        },
         // Specifies info about where and how the <Logout Response> message MUST be
         // returned to the requester, in this case our SP. 
         "singleLogoutService": {
@@ -333,6 +349,9 @@ In addition to the required settings data (idp, sp), there is extra information 
         // Indicates a requirement for the NameID received by
         // this SP to be encrypted.
         "wantNameIdEncrypted": false,
+
+        // Indicates a requirement for the AttributeStatement element
+        "wantAttributeStatement": true,
 
         // Authentication context.
         // Set to false and no AuthContext will be sent in the AuthNRequest,

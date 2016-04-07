@@ -559,6 +559,42 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         signature_nodes_5 = OneLogin_Saml2_Utils.query(dom, './/ds:SignatureValue', assertion)
         self.assertEqual(1, len(signature_nodes_5))
 
+    def _generate_name_id_element(self, name_qualifier):
+        name_id_value = 'value'
+        entity_id = 'sp-entity-id'
+        name_id_format = 'name-id-format'
+
+        raw_name_id = OneLogin_Saml2_Utils.generate_name_id(
+            name_id_value,
+            entity_id,
+            name_id_format,
+            nq=name_qualifier,
+        )
+        parser = etree.XMLParser(recover=True)
+        return etree.fromstring(raw_name_id, parser)
+
+    def testNameidGenerationIncludesNameQualifierAttribute(self):
+        """
+        Tests the inclusion of NameQualifier in the generateNameId method of the OneLogin_Saml2_Utils
+        """
+        idp_name_qualifier = 'idp-name-qualifier'
+        idp_name_qualifier_attribute = ('NameQualifier', idp_name_qualifier)
+
+        name_id = self._generate_name_id_element(idp_name_qualifier)
+
+        self.assertIn(idp_name_qualifier_attribute, name_id.attrib.items())
+
+    def testNameidGenerationDoesNotIncludeNameQualifierAttribute(self):
+        """
+        Tests the (not) inclusion of NameQualifier in the generateNameId method of the OneLogin_Saml2_Utils
+        """
+        idp_name_qualifier = None
+        not_expected_attribute = 'NameQualifier'
+
+        name_id = self._generate_name_id_element(idp_name_qualifier)
+
+        self.assertNotIn(not_expected_attribute, name_id.attrib.keys())
+
     def testGenerateNameIdWithSPNameQualifier(self):
         """
         Tests the generateNameId method of the OneLogin_Saml2_Utils

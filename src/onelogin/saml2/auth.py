@@ -300,7 +300,7 @@ class OneLogin_Saml2_Auth(object):
             parameters['Signature'] = self.build_request_signature(saml_request, parameters['RelayState'], security['signatureAlgorithm'])
         return self.redirect_to(self.get_sso_url(), parameters)
 
-    def logout(self, return_to=None, name_id=None, session_index=None):
+    def logout(self, return_to=None, name_id=None, session_index=None, nq=None):
         """
         Initiates the SLO process.
 
@@ -312,6 +312,9 @@ class OneLogin_Saml2_Auth(object):
 
         :param session_index: SessionIndex that identifies the session of the user.
         :type session_index: string
+
+        :param nq: IDP Name Qualifier
+        :type: string
 
         :returns: Redirection url
         """
@@ -325,7 +328,12 @@ class OneLogin_Saml2_Auth(object):
         if name_id is None and self.__nameid is not None:
             name_id = self.__nameid
 
-        logout_request = OneLogin_Saml2_Logout_Request(self.__settings, name_id=name_id, session_index=session_index)
+        logout_request = OneLogin_Saml2_Logout_Request(
+            self.__settings,
+            name_id=name_id,
+            session_index=session_index,
+            nq=nq
+        )
 
         self.__last_request_id = logout_request.id
 

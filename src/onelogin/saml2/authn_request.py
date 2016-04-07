@@ -8,12 +8,10 @@ All rights reserved.
 AuthNRequest class of OneLogin's Python Toolkit.
 
 """
-
 from base64 import b64encode
-from zlib import compress
 
-from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
+from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 
 class OneLogin_Saml2_Authn_Request(object):
@@ -96,6 +94,9 @@ class OneLogin_Saml2_Authn_Request(object):
                     requested_authn_context_str += '<saml:AuthnContextClassRef>%s</saml:AuthnContextClassRef>' % authn_context
                 requested_authn_context_str += '    </samlp:RequestedAuthnContext>'
 
+        attr_consuming_service_str = ''
+        if 'attributeConsumingService' in sp_data and sp_data['attributeConsumingService']:
+            attr_consuming_service_str = 'AttributeConsumingServiceIndex="1"'
 
         request = """<samlp:AuthnRequest
     xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
@@ -108,7 +109,8 @@ class OneLogin_Saml2_Authn_Request(object):
     IssueInstant="%(issue_instant)s"
     Destination="%(destination)s"
     ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
-    AssertionConsumerServiceURL="%(assertion_url)s">
+    AssertionConsumerServiceURL="%(assertion_url)s"
+    %(attr_consuming_service_str)s>
     <saml:Issuer>%(entity_id)s</saml:Issuer> %(name_id_policy)s
 %(requested_authn_context_str)s
 </samlp:AuthnRequest>""" % \
@@ -123,18 +125,24 @@ class OneLogin_Saml2_Authn_Request(object):
                 'entity_id': sp_data['entityId'],
                 'name_id_policy': name_id_policy,
                 'requested_authn_context_str': requested_authn_context_str,
+                'attr_consuming_service_str': attr_consuming_service_str
             }
 
         self.__authn_request = request
 
-    def get_request(self):
+    def get_request(self, deflate=True):
         """
         Returns unsigned AuthnRequest.
-        :return: Unsigned AuthnRequest
+        :param deflate: It makes the deflate process optional
+        :type: bool
+        :return: AuthnRequest maybe deflated and base64 encoded
         :rtype: str object
         """
-        deflated_request = compress(self.__authn_request)[2:-4]
-        return b64encode(deflated_request)
+        if deflate:
+            request = OneLogin_Saml2_Utils.deflate_and_base64_encode(self.__authn_request)
+        else:
+            request = b64encode(self.__authn_request)
+        return request
 
     def get_id(self):
         """
