@@ -80,6 +80,7 @@ class OneLogin_Saml2_Settings(object):
         self.__contacts = {}
         self.__organization = {}
         self.__errors = []
+        self.__validate_sign = None
 
         self.__load_paths(base_path=custom_base_path)
         self.__update_paths(settings)
@@ -211,6 +212,8 @@ class OneLogin_Saml2_Settings(object):
                 self.__contacts = settings['contactPerson']
             if 'organization' in settings:
                 self.__organization = settings['organization']
+            if 'validate_sign' in settings:
+                self.__validate_sign = settings['validate_sign']
 
             self.__add_default_values()
             return True
@@ -342,6 +345,10 @@ class OneLogin_Saml2_Settings(object):
                 errors += self.check_idp_settings(settings)
             sp_errors = self.check_sp_settings(settings)
             errors += sp_errors
+
+        if 'validate_sign' in settings \
+                and not callable(settings['validate_sign']):
+            errors.append('validate_sign_not_a_function')
 
         return errors
 
@@ -793,3 +800,12 @@ class OneLogin_Saml2_Settings(object):
         :rtype: boolean
         """
         return self.__debug
+
+    def get_validate_sign(self):
+        """
+        Returns custom validate_sign method if specify or the default method
+
+        :return: a validate_sign method
+        :rtype: function
+        """
+        return self.__validate_sign or OneLogin_Saml2_Utils.validate_sign
