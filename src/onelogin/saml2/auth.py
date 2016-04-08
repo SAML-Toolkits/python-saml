@@ -51,7 +51,6 @@ class OneLogin_Saml2_Auth(object):
         :type custom_base_path: string
         """
         self.__request_data = request_data
-        self.__settings = OneLogin_Saml2_Settings(old_settings, custom_base_path)
         self.__attributes = []
         self.__nameid = None
         self.__session_index = None
@@ -60,6 +59,15 @@ class OneLogin_Saml2_Auth(object):
         self.__errors = []
         self.__error_reason = None
         self.__last_request_id = None
+
+        if old_settings is None:
+            self.__settings(custom_base_path=custom_base_path)
+        elif isinstance(old_settings, dict):
+            self.__settings = OneLogin_Saml2_Settings(settings=old_settings, custom_base_path=custom_base_path)
+        elif isinstance(old_settings, OneLogin_Saml2_Settings):
+            self.__settings = copy.deepcopy(old_settings)
+        else:
+            raise Exception('Unsupported settings object')
 
     def get_settings(self):
         """
