@@ -15,6 +15,7 @@ from base64 import b64encode
 from urllib import quote_plus
 
 import dm.xmlsec.binding as xmlsec
+import copy
 
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.response import OneLogin_Saml2_Response
@@ -44,7 +45,7 @@ class OneLogin_Saml2_Auth(object):
         :type request_data: dict
 
         :param settings: Optional. SAML Toolkit Settings
-        :type settings: dict|object
+        :type settings: dict
 
         :param custom_base_path: Optional. Path where are stored the settings file and the cert folder
         :type custom_base_path: string
