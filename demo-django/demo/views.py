@@ -24,7 +24,7 @@ def prepare_django_request(request):
         'server_port': request.META['SERVER_PORT'],
         'get_data': request.GET.copy(),
         'post_data': request.POST.copy(),
-        'query_string': req.query_string
+        'query_string': request.META['QUERY_STRING']
     }
     return result
 

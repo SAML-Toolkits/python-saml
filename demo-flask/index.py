@@ -29,7 +29,7 @@ def prepare_flask_request(request):
         'script_name': request.path,
         'get_data': request.args.copy(),
         'post_data': request.form.copy(),
-        'query_string': req.query_string
+        'query_string': request.query_string
     }
 
 
