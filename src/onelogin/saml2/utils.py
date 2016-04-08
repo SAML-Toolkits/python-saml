@@ -1127,3 +1127,25 @@ class OneLogin_Saml2_Utils(object):
             return True
         except Exception:
             return False
+
+    @staticmethod
+    def get_encoded_parameter(get_data, name, default=None):
+        """Return an url encoded get parameter value
+        Prefer to extract the original encoded value directly from query_string since url
+        encoding is not canonical. The encoding used by ADFS 3.0 is not compatible with
+        python's quote_plus (ADFS produces lower case hex numbers and quote_plus produces
+        upper case hex numbers)
+        """
+        if name not in get_data:
+            return quote_plus(default)
+        if 'query_string' in get_data:
+            return OneLogin_Saml2_Utils.extract_raw_query_parameter(get_data['query_string'], name)
+        return quote_plus(get_data[name])
+
+    @staticmethod
+    def extract_raw_query_parameter(query_string, parameter, default=''):
+        m = re.search('%s=([^&]+)' % parameter, query_string)
+        if m:
+            return m.group(1)
+        else:
+            return default

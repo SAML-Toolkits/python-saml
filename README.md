@@ -925,6 +925,8 @@ Auxiliary class that contains several methods
 * ***add_sign*** Adds signature key and senders certificate to an element (Message or Assertion).
 * ***validate_sign*** Validates a signature (Message or Assertion).
 * ***validate_binary_sign*** Validates signed bynary data (Used to validate GET Signature).
+* ***def get_encoded_parameter*** Return an url encoded get parameter value
+* ***extract_raw_query_parameter***
 
 ####OneLogin_Saml2_IdPMetadataParser - idp_metadata_parser.py####
 
