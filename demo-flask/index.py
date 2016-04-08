@@ -28,7 +28,8 @@ def prepare_flask_request(request):
         'server_port': url_data.port,
         'script_name': request.path,
         'get_data': request.args.copy(),
-        'post_data': request.form.copy()
+        'post_data': request.form.copy(),
+        'query_string': request.query_string
     }
 
 

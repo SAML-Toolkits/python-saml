@@ -35,6 +35,7 @@ def prepare_bottle_request(req):
         'script_name': req.fullpath,
         'get_data': req.query,
         'post_data': req.forms,
+        'query_string': req.query_string,
         'https': 'on' if req.urlparts.scheme == 'https' else 'off'
     }
 
