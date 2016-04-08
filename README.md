@@ -286,7 +286,8 @@ This is the settings.json file:
         "x509cert": "<onelogin_connector_cert>"
         /*
          *  Instead of use the whole x509cert you can use a fingerprint in order to 
-         *  validate a SAMLResponse.
+         *  validate a SAMLResponse, but you will need it to validate LogoutRequest and LogoutResponse using the HTTP-Redirect binding.
+         * 
          *  (openssl x509 -noout -fingerprint -in "idp.crt" to generate it,
          *  or add for example the -sha256 , -sha384 or -sha512 parameter)
          *

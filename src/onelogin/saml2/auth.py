@@ -15,7 +15,6 @@ from base64 import b64encode
 from urllib import quote_plus
 
 import dm.xmlsec.binding as xmlsec
-import copy
 
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.response import OneLogin_Saml2_Response
