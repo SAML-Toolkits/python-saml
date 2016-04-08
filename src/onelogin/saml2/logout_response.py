@@ -12,7 +12,6 @@ Logout Response class of OneLogin's Python Toolkit.
 from base64 import b64encode, b64decode
 from defusedxml.lxml import fromstring
 
-from urllib import quote_plus
 from xml.dom.minidom import Document
 from defusedxml.minidom import parseString
 
@@ -120,10 +119,10 @@ class OneLogin_Saml2_Logout_Response(object):
                 else:
                     sign_alg = get_data['SigAlg']
 
-                signed_query = 'SAMLResponse=%s' % quote_plus(get_data['SAMLResponse'])
+                signed_query = 'SAMLResponse=%s' % OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SAMLResponse')
                 if 'RelayState' in get_data:
-                    signed_query = '%s&RelayState=%s' % (signed_query, quote_plus(get_data['RelayState']))
-                signed_query = '%s&SigAlg=%s' % (signed_query, quote_plus(sign_alg))
+                    signed_query = '%s&RelayState=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'RelayState'))
+                signed_query = '%s&SigAlg=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SigAlg', OneLogin_Saml2_Constants.RSA_SHA1))
 
                 if 'x509cert' not in idp_data or idp_data['x509cert'] is None:
                     raise Exception('In order to validate the sign on the Logout Response, the x509cert of the IdP is required')
