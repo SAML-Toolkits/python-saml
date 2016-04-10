@@ -185,7 +185,7 @@ class OneLogin_Saml2_Response(object):
                         any_subject_confirmation = True
                         break
 
-                if security.get('checkDestination', True):
+                if not security.get('checkDestination', True):
                     any_subject_confirmation = True
 
                 if not any_subject_confirmation:
