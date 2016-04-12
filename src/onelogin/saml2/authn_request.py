@@ -47,15 +47,13 @@ class OneLogin_Saml2_Authn_Request(object):
 
         destination = idp_data['singleSignOnService']['url']
 
-        name_id_policy_format = None
-        if 'wantNameId' in security and security['wantNameId']:
-            name_id_policy_format = sp_data['NameIDFormat']
-            if 'wantNameIdEncrypted' in security and security['wantNameIdEncrypted']:
-                name_id_policy_format = OneLogin_Saml2_Constants.NAMEID_ENCRYPTED
+        name_id_policy_format = sp_data['NameIDFormat']
+        if 'wantNameIdEncrypted' in security and security['wantNameIdEncrypted']:
+            name_id_policy_format = OneLogin_Saml2_Constants.NAMEID_ENCRYPTED
 
         name_id_policy = ''
-        if name_id_policy_format: 
-            name_id_policy = """<samlp:NameIDPolicy Format="%(name_id_policy)s" AllowCreate="true" />""" % name_id_policy_format
+        if security.get('wantNameId', True):
+            name_id_policy = """<samlp:NameIDPolicy Format="%s" AllowCreate="true" />""" % name_id_policy_format
 
         provider_name_str = ''
         organization_data = settings.get_organization()
