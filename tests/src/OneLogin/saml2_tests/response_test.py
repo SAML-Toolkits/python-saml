@@ -207,6 +207,26 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         response_7 = OneLogin_Saml2_Response(settings, xml_7)
         self.assertEqual(['http://idp.example.com/'], response_7.get_issuers())
 
+    def testQueryAssertionsWithEmptyRefenceURI(self):
+        """
+        Tests the __query_assertion if //Signature/Reference/@URI is empty.
+        """
+        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
+
+        # test with signed assertion still work
+        xml = self.file_contents(join(self.data_path, 'responses', 'valid_response.xml.base64'))
+        response = OneLogin_Saml2_Response(settings, xml)
+        self.assertEqual('492882615acf31c8096b627245d76ae53036c090', response.get_nameid())
+
+        # test with unsigned assertion still work
+        xml = self.file_contents(join(self.data_path, 'responses', 'valid_response_with_unsigned_assertion.xml.base64'))
+        response = OneLogin_Saml2_Response(settings, xml)
+        self.assertEqual('492882615acf31c8096b627245d76ae53036c090', response.get_nameid())
+
+        xml = self.file_contents(join(self.data_path, 'responses', 'response_without_reference_uri.xml.base64'))
+        response = OneLogin_Saml2_Response(settings, xml)
+        self.assertEqual('saml@user.com', response.get_nameid())
+
     def testGetIssuers(self):
         """
         Tests the get_issuers method of the OneLogin_Saml2_Response
@@ -1195,6 +1215,12 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
         settings_info['idp']['certFingerprint'] = "194d97e4d8c9c8cfa4b721e5ee497fd9660e5213"
         settings = OneLogin_Saml2_Settings(settings_info)
         xml = self.file_contents(join(self.data_path, 'responses', 'response_without_reference_uri.xml.base64'))
+        response = OneLogin_Saml2_Response(settings, xml)
+        self.assertTrue(response.is_valid(self.get_request_data()))
+
+    def testIsValidSignWithEmptyReferenceURIAndIdPCert(self):
+        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
+        xml = self.file_contents(join(self.data_path, 'responses', 'valid_response_with_unsigned_assertion.xml.base64'))
         response = OneLogin_Saml2_Response(settings, xml)
         self.assertTrue(response.is_valid(self.get_request_data()))
 
