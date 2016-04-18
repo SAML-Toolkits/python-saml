@@ -135,7 +135,7 @@ SAML requires a x.509 cert to sign and encrypt elements like NameID, Message, As
 If our environment requires sign or encrypt support, the certs folder may contain the x509 cert and the private key that the SP will use:
 
 * sp.crt The public cert of the SP
-* sp.key The privake key of the SP
+* sp.key The private key of the SP
 
 Or also we can provide those data in the setting file at the 'x509cert' and the privateKey' json parameters of the 'sp' element.
 
@@ -225,7 +225,7 @@ This is the settings.json file:
         },
         // If you need to specify requested attributes, set a 
         // attributeConsumingService. nameFormat, attributeValue and
-        // friendlyName can be ommited
+        // friendlyName can be omitted
         "attributeConsumingService": {
                 "ServiceName": "SP test",
                 "serviceDescription": "Test Service",
@@ -356,7 +356,7 @@ In addition to the required settings data (idp, sp), there is extra information 
 
         // Authentication context.
         // Set to false and no AuthContext will be sent in the AuthNRequest,
-        // Set true or don't present thi parameter and you will get an AuthContext 'exact' 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport'
+        // Set true or don't present this parameter and you will get an AuthContext 'exact' 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport'
         // Set an array with the possible auth context values: array ('urn:oasis:names:tc:SAML:2.0:ac:classes:Password', 'urn:oasis:names:tc:SAML:2.0:ac:classes:X509'),
         'requestedAuthnContext': true,
         // Allows the authn comparison parameter to be set, defaults to 'exact' if the setting is not present.
@@ -378,7 +378,7 @@ In addition to the required settings data (idp, sp), there is extra information 
         'signatureAlgorithm' => 'http://www.w3.org/2000/09/xmldsig#rsa-sha1'
     },
 
-    // Contact information template, it is recommended to suply a
+    // Contact information template, it is recommended to supply
     // technical and support contacts.
     "contactPerson": {
         "technical": {
@@ -392,7 +392,7 @@ In addition to the required settings data (idp, sp), there is extra information 
     },
 
     // Organization information template, the info in en_US lang is
-    // recomended, add more if required.
+    // recommended, add more if required.
     "organization": {
         "en-US": {
             "name": "sp_test",
