@@ -734,7 +734,7 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         except:
             pass
 
-        key_3_file_name = join(self.data_path, 'misc', 'sp2.key')
+        key_3_file_name = join(self.data_path, 'misc', 'sp3.key')
         f = open(key_3_file_name, 'r')
         key3 = f.read()
         f.close()
