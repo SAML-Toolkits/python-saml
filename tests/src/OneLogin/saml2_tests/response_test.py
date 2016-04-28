@@ -1196,7 +1196,7 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
         settings = OneLogin_Saml2_Settings(settings_info)
         xml = self.file_contents(join(self.data_path, 'responses', 'response_without_reference_uri.xml.base64'))
         response = OneLogin_Saml2_Response(settings, xml)
-        self.assertTrue(response.is_valid(self.get_request_data()))
+        self.assertFalse(response.is_valid(self.get_request_data()))
 
     def testIsValidWithoutInResponseTo(self):
         """
