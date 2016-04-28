@@ -12,6 +12,7 @@ Setting class of OneLogin's Python Toolkit.
 from datetime import datetime
 import json
 import re
+import os
 from os.path import dirname, exists, join, sep, abspath
 from xml.dom.minidom import Document
 
@@ -32,6 +33,18 @@ url_regex = re.compile(
     r'(?::\d+)?'  # optional port
     r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 url_schemes = ['http', 'https', 'ftp', 'ftps']
+
+
+def resolve_json_template(json_data):
+    """
+    Resolve placeholders from settings and return clean settings
+    """
+
+    domain = os.environ.get('SETTINGS_DOMAIN_NAME', 'streamfra.me')
+    json_data %= ({
+        'domain': domain
+    })
+    return json.loads(json_data)
 
 
 def validate_url(url):
@@ -237,13 +250,13 @@ class OneLogin_Saml2_Settings(object):
         # In the php toolkit instead of being a json file it is a php file and
         # it is directly included
         json_data = open(filename, 'r')
-        settings = json.load(json_data)
+        settings = resolve_json_template(json_data.read())
         json_data.close()
 
         advanced_filename = self.get_base_path() + 'advanced_settings.json'
         if exists(advanced_filename):
             json_data = open(advanced_filename, 'r')
-            settings.update(json.load(json_data))  # Merge settings
+            settings.update(resolve_json_template(json_data.read())) # Merge settings
             json_data.close()
 
         return self.__load_settings_from_dict(settings)
