@@ -128,14 +128,15 @@ class OneLogin_Saml2_Response(object):
                     raise Exception('There is an EncryptedAttribute in the Response and this SP not support them')
 
                 # Checks destination
-                destination = self.document.get('Destination', '')
-                if destination:
-                    if not destination.startswith(current_url):
-                        # TODO: Review if following lines are required, since we can control the
-                        # request_data
-                        #  current_url_routed = OneLogin_Saml2_Utils.get_self_routed_url_no_query(request_data)
-                        #  if not destination.startswith(current_url_routed):
-                        raise Exception('The response was received at %s instead of %s' % (current_url, destination))
+                if security.get('checkDestination', True):
+                    destination = self.document.get('Destination', '')
+                    if destination:
+                        if not destination.startswith(current_url):
+                            # TODO: Review if following lines are required, since we can control the
+                            # request_data
+                            #  current_url_routed = OneLogin_Saml2_Utils.get_self_routed_url_no_query(request_data)
+                            #  if not destination.startswith(current_url_routed):
+                            raise Exception('The response was received at %s instead of %s' % (current_url, destination))
 
                 # Checks audience
                 valid_audiences = self.get_audiences()
@@ -183,6 +184,9 @@ class OneLogin_Saml2_Response(object):
                                 continue
                         any_subject_confirmation = True
                         break
+
+                if not security.get('checkDestination', True):
+                    any_subject_confirmation = True
 
                 if not any_subject_confirmation:
                     raise Exception('A valid SubjectConfirmation was not found on this Response')

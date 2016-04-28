@@ -51,6 +51,10 @@ class OneLogin_Saml2_Authn_Request(object):
         if 'wantNameIdEncrypted' in security and security['wantNameIdEncrypted']:
             name_id_policy_format = OneLogin_Saml2_Constants.NAMEID_ENCRYPTED
 
+        name_id_policy = ''
+        if security.get('wantNameId', True):
+            name_id_policy = """<samlp:NameIDPolicy Format="%s" AllowCreate="true" />""" % name_id_policy_format
+
         provider_name_str = ''
         organization_data = settings.get_organization()
         if isinstance(organization_data, dict) and organization_data:
@@ -77,9 +81,11 @@ class OneLogin_Saml2_Authn_Request(object):
                 authn_comparison = security['requestedAuthnContextComparison']
 
             if security['requestedAuthnContext'] is True:
-                requested_authn_context_str = """    <samlp:RequestedAuthnContext Comparison="%s">
-        <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>
-    </samlp:RequestedAuthnContext>""" % authn_comparison
+                if 'activeDirectoryFederation' in security and security['activeDirectoryFederation']:
+                    authn_context = """<saml:AuthnContextClassRef xmlns:samlp="urn:oasis:names:tc:SAML:2.0:assertion">urn:federation:authentication:windows</saml:AuthnContextClassRef>"""
+                else:
+                    authn_context = """<saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>"""
+                requested_authn_context_str = """    <samlp:RequestedAuthnContext Comparison="%s">%s</samlp:RequestedAuthnContext>""" % (authn_comparison, authn_context)
             else:
                 requested_authn_context_str = '     <samlp:RequestedAuthnContext Comparison="%s">' % authn_comparison
                 for authn_context in security['requestedAuthnContext']:
@@ -103,10 +109,7 @@ class OneLogin_Saml2_Authn_Request(object):
     ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
     AssertionConsumerServiceURL="%(assertion_url)s"
     %(attr_consuming_service_str)s>
-    <saml:Issuer>%(entity_id)s</saml:Issuer>
-    <samlp:NameIDPolicy
-        Format="%(name_id_policy)s"
-        AllowCreate="true" />
+    <saml:Issuer>%(entity_id)s</saml:Issuer> %(name_id_policy)s
 %(requested_authn_context_str)s
 </samlp:AuthnRequest>""" % \
             {
@@ -118,7 +121,7 @@ class OneLogin_Saml2_Authn_Request(object):
                 'destination': destination,
                 'assertion_url': sp_data['assertionConsumerService']['url'],
                 'entity_id': sp_data['entityId'],
-                'name_id_policy': name_id_policy_format,
+                'name_id_policy': name_id_policy,
                 'requested_authn_context_str': requested_authn_context_str,
                 'attr_consuming_service_str': attr_consuming_service_str
             }
