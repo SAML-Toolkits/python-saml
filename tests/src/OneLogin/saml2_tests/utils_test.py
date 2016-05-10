@@ -731,18 +731,18 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         try:
             OneLogin_Saml2_Utils.decrypt_element(encrypted_data, key2)
             self.assertTrue(False)
-        except:
-            pass
+        except Exception as e:
+            self.assertEqual('failed to decrypt', e[0])
 
-        key_3_file_name = join(self.data_path, 'misc', 'sp2.key')
+        key_3_file_name = join(self.data_path, 'misc', 'sp3.key')
         f = open(key_3_file_name, 'r')
         key3 = f.read()
         f.close()
         try:
             OneLogin_Saml2_Utils.decrypt_element(encrypted_data, key3)
             self.assertTrue(False)
-        except:
-            pass
+        except Exception as e:
+            self.assertEqual('failed to decrypt', e[0])
 
         xml_nameid_enc_2 = b64decode(self.file_contents(join(self.data_path, 'responses', 'invalids', 'encrypted_nameID_without_EncMethod.xml.base64')))
         dom_nameid_enc_2 = parseString(xml_nameid_enc_2)
