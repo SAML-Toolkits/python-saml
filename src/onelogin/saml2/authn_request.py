@@ -59,15 +59,15 @@ class OneLogin_Saml2_Authn_Request(object):
             else:
                 lang = langs[0]
             if 'displayname' in organization_data[lang] and organization_data[lang]['displayname'] is not None:
-                provider_name_str = 'ProviderName="%s"' % organization_data[lang]['displayname']
+                provider_name_str = "\n" + '    ProviderName="%s"' % organization_data[lang]['displayname']
 
         force_authn_str = ''
         if force_authn is True:
-            force_authn_str = 'ForceAuthn="true"'
+            force_authn_str = "\n" + '    ForceAuthn="true"'
 
         is_passive_str = ''
         if is_passive is True:
-            is_passive_str = 'IsPassive="true"'
+            is_passive_str = "\n" + '    IsPassive="true"'
 
         nameid_policy_str = ''
         if set_nameid_policy:
@@ -87,11 +87,11 @@ class OneLogin_Saml2_Authn_Request(object):
                 authn_comparison = security['requestedAuthnContextComparison']
 
             if security['requestedAuthnContext'] is True:
-                requested_authn_context_str = """    <samlp:RequestedAuthnContext Comparison="%s">
+                requested_authn_context_str = "\n" + """    <samlp:RequestedAuthnContext Comparison="%s">
         <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>
     </samlp:RequestedAuthnContext>""" % authn_comparison
             else:
-                requested_authn_context_str = '     <samlp:RequestedAuthnContext Comparison="%s">' % authn_comparison
+                requested_authn_context_str = "\n" + '     <samlp:RequestedAuthnContext Comparison="%s">' % authn_comparison
                 for authn_context in security['requestedAuthnContext']:
                     requested_authn_context_str += '<saml:AuthnContextClassRef>%s</saml:AuthnContextClassRef>' % authn_context
                 requested_authn_context_str += '    </samlp:RequestedAuthnContext>'
@@ -104,18 +104,13 @@ class OneLogin_Saml2_Authn_Request(object):
     xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
     xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
     ID="%(id)s"
-    Version="2.0"
-    %(provider_name)s
-    %(force_authn_str)s
-    %(is_passive_str)s
+    Version="2.0"%(provider_name)s%(force_authn_str)s%(is_passive_str)s
     IssueInstant="%(issue_instant)s"
     Destination="%(destination)s"
     ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
     AssertionConsumerServiceURL="%(assertion_url)s"
     %(attr_consuming_service_str)s>
-    <saml:Issuer>%(entity_id)s</saml:Issuer>
-%(nameid_policy_str)s
-%(requested_authn_context_str)s
+    <saml:Issuer>%(entity_id)s</saml:Issuer>%(nameid_policy_str)s%(requested_authn_context_str)s
 </samlp:AuthnRequest>""" % \
             {
                 'id': uid,
