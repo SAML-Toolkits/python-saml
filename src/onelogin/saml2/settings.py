@@ -293,6 +293,10 @@ class OneLogin_Saml2_Settings(object):
         if 'wantAssertionsSigned' not in self.__security.keys():
             self.__security['wantAssertionsSigned'] = False
 
+        # NameID element expected
+        if 'wantNameId' not in self.__security.keys():
+            self.__security['wantNameId'] = True
+
         # Encrypt expected
         if 'wantAssertionsEncrypted' not in self.__security.keys():
             self.__security['wantAssertionsEncrypted'] = False

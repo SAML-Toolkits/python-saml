@@ -64,7 +64,9 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         """
         Tests the get_nameid method of the OneLogin_Saml2_Response
         """
-        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
+        json_settings = self.loadSettingsJSON()
+
+        settings = OneLogin_Saml2_Settings(json_settings)
         xml = self.file_contents(join(self.data_path, 'responses', 'response1.xml.base64'))
         response = OneLogin_Saml2_Response(settings, xml)
         self.assertEqual('support@onelogin.com', response.get_nameid())
@@ -85,10 +87,39 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         except Exception as e:
             self.assertIn('Not NameID found in the assertion of the Response', e.message)
 
+        json_settings['security']['wantNameId'] = True
+        settings = OneLogin_Saml2_Settings(json_settings)
+
+        response_5 = OneLogin_Saml2_Response(settings, xml_4)
+        try:
+            response_5.get_nameid()
+            self.assertTrue(False)
+        except Exception as e:
+            self.assertIn('Not NameID found in the assertion of the Response', e.message)
+
+        json_settings['security']['wantNameId'] = False
+        settings = OneLogin_Saml2_Settings(json_settings)
+
+        response_6 = OneLogin_Saml2_Response(settings, xml_4)
+        nameid_6 = response_6.get_nameid()
+        self.assertIsNone(nameid_6)
+
+        del json_settings['security']['wantNameId']
+        settings = OneLogin_Saml2_Settings(json_settings)
+
+        response_7 = OneLogin_Saml2_Response(settings, xml_4)
+        try:
+            response_7.get_nameid()
+            self.assertTrue(False)
+        except Exception as e:
+            self.assertIn('Not NameID found in the assertion of the Response', e.message)
+
     def testGetNameIdData(self):
         """
         Tests the get_nameid_data method of the OneLogin_Saml2_Response
         """
+        json_settings = self.loadSettingsJSON()
+
         settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
         xml = self.file_contents(join(self.data_path, 'responses', 'response1.xml.base64'))
         response = OneLogin_Saml2_Response(settings, xml)
@@ -123,6 +154,33 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         response_4 = OneLogin_Saml2_Response(settings, xml_4)
         try:
             response_4.get_nameid_data()
+            self.assertTrue(False)
+        except Exception as e:
+            self.assertIn('Not NameID found in the assertion of the Response', e.message)
+
+        json_settings['security']['wantNameId'] = True
+        settings = OneLogin_Saml2_Settings(json_settings)
+
+        response_5 = OneLogin_Saml2_Response(settings, xml_4)
+        try:
+            response_5.get_nameid_data()
+            self.assertTrue(False)
+        except Exception as e:
+            self.assertIn('Not NameID found in the assertion of the Response', e.message)
+
+        json_settings['security']['wantNameId'] = False
+        settings = OneLogin_Saml2_Settings(json_settings)
+
+        response_6 = OneLogin_Saml2_Response(settings, xml_4)
+        nameid_data_6 = response_6.get_nameid_data()
+        self.assertEqual({}, nameid_data_6)
+
+        del json_settings['security']['wantNameId']
+        settings = OneLogin_Saml2_Settings(json_settings)
+
+        response_7 = OneLogin_Saml2_Response(settings, xml_4)
+        try:
+            response_7.get_nameid_data()
             self.assertTrue(False)
         except Exception as e:
             self.assertIn('Not NameID found in the assertion of the Response', e.message)
