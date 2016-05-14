@@ -1,5 +1,20 @@
 # python-saml changelog
 
+### 2.1.7 (May 14, 2016)
+* [#117](https://github.com/onelogin/python-saml/pull/117) AttributeConsumingService support
+* [#114](https://github.com/onelogin/python-saml/pull/114) Compare Assertion InResponseTo if not None
+* Return empty list when there are no audience values
+* Passing NameQualifier through to logout request
+* Make deflate process when retrieving built SAML messages optional
+* Add debug parameter to decrypt method
+* Fix Idp Metadata parser
+* Add documentation related to the new IdP metadata parser methods
+* Extract the already encoded value directly from get_data
+* [#133](https://github.com/onelogin/python-saml/pull/133) Fix typo and add extra assertions in util decrypt test
+* Fix Signature with empty URI support
+* Allow AuthnRequest with no NameIDPolicy
+* Remove requirement of NameID on SAML responses
+
 ### 2.1.6 (Feb 15, 2016)
 * Prevent signature wrapping attack!!
 * [#111](https://github.com/onelogin/python-saml/pull/111) Add support for nested `NameID` children inside `AttributeValue`s
