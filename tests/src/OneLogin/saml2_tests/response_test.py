@@ -134,7 +134,7 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         response_2 = OneLogin_Saml2_Response(settings, xml_2)
         expected_nameid_data_2 = {
             'Value': '2de11defd199f8d5bb63f9b7deb265ba5c675c10',
-            'Format': 'urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified',
+            'Format': 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
             'SPNameQualifier': 'https://pitbulk.no-ip.org/newonelogin/demo1/metadata.php'
         }
         nameid_data_2 = response_2.get_nameid_data()

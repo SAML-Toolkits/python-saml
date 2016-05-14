@@ -602,10 +602,10 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         """
         name_id_value = 'ONELOGIN_ce998811003f4e60f8b07a311dc641621379cfde'
         entity_id = 'http://stuff.com/endpoints/metadata.php'
-        name_id_format = 'urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified'
+        name_id_format = 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified'
 
         name_id = OneLogin_Saml2_Utils.generate_name_id(name_id_value, entity_id, name_id_format)
-        expected_name_id = '<saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified" SPNameQualifier="http://stuff.com/endpoints/metadata.php">ONELOGIN_ce998811003f4e60f8b07a311dc641621379cfde</saml:NameID>'
+        expected_name_id = '<saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified" SPNameQualifier="http://stuff.com/endpoints/metadata.php">ONELOGIN_ce998811003f4e60f8b07a311dc641621379cfde</saml:NameID>'
         self.assertEqual(name_id, expected_name_id)
 
         settings_info = self.loadSettingsJSON()
@@ -621,10 +621,10 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         Tests the generateNameId method of the OneLogin_Saml2_Utils
         """
         name_id_value = 'ONELOGIN_ce998811003f4e60f8b07a311dc641621379cfde'
-        name_id_format = 'urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified'
+        name_id_format = 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified'
 
         name_id = OneLogin_Saml2_Utils.generate_name_id(name_id_value, None, name_id_format)
-        expected_name_id = '<saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified">ONELOGIN_ce998811003f4e60f8b07a311dc641621379cfde</saml:NameID>'
+        expected_name_id = '<saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">ONELOGIN_ce998811003f4e60f8b07a311dc641621379cfde</saml:NameID>'
         self.assertEqual(name_id, expected_name_id)
 
         settings_info = self.loadSettingsJSON()
@@ -700,11 +700,11 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         encrypted_data = encrypted_nameid_nodes[0].firstChild
         encrypted_data_str = str(encrypted_nameid_nodes[0].firstChild.toxml())
         decrypted_nameid = OneLogin_Saml2_Utils.decrypt_element(encrypted_data, key)
-        self.assertEqual('{%s}NameID' % (OneLogin_Saml2_Constants.NS_SAML), decrypted_nameid.tag)
+        self.assertIn('NameID', decrypted_nameid.tag)
         self.assertEqual('2de11defd199f8d5bb63f9b7deb265ba5c675c10', decrypted_nameid.text)
 
         decrypted_nameid = OneLogin_Saml2_Utils.decrypt_element(encrypted_data_str, key)
-        self.assertEqual('{%s}NameID' % (OneLogin_Saml2_Constants.NS_SAML), decrypted_nameid.tag)
+        self.assertIn('NameID', decrypted_nameid.tag)
         self.assertEqual('2de11defd199f8d5bb63f9b7deb265ba5c675c10', decrypted_nameid.text)
 
         xml_assertion_enc = b64decode(self.file_contents(join(self.data_path, 'responses', 'valid_encrypted_assertion_encrypted_nameid.xml.base64')))
@@ -720,7 +720,7 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         encrypted_nameid_nodes = decrypted_assertion.xpath('/saml:Assertion/saml:Subject/saml:EncryptedID', namespaces=OneLogin_Saml2_Constants.NSMAP)
         encrypted_data = encrypted_nameid_nodes[0][0]
         decrypted_nameid = OneLogin_Saml2_Utils.decrypt_element(encrypted_data, key)
-        self.assertEqual('{%s}NameID' % (OneLogin_Saml2_Constants.NS_SAML), decrypted_nameid.tag)
+        self.assertIn('{%s}NameID' % (OneLogin_Saml2_Constants.NS_SAML), decrypted_nameid.tag)
         self.assertEqual('457bdb600de717891c77647b0806ce59c089d5b8', decrypted_nameid.text)
 
         key_2_file_name = join(self.data_path, 'misc', 'sp2.key')
