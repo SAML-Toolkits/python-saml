@@ -9,9 +9,9 @@ Setting class of OneLogin's Python Toolkit.
 
 """
 
-from datetime import datetime
 import json
 import re
+from time import time
 from os.path import dirname, exists, join, sep, abspath
 from xml.dom.minidom import Document
 
@@ -735,7 +735,7 @@ class OneLogin_Saml2_Settings(object):
                         cache_duration = element.getAttribute('cacheDuration')
 
                     expire_time = OneLogin_Saml2_Utils.get_expire_time(cache_duration, valid_until)
-                    if expire_time is not None and int(datetime.now().strftime('%s')) > int(expire_time):
+                    if expire_time is not None and int(time()) > int(expire_time):
                         errors.append('expired_xml')
 
         # TODO: Validate Sign
