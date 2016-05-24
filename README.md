@@ -78,7 +78,18 @@ Installation
  * [isodate](https://pypi.python.org/pypi/isodate)  An ISO 8601 date/time/duration parser and formater
  * [defusedxml](https://pypi.python.org/pypi/defusedxml)  XML bomb protection for Python stdlib modules
 
+
 Review the setup.py file to know the version of the library that python-saml is using
+
+### OSX Dependences ###
+ * python 2.7
+ * libxmlsec1
+ 
+```sh
+ # using brew
+ brew install libxmlsec1
+```
+
 
 ### Code ###
 
