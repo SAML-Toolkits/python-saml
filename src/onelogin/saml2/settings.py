@@ -489,7 +489,7 @@ class OneLogin_Saml2_Settings(object):
         Returns the x509 private key of the SP.
 
         :returns: SP private key
-        :rtype: string
+        :rtype: string or None
         """
         key = self.__sp.get('privateKey')
         key_file_name = self.__paths['cert'] + 'sp.key'
@@ -498,14 +498,14 @@ class OneLogin_Saml2_Settings(object):
             with open(key_file_name) as f:
                 key = f.read()
 
-        return key or None  # TODO: Should change rtype docstrings or update tests
+        return key or None
 
     def get_sp_cert(self):
         """
         Returns the x509 public cert of the SP.
 
         :returns: SP public cert
-        :rtype: string
+        :rtype: string or None
         """
         cert = self.__sp.get('x509cert')
         cert_file_name = self.__paths['cert'] + 'sp.crt'
@@ -514,7 +514,7 @@ class OneLogin_Saml2_Settings(object):
             with open(cert_file_name) as f:
                 cert = f.read()
 
-        return cert or None  # TODO: Should change rtype docstrings or update tests
+        return cert or None
 
     def get_idp_cert(self):
         """
