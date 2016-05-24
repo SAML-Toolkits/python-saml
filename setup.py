@@ -1,59 +1,51 @@
-#!/usr/bin/python
-from setuptools import setup, find_packages
-from setuptools.command import install as _install
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
-class ExampleCommand(_install.install):
-    description = "Runs the example application"
+# Copyright (c) 2014, OneLogin, Inc.
+# All rights reserved.
 
-    _install.install.user_options.append(
-        (
-            'config-file=',
-            'c',
-            'The configuration file containing the app and SAML settings',
-            ),
-        )
+from setuptools import setup
 
-    def initialize_options(self):
-        self.config_file = None
-        _install.install.initialize_options(self)
-
-    def finalize_options(self):
-        if self.config_file is None:
-            self.config_file = 'example.cfg'
-
-        _install.install.finalize_options(self)
-
-    def run(self):
-        if self.distribution.install_requires:
-            self.distribution.fetch_build_eggs(
-                self.distribution.install_requires,
-                )
-
-        import example
-        example.main(self.config_file)
-
-install_requires = [
-        'lxml>=2.3',
-        ]
-tests_require = [
-        'fudge >=0.9.5',
-        'nose >= 0.10.4',
-        ]
 
 setup(
-    name='onelogin.saml',
-    version='0.0.1',
-    description="Python client library for SAML Version 2.0",
-    packages = find_packages(),
-    namespace_packages = ['onelogin'],
-    install_requires=install_requires,
-    tests_require=tests_require,
-    extras_require={'tests': tests_require},
-    test_suite='nose.collector',
-    cmdclass={
-        'example': ExampleCommand
-        },
-    author='Andres Buritica',
-    author_email='andres@thelinuxkid.com',
+    name='python-saml',
+    version='2.1.7',
+    description='Onelogin Python Toolkit. Add SAML support to your Python software using this library',
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2.7',
+    ],
+    author='OneLogin',
+    author_email='support@onelogin.com',
+    license='MIT',
     url='https://github.com/onelogin/python-saml',
-    )
+    packages=['onelogin','onelogin/saml2'],
+    include_package_data=True,
+    package_data = {
+            'onelogin/saml2/schemas': ['*.xsd'],
+    },
+    package_dir={
+        '': 'src',
+    },
+    test_suite='tests',
+    install_requires=[
+        'dm.xmlsec.binding==1.3.2',
+        'isodate==0.5.0',
+        'defusedxml==0.4.1',
+    ],
+    extras_require={
+        'test': (
+            'teamcity-messages==1.17',
+            'coverage==4.0.3',
+            'freezegun==0.3.5',
+            'pylint==1.3.1',
+            'pep8==1.5.7',
+            'pyflakes==0.8.1',
+            'coveralls==0.4.4',
+        ),
+    },
+    keywords='saml saml2 xmlsec django flask',
+)
