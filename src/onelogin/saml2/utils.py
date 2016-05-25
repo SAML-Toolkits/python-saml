@@ -1135,10 +1135,10 @@ class OneLogin_Saml2_Utils(object):
         upper case hex numbers)
         """
         if name not in get_data:
-            return case_sensitive_urlencode(default, lowercase_urlencoding)
+            return OneLogin_Saml2_Utils.case_sensitive_urlencode(default, lowercase_urlencoding)
         if 'query_string' in get_data:
             return OneLogin_Saml2_Utils.extract_raw_query_parameter(get_data['query_string'], name)
-        return case_sensitive_urlencode(get_data[name], lowercase_urlencoding)
+        return OneLogin_Saml2_Utils.case_sensitive_urlencode(get_data[name], lowercase_urlencoding)
 
     @staticmethod
     def extract_raw_query_parameter(query_string, parameter, default=''):
