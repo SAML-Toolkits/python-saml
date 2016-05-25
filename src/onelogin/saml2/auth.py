@@ -111,7 +111,7 @@ class OneLogin_Saml2_Auth(object):
                 OneLogin_Saml2_Error.SAML_RESPONSE_NOT_FOUND
             )
 
-    def process_slo(self, keep_local_session=False, request_id=None, delete_session_cb=None):
+    def process_slo(self, keep_local_session=False, request_id=None, delete_session_cb=None, lowercase_urlencoding=False):
         """
         Process the SAML Logout Response / Logout Request sent by the IdP.
 
@@ -127,7 +127,7 @@ class OneLogin_Saml2_Auth(object):
 
         if 'get_data' in self.__request_data and 'SAMLResponse' in self.__request_data['get_data']:
             logout_response = OneLogin_Saml2_Logout_Response(self.__settings, self.__request_data['get_data']['SAMLResponse'])
-            if not logout_response.is_valid(self.__request_data, request_id):
+            if not logout_response.is_valid(self.__request_data, request_id, lowercase_urlencoding=lowercase_urlencoding):
                 self.__errors.append('invalid_logout_response')
                 self.__error_reason = logout_response.get_error()
             elif logout_response.get_status() != OneLogin_Saml2_Constants.STATUS_SUCCESS:
@@ -137,7 +137,7 @@ class OneLogin_Saml2_Auth(object):
 
         elif 'get_data' in self.__request_data and 'SAMLRequest' in self.__request_data['get_data']:
             logout_request = OneLogin_Saml2_Logout_Request(self.__settings, self.__request_data['get_data']['SAMLRequest'])
-            if not logout_request.is_valid(self.__request_data):
+            if not logout_request.is_valid(self.__request_data, lowercase_urlencoding=lowercase_urlencoding):
                 self.__errors.append('invalid_logout_request')
                 self.__error_reason = logout_request.get_error()
             else:

@@ -251,7 +251,7 @@ class OneLogin_Saml2_Logout_Request(object):
             session_indexes.append(session_index_node.text)
         return session_indexes
 
-    def is_valid(self, request_data):
+    def is_valid(self, request_data, lowercase_urlencoding=False):
         """
         Checks if the Logout Request recieved is valid
         :param request_data: Request Data
@@ -316,10 +316,10 @@ class OneLogin_Saml2_Logout_Request(object):
                 else:
                     sign_alg = get_data['SigAlg']
 
-                signed_query = 'SAMLRequest=%s' % OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SAMLRequest')
+                signed_query = 'SAMLRequest=%s' % OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SAMLRequest', lowercase_urlencoding=lowercase_urlencoding)
                 if 'RelayState' in get_data:
-                    signed_query = '%s&RelayState=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'RelayState'))
-                signed_query = '%s&SigAlg=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SigAlg', OneLogin_Saml2_Constants.RSA_SHA1))
+                    signed_query = '%s&RelayState=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'RelayState', lowercase_urlencoding=lowercase_urlencoding))
+                signed_query = '%s&SigAlg=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SigAlg', OneLogin_Saml2_Constants.RSA_SHA1, lowercase_urlencoding=lowercase_urlencoding))
 
                 if 'x509cert' not in idp_data or idp_data['x509cert'] is None:
                     raise Exception('In order to validate the sign on the Logout Request, the x509cert of the IdP is required')
