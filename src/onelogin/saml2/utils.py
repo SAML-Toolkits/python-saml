@@ -1151,5 +1151,5 @@ class OneLogin_Saml2_Utils(object):
 
     @staticmethod
     def case_sensitive_urlencode(to_encode, lowercase=False):
-        encoded=quote_plus(to_encode)
+        encoded = quote_plus(to_encode)
         return re.sub(r"%[A-F0-9]{2}", lambda m: m.group(0).lower(), encoded) if lowercase else encoded
