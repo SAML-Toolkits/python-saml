@@ -68,7 +68,7 @@ class OneLogin_Saml2_Logout_Response(object):
         status = entries[0].attrib['Value']
         return status
 
-    def is_valid(self, request_data, request_id=None, lowercase_urlencoding=False):
+    def is_valid(self, request_data, request_id=None):
         """
         Determines if the SAML LogoutResponse is valid
         :param request_id: The ID of the LogoutRequest sent by this SP to the IdP
@@ -119,10 +119,10 @@ class OneLogin_Saml2_Logout_Response(object):
                 else:
                     sign_alg = get_data['SigAlg']
 
-                signed_query = 'SAMLResponse=%s' % OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SAMLResponse', lowercase_urlencoding=lowercase_urlencoding)
+                signed_query = 'SAMLResponse=%s' % OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SAMLResponse')
                 if 'RelayState' in get_data:
-                    signed_query = '%s&RelayState=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'RelayState', lowercase_urlencoding=lowercase_urlencoding))
-                signed_query = '%s&SigAlg=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SigAlg', OneLogin_Saml2_Constants.RSA_SHA1, lowercase_urlencoding=lowercase_urlencoding))
+                    signed_query = '%s&RelayState=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'RelayState'))
+                signed_query = '%s&SigAlg=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SigAlg', OneLogin_Saml2_Constants.RSA_SHA1))
 
                 if 'x509cert' not in idp_data or idp_data['x509cert'] is None:
                     raise Exception('In order to validate the sign on the Logout Response, the x509cert of the IdP is required')
