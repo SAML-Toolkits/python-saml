@@ -272,6 +272,11 @@ class OneLogin_Saml2_Logout_Request(object):
             else:
                 get_data = {}
 
+            if 'lowercase_urlencoding' in request_data.keys():
+                lowercase_urlencoding = request_data['lowercase_urlencoding']
+            else:
+                lowercase_urlencoding = False
+
             if self.__settings.is_strict():
                 res = OneLogin_Saml2_Utils.validate_xml(dom, 'saml-schema-protocol-2.0.xsd', self.__settings.is_debug_active())
                 if not isinstance(res, Document):
@@ -316,10 +321,10 @@ class OneLogin_Saml2_Logout_Request(object):
                 else:
                     sign_alg = get_data['SigAlg']
 
-                signed_query = 'SAMLRequest=%s' % OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SAMLRequest')
+                signed_query = 'SAMLRequest=%s' % OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SAMLRequest', lowercase_urlencoding=lowercase_urlencoding)
                 if 'RelayState' in get_data:
-                    signed_query = '%s&RelayState=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'RelayState'))
-                signed_query = '%s&SigAlg=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SigAlg', OneLogin_Saml2_Constants.RSA_SHA1))
+                    signed_query = '%s&RelayState=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'RelayState', lowercase_urlencoding=lowercase_urlencoding))
+                signed_query = '%s&SigAlg=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SigAlg', OneLogin_Saml2_Constants.RSA_SHA1, lowercase_urlencoding=lowercase_urlencoding))
 
                 if 'x509cert' not in idp_data or idp_data['x509cert'] is None:
                     raise Exception('In order to validate the sign on the Logout Request, the x509cert of the IdP is required')
