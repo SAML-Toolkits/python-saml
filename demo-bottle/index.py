@@ -36,9 +36,9 @@ def prepare_bottle_request(req):
         'script_name': req.fullpath,
         'get_data': req.query,
         'post_data': req.forms,
-        'query_string': req.query_string,
         # Uncomment if using ADFS as IdP, https://github.com/onelogin/python-saml/pull/144
-        # 'lowercase_urlencoding': True
+        # 'lowercase_urlencoding': True,
+        'query_string': req.query_string
     }
 
 
