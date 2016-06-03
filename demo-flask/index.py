@@ -29,6 +29,8 @@ def prepare_flask_request(request):
         'script_name': request.path,
         'get_data': request.args.copy(),
         'post_data': request.form.copy(),
+        # Uncomment if using ADFS as IdP, https://github.com/onelogin/python-saml/pull/144
+        # 'lowercase_urlencoding': True,
         'query_string': request.query_string
     }
 

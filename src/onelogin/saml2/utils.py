@@ -1127,18 +1127,19 @@ class OneLogin_Saml2_Utils(object):
             return False
 
     @staticmethod
-    def get_encoded_parameter(get_data, name, default=None):
+    def get_encoded_parameter(get_data, name, default=None, lowercase_urlencoding=False):
         """Return an url encoded get parameter value
         Prefer to extract the original encoded value directly from query_string since url
         encoding is not canonical. The encoding used by ADFS 3.0 is not compatible with
         python's quote_plus (ADFS produces lower case hex numbers and quote_plus produces
         upper case hex numbers)
         """
+
         if name not in get_data:
-            return quote_plus(default)
+            return OneLogin_Saml2_Utils.case_sensitive_urlencode(default, lowercase_urlencoding)
         if 'query_string' in get_data:
             return OneLogin_Saml2_Utils.extract_raw_query_parameter(get_data['query_string'], name)
-        return quote_plus(get_data[name])
+        return OneLogin_Saml2_Utils.case_sensitive_urlencode(get_data[name], lowercase_urlencoding)
 
     @staticmethod
     def extract_raw_query_parameter(query_string, parameter, default=''):
@@ -1147,3 +1148,8 @@ class OneLogin_Saml2_Utils(object):
             return m.group(1)
         else:
             return default
+
+    @staticmethod
+    def case_sensitive_urlencode(to_encode, lowercase=False):
+        encoded = quote_plus(to_encode)
+        return re.sub(r"%[A-F0-9]{2}", lambda m: m.group(0).lower(), encoded) if lowercase else encoded
