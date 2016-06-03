@@ -1,5 +1,14 @@
 # python-saml changelog
 
+### 2.1.8 (Jun 02, 2016)
+* Fix Metadata XML (RequestedAttribute)
+* Fix Windows specific Unix date formatting bug.
+* Docs for OSx instlltion of libsecxml1
+* Fix SHA384 Constant URI
+* [#142](https://github.com/onelogin/python-saml/pull/142) Refactor of settings.py to make it a little more readable.
+* Bugfix for ADFS lowercase signatures
+* READMEs suggested wrong cert name
+
 ### 2.1.7 (May 14, 2016)
 * [#117](https://github.com/onelogin/python-saml/pull/117) AttributeConsumingService support
 * [#114](https://github.com/onelogin/python-saml/pull/114) Compare Assertion InResponseTo if not None
