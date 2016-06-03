@@ -77,6 +77,7 @@ class OneLogin_Saml2_Logout_Response(object):
         :rtype: boolean
         """
         self.__error = None
+        lowercase_urlencoding = False
         try:
             idp_data = self.__settings.get_idp_data()
             idp_entity_id = idp_data['entityId']
@@ -84,8 +85,6 @@ class OneLogin_Saml2_Logout_Response(object):
 
             if 'lowercase_urlencoding' in request_data.keys():
                 lowercase_urlencoding = request_data['lowercase_urlencoding']
-            else:
-                lowercase_urlencoding = False
 
             if self.__settings.is_strict():
                 res = OneLogin_Saml2_Utils.validate_xml(self.document, 'saml-schema-protocol-2.0.xsd', self.__settings.is_debug_active())

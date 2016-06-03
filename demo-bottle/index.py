@@ -30,13 +30,15 @@ def init_saml_auth(req):
 def prepare_bottle_request(req):
     url_data = urlparse(req.url)
     return {
+        'https': 'on' if req.urlparts.scheme == 'https' else 'off',
         'http_host': req.get_header('host'),
         'server_port': url_data.port,
         'script_name': req.fullpath,
         'get_data': req.query,
         'post_data': req.forms,
         'query_string': req.query_string,
-        'https': 'on' if req.urlparts.scheme == 'https' else 'off'
+        # Uncomment if using ADFS as IdP, https://github.com/onelogin/python-saml/pull/144
+        # 'lowercase_urlencoding': True
     }
 
 

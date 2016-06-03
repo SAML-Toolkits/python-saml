@@ -24,6 +24,8 @@ def prepare_django_request(request):
         'server_port': request.META['SERVER_PORT'],
         'get_data': request.GET.copy(),
         'post_data': request.POST.copy(),
+        # Uncomment if using ADFS as IdP, https://github.com/onelogin/python-saml/pull/144
+        # 'lowercase_urlencoding': True,
         'query_string': request.META['QUERY_STRING']
     }
     return result
