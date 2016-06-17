@@ -433,7 +433,7 @@ class OneLogin_Saml2_Auth(object):
                 OneLogin_Saml2_Error.SP_CERTS_NOT_FOUND
             )
 
-        xmlsec.initialize()
+        xmlsec.initialize('openssl')
 
         dsig_ctx = xmlsec.DSigCtx()
         dsig_ctx.signKey = xmlsec.Key.loadMemory(key, xmlsec.KeyDataFormatPem, None)
