@@ -629,7 +629,7 @@ class OneLogin_Saml2_Utils(object):
             xml = name_id_container.toxml()
             elem = fromstring(xml)
 
-            xmlsec.initialize('openssl')
+            # xmlsec.initialize('openssl') # done when the module is loaded
 
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
