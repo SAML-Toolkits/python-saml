@@ -34,6 +34,9 @@ from dm.xmlsec.binding.tmpl import EncData, Signature
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.errors import OneLogin_Saml2_Error
 
+if not globals().get('xmlsec_setup', False):
+    xmlsec.initialize()
+    globals()['xmlsec_setup'] = True
 
 def print_xmlsec_errors(filename, line, func, error_object, error_subject, reason, msg):
     """
