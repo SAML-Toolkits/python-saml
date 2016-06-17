@@ -738,7 +738,7 @@ class OneLogin_Saml2_Utils(object):
         elif isinstance(encrypted_data, basestring):
             encrypted_data = fromstring(str(encrypted_data))
 
-        xmlsec.initialize()
+        # xmlsec.initialize()  # Initialized at the start of the module
 
         if debug:
             xmlsec.set_error_callback(print_xmlsec_errors)
@@ -813,7 +813,7 @@ class OneLogin_Saml2_Utils(object):
         else:
             raise Exception('Error parsing xml string')
 
-        xmlsec.initialize()
+        # xmlsec.initialize()  # Initialized at the start of the module
 
         if debug:
             xmlsec.set_error_callback(print_xmlsec_errors)
@@ -919,7 +919,7 @@ class OneLogin_Saml2_Utils(object):
             else:
                 raise Exception('Error parsing xml string')
 
-            xmlsec.initialize()
+            # xmlsec.initialize()  # Initialized at the start of the module
 
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
@@ -985,7 +985,7 @@ class OneLogin_Saml2_Utils(object):
             else:
                 raise Exception('Error parsing xml string')
 
-            xmlsec.initialize()
+            # xmlsec.initialize()  # Initialized at the start of the module
 
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
@@ -1038,7 +1038,7 @@ class OneLogin_Saml2_Utils(object):
         :type: bool
         """
         try:
-            xmlsec.initialize()
+            # xmlsec.initialize()  # Initialized at the start of the module
 
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
@@ -1103,7 +1103,7 @@ class OneLogin_Saml2_Utils(object):
         :type: bool
         """
         try:
-            xmlsec.initialize()
+            # xmlsec.initialize()  # Initialized at the start of the module
 
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
