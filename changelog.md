@@ -1,5 +1,9 @@
 # python-saml changelog
 
+### 2.1.9 (Jun 27, 2016)
+* Change the decrypt assertion process.
+* Add 2 extra validations to prevent Signature wrapping attacks.
+
 ### 2.1.8 (Jun 02, 2016)
 * Fix Metadata XML (RequestedAttribute)
 * Fix Windows specific Unix date formatting bug.

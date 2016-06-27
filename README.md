@@ -14,8 +14,14 @@ This version supports Python2, exists an alternative version compatible with Pyt
 
 #### Warning ####
 
-`Please if you are using python-saml < v2.1.6. Update it!
-v2.1.6 includes a security patch that will prevent signature wrapping attacks, older versions are vulnerable.` :exclamation:
+Update python-saml to 2.1.9, this version includes a security patch that contains extra validations that will prevent signature wrapping attacks.
+
+python-saml < v2.1.6 is vulnerable and allows signature wrapping!
+
+
+#### Security Guidelines ####
+
+If you believe you have discovered a security vulnerability in this toolkit, please report it at https://www.onelogin.com/security with a description. We follow responsible disclosure guidelines, and will work with you to quickly find a resolution.
 
 
 Why add SAML support to my software?
