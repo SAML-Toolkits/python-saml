@@ -926,7 +926,6 @@ class OneLogin_Saml2_Utils(object):
             signature_nodes = OneLogin_Saml2_Utils.query(elem, '/samlp:Response/ds:Signature')
 
             if not len(signature_nodes) > 0:
-                signature_nodes += OneLogin_Saml2_Utils.query(elem, '/samlp:Response/saml:EncryptedAssertion/saml:Assertion/ds:Signature')
                 signature_nodes += OneLogin_Saml2_Utils.query(elem, '/samlp:Response/saml:Assertion/ds:Signature')
 
             if len(signature_nodes) == 1:
