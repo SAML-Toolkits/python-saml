@@ -360,13 +360,13 @@ In addition to the required settings data (idp, sp), there is extra information 
         // and <samlp:LogoutResponse> elements received by this SP to be signed.
         "wantMessagesSigned": false,
 
-        // this SP to be encrypted.
-        'wantAssertionsEncrypted' => false,
-         
-        // Indicates a requirement for the <saml:Assertion> elements received by
         // Indicates a requirement for the <saml:Assertion> elements received by
         // this SP to be signed. [Metadata of the SP will offer this info]
         "wantAssertionsSigned": false,
+
+        // Indicates a requirement for the <saml:Assertion>
+        // elements received by this SP to be encrypted.
+        'wantAssertionsEncrypted' => false,
 
         // Indicates a requirement for the NameID element on the SAMLResponse 
         // received by this SP to be present.
