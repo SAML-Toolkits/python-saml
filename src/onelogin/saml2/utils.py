@@ -38,6 +38,7 @@ if not globals().get('xmlsec_setup', False):
     xmlsec.initialize()
     globals()['xmlsec_setup'] = True
 
+
 def print_xmlsec_errors(filename, line, func, error_object, error_subject, reason, msg):
     """
     Auxiliary method. It override the default xmlsec debug message.
