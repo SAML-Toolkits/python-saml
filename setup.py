@@ -20,7 +20,7 @@ setup(
     ],
     author='OneLogin',
     author_email='support@onelogin.com',
-    license='MIT',
+    license='BSD',
     url='https://github.com/onelogin/python-saml',
     packages=['onelogin','onelogin/saml2'],
     include_package_data=True,
