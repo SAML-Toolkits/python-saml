@@ -121,7 +121,7 @@ def metadata():
         resp = make_response(metadata, 200)
         resp.headers['Content-Type'] = 'text/xml'
     else:
-        resp = make_response(errors.join(', '), 500)
+        resp = make_response(', '.join(errors), 500)
     return resp
 
 
