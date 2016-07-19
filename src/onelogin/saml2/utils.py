@@ -34,6 +34,10 @@ from dm.xmlsec.binding.tmpl import EncData, Signature
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.errors import OneLogin_Saml2_Error
 
+if not globals().get('xmlsec_setup', False):
+    xmlsec.initialize()
+    globals()['xmlsec_setup'] = True
+
 
 def print_xmlsec_errors(filename, line, func, error_object, error_subject, reason, msg):
     """
@@ -626,7 +630,7 @@ class OneLogin_Saml2_Utils(object):
             xml = name_id_container.toxml()
             elem = fromstring(xml)
 
-            xmlsec.initialize()
+            # xmlsec.initialize('openssl') # done when the module is loaded
 
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
@@ -735,7 +739,7 @@ class OneLogin_Saml2_Utils(object):
         elif isinstance(encrypted_data, basestring):
             encrypted_data = fromstring(str(encrypted_data))
 
-        xmlsec.initialize()
+        # xmlsec.initialize()  # Initialized at the start of the module
 
         if debug:
             xmlsec.set_error_callback(print_xmlsec_errors)
@@ -810,7 +814,7 @@ class OneLogin_Saml2_Utils(object):
         else:
             raise Exception('Error parsing xml string')
 
-        xmlsec.initialize()
+        # xmlsec.initialize()  # Initialized at the start of the module
 
         if debug:
             xmlsec.set_error_callback(print_xmlsec_errors)
@@ -916,7 +920,7 @@ class OneLogin_Saml2_Utils(object):
             else:
                 raise Exception('Error parsing xml string')
 
-            xmlsec.initialize()
+            # xmlsec.initialize()  # Initialized at the start of the module
 
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
@@ -981,7 +985,7 @@ class OneLogin_Saml2_Utils(object):
             else:
                 raise Exception('Error parsing xml string')
 
-            xmlsec.initialize()
+            # xmlsec.initialize()  # Initialized at the start of the module
 
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
@@ -1034,7 +1038,7 @@ class OneLogin_Saml2_Utils(object):
         :type: bool
         """
         try:
-            xmlsec.initialize()
+            # xmlsec.initialize()  # Initialized at the start of the module
 
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
@@ -1099,7 +1103,7 @@ class OneLogin_Saml2_Utils(object):
         :type: bool
         """
         try:
-            xmlsec.initialize()
+            # xmlsec.initialize()  # Initialized at the start of the module
 
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
