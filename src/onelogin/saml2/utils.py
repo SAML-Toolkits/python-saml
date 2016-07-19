@@ -630,8 +630,6 @@ class OneLogin_Saml2_Utils(object):
             xml = name_id_container.toxml()
             elem = fromstring(xml)
 
-            # xmlsec.initialize('openssl') # done when the module is loaded
-
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
 
@@ -739,8 +737,6 @@ class OneLogin_Saml2_Utils(object):
         elif isinstance(encrypted_data, basestring):
             encrypted_data = fromstring(str(encrypted_data))
 
-        # xmlsec.initialize()  # Initialized at the start of the module
-
         if debug:
             xmlsec.set_error_callback(print_xmlsec_errors)
 
@@ -813,8 +809,6 @@ class OneLogin_Saml2_Utils(object):
             elem = fromstring(str(xml))
         else:
             raise Exception('Error parsing xml string')
-
-        # xmlsec.initialize()  # Initialized at the start of the module
 
         if debug:
             xmlsec.set_error_callback(print_xmlsec_errors)
@@ -920,8 +914,6 @@ class OneLogin_Saml2_Utils(object):
             else:
                 raise Exception('Error parsing xml string')
 
-            # xmlsec.initialize()  # Initialized at the start of the module
-
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
 
@@ -985,8 +977,6 @@ class OneLogin_Saml2_Utils(object):
             else:
                 raise Exception('Error parsing xml string')
 
-            # xmlsec.initialize()  # Initialized at the start of the module
-
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
 
@@ -1038,8 +1028,6 @@ class OneLogin_Saml2_Utils(object):
         :type: bool
         """
         try:
-            # xmlsec.initialize()  # Initialized at the start of the module
-
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
 
@@ -1103,8 +1091,6 @@ class OneLogin_Saml2_Utils(object):
         :type: bool
         """
         try:
-            # xmlsec.initialize()  # Initialized at the start of the module
-
             if debug:
                 xmlsec.set_error_callback(print_xmlsec_errors)
 
