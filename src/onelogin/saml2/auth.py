@@ -14,14 +14,12 @@ Initializes the SP SAML instance
 from base64 import b64encode
 from urllib import quote_plus
 
-import dm.xmlsec.binding as xmlsec
-
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.response import OneLogin_Saml2_Response
 from onelogin.saml2.errors import OneLogin_Saml2_Error
 from onelogin.saml2.logout_response import OneLogin_Saml2_Logout_Response
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
-from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.utils import OneLogin_Saml2_Utils, xmlsec
 from onelogin.saml2.logout_request import OneLogin_Saml2_Logout_Request
 from onelogin.saml2.authn_request import OneLogin_Saml2_Authn_Request
 
@@ -432,8 +430,6 @@ class OneLogin_Saml2_Auth(object):
                 "Trying to sign the %s but can't load the SP private key" % saml_type,
                 OneLogin_Saml2_Error.SP_CERTS_NOT_FOUND
             )
-
-        xmlsec.initialize()
 
         dsig_ctx = xmlsec.DSigCtx()
         dsig_ctx.signKey = xmlsec.Key.loadMemory(key, xmlsec.KeyDataFormatPem, None)
