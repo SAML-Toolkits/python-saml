@@ -20,13 +20,13 @@ from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 class OneLogin_Saml2_IdPMetadataParser(object):
     """
-    A class that contains methods related to obtain and parse metadata from IdP
+    A class that contain methods related to obtaining and parsing metadata from IdP
     """
 
     @staticmethod
     def get_metadata(url):
         """
-        Get the metadata XML from the provided URL
+        Gets the metadata XML from the provided URL
 
         :param url: Url where the XML of the Identity Provider Metadata is published.
         :type url: string
@@ -55,7 +55,7 @@ class OneLogin_Saml2_IdPMetadataParser(object):
     @staticmethod
     def parse_remote(url, **kwargs):
         """
-        Get the metadata XML from the provided URL and parse it, returning a dict with extracted data
+        Gets the metadata XML from the provided URL and parse it, returning a dict with extracted data
 
         :param url: Url where the XML of the Identity Provider Metadata is published.
         :type url: string

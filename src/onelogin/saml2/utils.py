@@ -41,7 +41,7 @@ if not globals().get('xmlsec_setup', False):
 
 def print_xmlsec_errors(filename, line, func, error_object, error_subject, reason, msg):
     """
-    Auxiliary method. It override the default xmlsec debug message.
+    Auxiliary method. It overrides the default xmlsec debug message.
     """
 
     info = []
@@ -80,7 +80,7 @@ class OneLogin_Saml2_Utils(object):
     @staticmethod
     def deflate_and_base64_encode(value):
         """
-        Deflates and the base64 encodes a string
+        Deflates and then base64 encodes a string
         :param value: The string to deflate and encode
         :type value: string
         :returns: The deflated and encoded string
@@ -137,13 +137,13 @@ class OneLogin_Saml2_Utils(object):
         """
         Returns a x509 cert (adding header & footer if required).
 
-        :param cert: A x509 unformated cert
+        :param cert: A x509 unformatted cert
         :type: string
 
         :param heads: True if we want to include head and footer
         :type: boolean
 
-        :returns: Formated cert
+        :returns: Formatted cert
         :rtype: string
         """
         x509_cert = cert.replace('\x0D', '')
@@ -170,7 +170,7 @@ class OneLogin_Saml2_Utils(object):
         :param heads: True if we want to include head and footer
         :type: boolean
 
-        :returns: Formated private key
+        :returns: Formatted private key
         :rtype: string
         """
         private_key = key.replace('\x0D', '')
@@ -576,12 +576,12 @@ class OneLogin_Saml2_Utils(object):
     @staticmethod
     def format_finger_print(fingerprint):
         """
-        Formates a fingerprint.
+        Formats a fingerprint.
 
         :param fingerprint: fingerprint
         :type: string
 
-        :returns: Formated fingerprint
+        :returns: Formatted fingerprint
         :rtype: string
         """
         formated_fingerprint = fingerprint.replace(':', '')
@@ -1012,7 +1012,7 @@ class OneLogin_Saml2_Utils(object):
         :param xml: The element we should validate
         :type: Document
 
-        :param cert: The pubic cert
+        :param cert: The public cert
         :type: string
 
         :param fingerprint: The fingerprint of the public cert
@@ -1072,7 +1072,7 @@ class OneLogin_Saml2_Utils(object):
     @staticmethod
     def validate_binary_sign(signed_query, signature, cert=None, algorithm=OneLogin_Saml2_Constants.RSA_SHA1, debug=False):
         """
-        Validates signed bynary data (Used to validate GET Signature).
+        Validates signed binary data (Used to validate GET Signature).
 
         :param signed_query: The element we should validate
         :type: string
@@ -1081,7 +1081,7 @@ class OneLogin_Saml2_Utils(object):
         :param signature: The signature that will be validate
         :type: string
 
-        :param cert: The pubic cert
+        :param cert: The public cert
         :type: string
 
         :param algorithm: Signature algorithm
@@ -1117,8 +1117,8 @@ class OneLogin_Saml2_Utils(object):
 
     @staticmethod
     def get_encoded_parameter(get_data, name, default=None, lowercase_urlencoding=False):
-        """Return an url encoded get parameter value
-        Prefer to extract the original encoded value directly from query_string since url
+        """Return a URL encoded get parameter value
+        Prefer to extract the original encoded value directly from query_string since URL
         encoding is not canonical. The encoding used by ADFS 3.0 is not compatible with
         python's quote_plus (ADFS produces lower case hex numbers and quote_plus produces
         upper case hex numbers)
