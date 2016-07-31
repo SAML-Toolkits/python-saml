@@ -93,7 +93,7 @@ class OneLogin_Saml2_Logout_Response(object):
 
                 security = self.__settings.get_security_data()
 
-                # Check if the InResponseTo of the Logout Response matchs the ID of the Logout Request (requestId) if provided
+                # Check if the InResponseTo of the Logout Response matches the ID of the Logout Request (requestId) if provided
                 if request_id is not None and self.document.documentElement.hasAttribute('InResponseTo'):
                     in_response_to = self.document.documentElement.getAttribute('InResponseTo')
                     if request_id != in_response_to:
@@ -207,6 +207,6 @@ class OneLogin_Saml2_Logout_Response(object):
 
     def get_error(self):
         """
-        After execute a validation process, if fails this method returns the cause
+        After executing a validation process, if it fails this method returns the cause
         """
         return self.__error
