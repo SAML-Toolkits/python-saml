@@ -150,8 +150,8 @@ class OneLogin_Saml2_Auth(object):
                 parameters = {'SAMLResponse': logout_response}
                 if 'RelayState' in self.__request_data['get_data']:
                     parameters['RelayState'] = self.__request_data['get_data']['RelayState']
-                else:
-                    parameters['RelayState'] = OneLogin_Saml2_Utils.get_self_url_no_query(self.__request_data)
+                # else:
+                #    parameters['RelayState'] = OneLogin_Saml2_Utils.get_self_url_no_query(self.__request_data)
 
                 security = self.__settings.get_security_data()
                 if 'logoutResponseSigned' in security and security['logoutResponseSigned']:
@@ -434,12 +434,10 @@ class OneLogin_Saml2_Auth(object):
         dsig_ctx = xmlsec.DSigCtx()
         dsig_ctx.signKey = xmlsec.Key.loadMemory(key, xmlsec.KeyDataFormatPem, None)
 
-        saml_data_str = '%s=%s' % (saml_type, quote_plus(saml_data))
-        relay_state_str = 'RelayState=%s' % quote_plus(relay_state)
-        alg_str = 'SigAlg=%s' % quote_plus(sign_algorithm)
-
-        sign_data = [saml_data_str, relay_state_str, alg_str]
-        msg = '&'.join(sign_data)
+        msg = '%s=%s' % (saml_type, quote_plus(saml_data))
+        if relay_state is not None:
+            msg += '&RelayState=%s' % quote_plus(relay_state)
+        msg += '&SigAlg=%s' % quote_plus(sign_algorithm)
 
         # Sign the metadata with our private key.
         sign_algorithm_transform_map = {
