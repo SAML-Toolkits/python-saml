@@ -13,6 +13,7 @@ Initializes the SP SAML instance
 
 from base64 import b64encode
 from urllib import quote_plus
+import logging
 
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.response import OneLogin_Saml2_Response
@@ -22,6 +23,8 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.utils import OneLogin_Saml2_Utils, xmlsec
 from onelogin.saml2.logout_request import OneLogin_Saml2_Logout_Request
 from onelogin.saml2.authn_request import OneLogin_Saml2_Authn_Request
+
+logger = logging.getLogger(__name__)
 
 
 class OneLogin_Saml2_Auth(object):
@@ -89,9 +92,12 @@ class OneLogin_Saml2_Auth(object):
 
         if 'post_data' in self.__request_data and 'SAMLResponse' in self.__request_data['post_data']:
             # AuthnResponse -- HTTP_POST Binding
+
             response = OneLogin_Saml2_Response(self.__settings, self.__request_data['post_data']['SAMLResponse'])
+            logger.info('Processing SAML response: %s', self.__request_data['post_data']['SAMLResponse'])
 
             if response.is_valid(self.__request_data, request_id):
+                logger.info('SAML response valid; session authenticated')
                 self.__attributes = response.get_attributes()
                 self.__nameid = response.get_nameid()
                 self.__session_index = response.get_session_index()
@@ -99,11 +105,13 @@ class OneLogin_Saml2_Auth(object):
                 self.__authenticated = True
 
             else:
+                logger.info('Could not validate SAML response')
                 self.__errors.append('invalid_response')
                 self.__error_reason = response.get_error()
 
         else:
             self.__errors.append('invalid_binding')
+            logger.error('Could not authenticate: No SAML Response found')
             raise OneLogin_Saml2_Error(
                 'SAML Response not found, Only supported HTTP_POST Binding',
                 OneLogin_Saml2_Error.SAML_RESPONSE_NOT_FOUND
@@ -157,8 +165,9 @@ class OneLogin_Saml2_Auth(object):
                 if 'logoutResponseSigned' in security and security['logoutResponseSigned']:
                     parameters['SigAlg'] = security['signatureAlgorithm']
                     parameters['Signature'] = self.build_response_signature(logout_response, parameters.get('RelayState', None), security['signatureAlgorithm'])
-
-                return self.redirect_to(self.get_slo_url(), parameters)
+                redirect_url = self.redirect_to(self.get_slo_url(), parameters)
+                logger.info('Redirecting user to URL for signout: %s', redirect_url)
+                return redirect_url
         else:
             self.__errors.append('invalid_binding')
             raise OneLogin_Saml2_Error(
@@ -300,7 +309,9 @@ class OneLogin_Saml2_Auth(object):
         if security.get('authnRequestsSigned', False):
             parameters['SigAlg'] = security['signatureAlgorithm']
             parameters['Signature'] = self.build_request_signature(saml_request, parameters['RelayState'], security['signatureAlgorithm'])
-        return self.redirect_to(self.get_sso_url(), parameters)
+        redirect_url = self.redirect_to(self.get_sso_url(), parameters)
+        logger.info('Redirecting user to URL for login: %s', redirect_url)
+        return redirect_url
 
     def logout(self, return_to=None, name_id=None, session_index=None, nq=None):
         """
@@ -351,7 +362,9 @@ class OneLogin_Saml2_Auth(object):
         if security.get('logoutRequestSigned', False):
             parameters['SigAlg'] = security['signatureAlgorithm']
             parameters['Signature'] = self.build_request_signature(saml_request, parameters['RelayState'], security['signatureAlgorithm'])
-        return self.redirect_to(slo_url, parameters)
+        redirect_url = self.redirect_to(slo_url, parameters)
+        logger.info('Redirecting user to URL for signout: %s', redirect_url)
+        return redirect_url
 
     def get_sso_url(self):
         """

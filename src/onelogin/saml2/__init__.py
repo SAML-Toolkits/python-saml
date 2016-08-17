@@ -21,3 +21,7 @@ Supports:
 * Enable a Single Logout Service endpoint.
 * Publish the SP metadata (which can be signed).
 """
+
+import logging
+
+logging.getLogger(__name__).addHandler(logging.NullHandler())
