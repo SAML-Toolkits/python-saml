@@ -823,6 +823,8 @@ Main class of OneLogin Python Toolkit
 * ***build_response_signature*** Builds the Signature of the SAML Response.
 * ***get_settings*** Returns the settings info.
 * ***set_strict*** Set the strict mode active/disable.
+* ***get_last_request_xml*** Returns the most recently-constructed XML request
+* ***get_last_response_xml*** Returns the most recently-decrypted XML response
 
 ####OneLogin_Saml2_Auth - authn_request.py####
 
