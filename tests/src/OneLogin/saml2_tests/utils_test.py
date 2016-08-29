@@ -856,11 +856,18 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         except Exception as e:
             self.assertEqual('Error parsing xml string', e.message)
 
+        with self.assertRaisesRegexp(Exception, 'Empty string supplied as input'):
+            OneLogin_Saml2_Utils.validate_sign('', cert, raise_exceptions=True)
+        with self.assertRaisesRegexp(Exception, 'Error parsing xml string'):
+            OneLogin_Saml2_Utils.validate_sign(1, cert, raise_exceptions=True)
+
         # expired cert
         xml_metadata_signed = self.file_contents(join(self.data_path, 'metadata', 'signed_metadata_settings1.xml'))
         self.assertTrue(OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed, cert))
         # expired cert, verified it
         self.assertFalse(OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed, cert, validatecert=True))
+        with self.assertRaises(Exception):
+            OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed, cert, validatecert=True, raise_exceptions=True)
 
         xml_metadata_signed_2 = self.file_contents(join(self.data_path, 'metadata', 'signed_metadata_settings2.xml'))
         self.assertTrue(OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed_2, cert_2))
@@ -872,6 +879,8 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert))
         # expired cert, verified it
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert, validatecert=True))
+        with self.assertRaises(Exception):
+            OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert, validatecert=True, raise_exceptions=True)
 
         # modified cert
         other_cert_path = join(dirname(__file__), '..', '..', '..', 'certs')
@@ -880,6 +889,10 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         f.close()
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert_x))
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert_x, validatecert=True))
+        with self.assertRaises(Exception):
+            OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert_x, raise_exceptions=True)
+        with self.assertRaises(Exception):
+            OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert_x, validatecert=True, raise_exceptions=True)
 
         xml_response_msg_signed_2 = b64decode(self.file_contents(join(self.data_path, 'responses', 'signed_message_response2.xml.base64')))
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed_2, cert_2))
@@ -893,6 +906,8 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_response_assert_signed, cert))
         # expired cert, verified it
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(xml_response_assert_signed, cert, validatecert=True))
+        with self.assertRaises(Exception):
+            OneLogin_Saml2_Utils.validate_sign(xml_response_assert_signed, cert, validatecert=True, raise_exceptions=True)
 
         xml_response_assert_signed_2 = b64decode(self.file_contents(join(self.data_path, 'responses', 'signed_assertion_response2.xml.base64')))
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_response_assert_signed_2, cert_2))
@@ -904,6 +919,8 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_response_double_signed, cert))
         # expired cert, verified it
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(xml_response_double_signed, cert, validatecert=True))
+        with self.assertRaises(Exception):
+            OneLogin_Saml2_Utils.validate_sign(xml_response_double_signed, cert, validatecert=True, raise_exceptions=True)
 
         xml_response_double_signed_2 = b64decode(self.file_contents(join(self.data_path, 'responses', 'double_signed_response2.xml.base64')))
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_response_double_signed_2, cert_2))
@@ -917,32 +934,46 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         dom.firstChild.getAttributeNode('ID').nodeValue = u'_34fg27g212d63k1f923845324475802ac0fc24530b'
         # Reference validation failed
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(dom, cert_2))
+        with self.assertRaises(Exception):
+            OneLogin_Saml2_Utils.validate_sign(dom, cert_2, raise_exceptions=True)
 
         invalid_fingerprint = 'afe71c34ef740bc87434be13a2263d31271da1f9'
         # Wrong fingerprint
         self.assertFalse(OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed_2, None, invalid_fingerprint))
+        with self.assertRaises(Exception):
+            OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed_2, None, invalid_fingerprint, raise_exceptions=True)
 
         dom_2 = parseString(xml_response_double_signed_2)
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(dom_2, cert_2))
         dom_2.firstChild.firstChild.firstChild.nodeValue = 'https://example.com/other-idp'
         # Modified message
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(dom_2, cert_2))
+        with self.assertRaises(Exception):
+            OneLogin_Saml2_Utils.validate_sign(dom_2, cert_2, raise_exceptions=True)
 
         # Try to validate directly the Assertion
         dom_3 = parseString(xml_response_double_signed_2)
         assert_elem_3 = dom_3.firstChild.firstChild.nextSibling.nextSibling.nextSibling
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(assert_elem_3, cert_2))
+        with self.assertRaises(Exception):
+            OneLogin_Saml2_Utils.validate_sign(assert_elem_3, cert_2, raise_exceptions=True)
 
         # Wrong scheme
         no_signed = b64decode(self.file_contents(join(self.data_path, 'responses', 'invalids', 'no_signature.xml.base64')))
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(no_signed, cert))
+        with self.assertRaises(Exception):
+            OneLogin_Saml2_Utils.validate_sign(no_signed, cert, raise_exceptions=True)
 
         no_key = b64decode(self.file_contents(join(self.data_path, 'responses', 'invalids', 'no_key.xml.base64')))
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(no_key, cert))
+        with self.assertRaises(Exception):
+            OneLogin_Saml2_Utils.validate_sign(no_key, cert, raise_exceptions=True)
 
         # Signature Wrapping attack
         wrapping_attack1 = b64decode(self.file_contents(join(self.data_path, 'responses', 'invalids', 'signature_wrapping_attack.xml.base64')))
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(wrapping_attack1, cert))
+        with self.assertRaises(Exception):
+            OneLogin_Saml2_Utils.validate_sign(wrapping_attack1, cert, raise_exceptions=True)
 
 
 if __name__ == '__main__':
