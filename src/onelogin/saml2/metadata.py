@@ -77,7 +77,6 @@ class OneLogin_Saml2_Metadata(object):
             organization = {}
 
         str_attribute_consuming_service = ''
-
         if 'attributeConsumingService' in sp and len(sp['attributeConsumingService']):
             attr_cs_desc_str = ''
             if "serviceDescription" in sp['attributeConsumingService']:
@@ -94,16 +93,22 @@ class OneLogin_Saml2_Metadata(object):
                 if 'friendlyName' in req_attribs.keys() and req_attribs['friendlyName']:
                     req_attr_nameformat_str = " FriendlyName=\"%s\"" % req_attribs['friendlyName']
                 if 'isRequired' in req_attribs.keys() and req_attribs['isRequired']:
-                    req_attr_isrequired_str = " isRequired=\"%s\"" % 'true' if req_attribs['isRequired'] else 'false'
-                if 'attributeValue' in req_attribs.keys() and req_attribs['attributeValue']:
-                    req_attr_aux_str = """ >
-            <saml:AttributeValue xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion>%(attributeValue)</saml:AttributeValue>
-</md:RequestedAttribute>""" % \
-                        {
-                            'attributeValue': req_attribs['attributeValue']
-                        }
+                    req_attr_isrequired_str = " isRequired=\"%s\"" % req_attribs['isRequired']
 
-                requested_attribute = """            <md:RequestedAttribute Name="%(req_attr_name)s"%(req_attr_nameformat_str)s%(req_attr_isrequired_str)s%(req_attr_aux_str)s""" % \
+                if 'attributeValue' in req_attribs.keys() and req_attribs['attributeValue']:
+                    req_attr_aux_str = ""
+                    if isinstance(req_attribs['attributeValue'], basestring):
+                        req_attribs['attributeValue'] = [req_attribs['attributeValue']]
+                    for attrValue in req_attribs['attributeValue']:
+                        req_attr_aux_str += """
+                <saml:AttributeValue xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion>%(attributeValue)s</saml:AttributeValue>""" % \
+                          {
+                            'attributeValue': attrValue
+                          }
+                    req_attr_aux_str += """
+            </md:RequestedAttribute>"""
+
+                requested_attribute = """            <md:RequestedAttribute Name="%(req_attr_name)s"%(req_attr_nameformat_str)s%(req_attr_friendlyname_str)s%(req_attr_isrequired_str)s%(req_attr_aux_str)s""" % \
                     {
                         'req_attr_name': req_attribs['name'],
                         'req_attr_nameformat_str': req_attr_nameformat_str,
