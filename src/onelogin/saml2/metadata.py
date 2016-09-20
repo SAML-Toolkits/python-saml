@@ -102,9 +102,9 @@ class OneLogin_Saml2_Metadata(object):
                     for attrValue in req_attribs['attributeValue']:
                         req_attr_aux_str += """
                 <saml:AttributeValue xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion>%(attributeValue)s</saml:AttributeValue>""" % \
-                          {
-                            'attributeValue': attrValue
-                          }
+                            {
+                                'attributeValue': attrValue
+                            }
                     req_attr_aux_str += """
             </md:RequestedAttribute>"""
 
