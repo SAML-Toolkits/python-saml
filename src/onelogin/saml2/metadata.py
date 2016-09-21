@@ -173,7 +173,7 @@ class OneLogin_Saml2_Metadata(object):
                 contacts_info.append(contact)
             str_contacts = '\n'.join(contacts_info) + '\n'
 
-        metadata = """<?xml version="1.0"?>
+        metadata = u"""<?xml version="1.0"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
                      %(valid)s
                      %(cache)s
@@ -241,7 +241,7 @@ class OneLogin_Saml2_Metadata(object):
         if cert is None or cert == '':
             return metadata
         try:
-            xml = parseString(metadata)
+            xml = parseString(metadata.encode('utf-8'))
         except Exception as e:
             raise Exception('Error parsing metadata. ' + e.message)
 

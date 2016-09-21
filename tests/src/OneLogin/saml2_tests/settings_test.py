@@ -18,8 +18,8 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
     data_path = join(dirname(dirname(dirname(dirname(__file__)))), 'data')
     settings_path = join(dirname(dirname(dirname(dirname(__file__)))), 'settings')
 
-    def loadSettingsJSON(self):
-        filename = join(self.settings_path, 'settings1.json')
+    def loadSettingsJSON(self, name='settings1.json'):
+        filename = join(self.settings_path, name)
         if exists(filename):
             stream = open(filename, 'r')
             settings = json.load(stream)
@@ -396,6 +396,20 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         self.assertIn('<md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://stuff.com/endpoints/endpoints/acs.php" index="1"/>', metadata)
         self.assertIn('<md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://stuff.com/endpoints/endpoints/sls.php"/>', metadata)
         self.assertIn('<md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>', metadata)
+
+    def testGetUnicodeSPMetadata(self):
+        """
+        Tests the getSPMetadata method of the OneLogin_Saml2_Settings
+        Case unicode metadata
+        """
+        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON('settings6.json'))
+        metadata = settings.get_sp_metadata()
+
+        self.assertIn('<md:SPSSODescriptor', metadata)
+        self.assertIn('<md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://stuff.com/endpoints/endpoints/acs.php" index="1"/>', metadata)
+        self.assertIn(u'<md:OrganizationDisplayName xml:lang="en-US">Sérvïçé prövïdér</md:OrganizationDisplayName>', metadata)
+        self.assertIn(u'<md:GivenName>Téçhnïçäl Nämé</md:GivenName>', metadata)
+        self.assertIn(u'<md:GivenName>Süppört Nämé</md:GivenName>', metadata)
 
     def testGetSPMetadataSigned(self):
         """

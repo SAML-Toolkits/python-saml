@@ -75,7 +75,7 @@ class OneLogin_Saml2_Utils(object):
         :rtype: string
         """
 
-        return zlib.decompress(base64.b64decode(value), -15)
+        return zlib.decompress(base64.b64decode(value), -15).decode('utf-8')
 
     @staticmethod
     def deflate_and_base64_encode(value):
@@ -86,7 +86,7 @@ class OneLogin_Saml2_Utils(object):
         :returns: The deflated and encoded string
         :rtype: string
         """
-        return base64.b64encode(zlib.compress(value)[2:-4])
+        return base64.b64encode(zlib.compress(value.encode('utf-8'))[2:-4])
 
     @staticmethod
     def validate_xml(xml, schema, debug=False):
@@ -107,11 +107,11 @@ class OneLogin_Saml2_Utils(object):
         if isinstance(xml, Document):
             xml = xml.toxml()
         elif isinstance(xml, etree._Element):
-            xml = tostring(xml)
+            xml = tostring(xml, encoding='unicode')
 
         # Switch to lxml for schema validation
         try:
-            dom = fromstring(str(xml))
+            dom = fromstring(xml.encode('utf-8'))
         except Exception:
             return 'unloaded_xml'
 
@@ -130,7 +130,7 @@ class OneLogin_Saml2_Utils(object):
 
             return 'invalid_xml'
 
-        return parseString(etree.tostring(dom))
+        return parseString(etree.tostring(dom, encoding='unicode').encode('utf-8'))
 
     @staticmethod
     def format_cert(cert, heads=True):
@@ -655,7 +655,7 @@ class OneLogin_Saml2_Utils(object):
 
             edata = enc_ctx.encryptXml(enc_data, elem[0])
 
-            newdoc = parseString(etree.tostring(edata))
+            newdoc = parseString(etree.tostring(edata, encoding='unicode').encode('utf-8'))
 
             if newdoc.hasChildNodes():
                 child = newdoc.firstChild
@@ -791,7 +791,7 @@ class OneLogin_Saml2_Utils(object):
             elem = xml
         elif isinstance(xml, Document):
             xml = xml.toxml()
-            elem = fromstring(str(xml))
+            elem = fromstring(xml.encode('utf-8'))
         elif isinstance(xml, Element):
             xml.setAttributeNS(
                 unicode(OneLogin_Saml2_Constants.NS_SAMLP),
@@ -804,9 +804,9 @@ class OneLogin_Saml2_Utils(object):
                 unicode(OneLogin_Saml2_Constants.NS_SAML)
             )
             xml = xml.toxml()
-            elem = fromstring(str(xml))
+            elem = fromstring(xml.encode('utf-8'))
         elif isinstance(xml, basestring):
-            elem = fromstring(str(xml))
+            elem = fromstring(xml.encode('utf-8'))
         else:
             raise Exception('Error parsing xml string')
 
@@ -849,7 +849,7 @@ class OneLogin_Saml2_Utils(object):
         dsig_ctx.signKey = sign_key
         dsig_ctx.sign(signature)
 
-        newdoc = parseString(etree.tostring(elem))
+        newdoc = parseString(etree.tostring(elem, encoding='unicode').encode('utf-8'))
 
         signature_nodes = newdoc.getElementsByTagName("Signature")
 
@@ -895,7 +895,7 @@ class OneLogin_Saml2_Utils(object):
                 elem = xml
             elif isinstance(xml, Document):
                 xml = xml.toxml()
-                elem = fromstring(str(xml))
+                elem = fromstring(xml.encode('utf-8'))
             elif isinstance(xml, Element):
                 xml.setAttributeNS(
                     unicode(OneLogin_Saml2_Constants.NS_SAMLP),
@@ -908,9 +908,9 @@ class OneLogin_Saml2_Utils(object):
                     unicode(OneLogin_Saml2_Constants.NS_SAML)
                 )
                 xml = xml.toxml()
-                elem = fromstring(str(xml))
+                elem = fromstring(xml.encode('utf-8'))
             elif isinstance(xml, basestring):
-                elem = fromstring(str(xml))
+                elem = fromstring(xml.encode('utf-8'))
             else:
                 raise Exception('Error parsing xml string')
 
@@ -963,7 +963,7 @@ class OneLogin_Saml2_Utils(object):
                 elem = xml
             elif isinstance(xml, Document):
                 xml = xml.toxml()
-                elem = fromstring(str(xml))
+                elem = fromstring(xml.encode('utf-8'))
             elif isinstance(xml, Element):
                 xml.setAttributeNS(
                     unicode(OneLogin_Saml2_Constants.NS_MD),
@@ -971,9 +971,9 @@ class OneLogin_Saml2_Utils(object):
                     unicode(OneLogin_Saml2_Constants.NS_MD)
                 )
                 xml = xml.toxml()
-                elem = fromstring(str(xml))
+                elem = fromstring(xml.encode('utf-8'))
             elif isinstance(xml, basestring):
-                elem = fromstring(str(xml))
+                elem = fromstring(xml.encode('utf-8'))
             else:
                 raise Exception('Error parsing xml string')
 
