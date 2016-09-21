@@ -16,7 +16,7 @@ from defusedxml.lxml import fromstring
 from xml.dom.minidom import Document
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
-from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.utils import OneLogin_Saml2_Utils, return_false_on_exception
 
 
 class OneLogin_Saml2_Response(object):
@@ -90,13 +90,21 @@ class OneLogin_Saml2_Response(object):
 
             if self.__settings.is_strict():
                 no_valid_xml_msg = 'Invalid SAML Response. Not match the saml-schema-protocol-2.0.xsd'
-                res = OneLogin_Saml2_Utils.validate_xml(etree.tostring(self.document), 'saml-schema-protocol-2.0.xsd', self.__settings.is_debug_active())
+                res = OneLogin_Saml2_Utils.validate_xml(
+                    etree.tostring(self.document),
+                    'saml-schema-protocol-2.0.xsd',
+                    self.__settings.is_debug_active()
+                )
                 if not isinstance(res, Document):
                     raise Exception(no_valid_xml_msg)
 
                 # If encrypted, check also the decrypted document
                 if self.encrypted:
-                    res = OneLogin_Saml2_Utils.validate_xml(etree.tostring(self.decrypted_document), 'saml-schema-protocol-2.0.xsd', self.__settings.is_debug_active())
+                    res = OneLogin_Saml2_Utils.validate_xml(
+                        etree.tostring(self.decrypted_document),
+                        'saml-schema-protocol-2.0.xsd',
+                        self.__settings.is_debug_active()
+                    )
                     if not isinstance(res, Document):
                         raise Exception(no_valid_xml_msg)
 
@@ -123,8 +131,7 @@ class OneLogin_Saml2_Response(object):
                     raise Exception('There is no AttributeStatement on the Response')
 
                 # Validates Assertion timestamps
-                if not self.validate_timestamps():
-                    raise Exception('Timing issues (please check your clock settings)')
+                self.validate_timestamps(raise_exceptions=True)
 
                 encrypted_attributes_nodes = self.__query_assertion('/saml:AttributeStatement/saml:EncryptedAttribute')
                 if encrypted_attributes_nodes:
@@ -212,8 +219,7 @@ class OneLogin_Saml2_Response(object):
                         document_to_validate = self.decrypted_document
                     else:
                         document_to_validate = self.document
-                if not OneLogin_Saml2_Utils.validate_sign(document_to_validate, cert, fingerprint, fingerprintalg):
-                    raise Exception('Signature validation failed. SAML Response rejected')
+                OneLogin_Saml2_Utils.validate_sign(document_to_validate, cert, fingerprint, fingerprintalg, raise_exceptions=True)
             else:
                 raise Exception('No Signature found. SAML Response rejected')
 
@@ -435,9 +441,13 @@ class OneLogin_Saml2_Response(object):
             signed_elements.append(signed_element)
         return signed_elements
 
+    @return_false_on_exception
     def validate_timestamps(self):
         """
         Verifies that the document is valid according to Conditions Element
+
+        :param raise_exceptions: Whether to return false on failure or raise an exception
+        :type raise_exceptions: Boolean
 
         :returns: True if the condition is valid, False otherwise
         :rtype: bool
@@ -448,9 +458,9 @@ class OneLogin_Saml2_Response(object):
             nb_attr = conditions_node.get('NotBefore')
             nooa_attr = conditions_node.get('NotOnOrAfter')
             if nb_attr and OneLogin_Saml2_Utils.parse_SAML_to_time(nb_attr) > OneLogin_Saml2_Utils.now() + OneLogin_Saml2_Constants.ALLOWED_CLOCK_DRIFT:
-                return False
+                raise Exception('Could not validate timestamp: not yet valid. Check system clock.')
             if nooa_attr and OneLogin_Saml2_Utils.parse_SAML_to_time(nooa_attr) + OneLogin_Saml2_Constants.ALLOWED_CLOCK_DRIFT <= OneLogin_Saml2_Utils.now():
-                return False
+                raise Exception('Could not validate timestamp: expired. Check system clock.')
         return True
 
     def __query_assertion(self, xpath_expr):
