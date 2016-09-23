@@ -22,8 +22,8 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
     data_path = join(dirname(dirname(dirname(dirname(__file__)))), 'data')
     settings_path = join(dirname(dirname(dirname(dirname(__file__)))), 'settings')
 
-    def loadSettingsJSON(self):
-        filename = join(self.settings_path, 'settings1.json')
+    def loadSettingsJSON(self, name='settings1.json'):
+        filename = join(self.settings_path, name)
         if exists(filename):
             stream = open(filename, 'r')
             settings = json.load(stream)
@@ -563,6 +563,20 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         self.assertIn(sso_url, target_url)
         self.assertIn('SAMLRequest', parsed_query)
         self.assertIn('RelayState', parsed_query)
+        hostname = OneLogin_Saml2_Utils.get_self_host(request_data)
+        self.assertIn(u'http://%s/index.html' % hostname, parsed_query['RelayState'])
+
+    def testLoginWithUnicodeSettings(self):
+        """
+        Tests the login method of the OneLogin_Saml2_Auth class
+        Case Login with unicode settings. An AuthnRequest is built an redirect executed
+        """
+        settings_info = self.loadSettingsJSON('settings6.json')
+        request_data = self.get_request()
+        auth = OneLogin_Saml2_Auth(request_data, old_settings=settings_info)
+
+        target_url = auth.login()
+        parsed_query = parse_qs(urlparse(target_url)[4])
         hostname = OneLogin_Saml2_Utils.get_self_host(request_data)
         self.assertIn(u'http://%s/index.html' % hostname, parsed_query['RelayState'])
 

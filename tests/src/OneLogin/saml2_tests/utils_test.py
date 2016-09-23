@@ -39,6 +39,18 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         f.close()
         return content
 
+    def testDeflateBase64Roundtrip(self):
+        """
+        Tests deflate_and_base64_encode and decode_base64_and_inflate methods of OneLogin_Saml2_Utils
+        """
+        body = 'Some random string.'
+        encoded = OneLogin_Saml2_Utils.deflate_and_base64_encode(body)
+        self.assertEqual(OneLogin_Saml2_Utils.decode_base64_and_inflate(encoded), body)
+
+        unicode_body = u'Sömé rändöm nön-äsçïï strïng.'
+        unicode_encoded = OneLogin_Saml2_Utils.deflate_and_base64_encode(unicode_body)
+        self.assertEqual(OneLogin_Saml2_Utils.decode_base64_and_inflate(unicode_encoded), unicode_body)
+
     def testValidateXML(self):
         """
         Tests the validate_xml method of the OneLogin_Saml2_Utils
