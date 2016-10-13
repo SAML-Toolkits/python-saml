@@ -50,7 +50,11 @@ class OneLogin_Saml2_SignedResponse_Test(unittest.TestCase):
         Tests the getNameId method of the OneLogin_Saml2_Response
         Case valid signed response, signed assertion
         """
-        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
+        settings_info = self.loadSettingsJSON()
+        settings_info['idp']['entityId'] = "https://federate.example.net/saml/saml2/idp/metadata.php"
+        settings_info['sp']['entityId'] = "hello.com"
+
+        settings = OneLogin_Saml2_Settings(settings_info)
         message = self.file_contents(join(self.data_path, 'responses', 'simple_saml_php.xml'))
         response = OneLogin_Saml2_Response(settings, b64encode(message))
 

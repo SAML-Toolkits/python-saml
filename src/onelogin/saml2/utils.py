@@ -65,6 +65,9 @@ class OneLogin_Saml2_Utils(object):
 
     """
 
+    RESPONSE_SIGNATURE_XPATH = '/samlp:Response/ds:Signature'
+    ASSERTION_SIGNATURE_XPATH = '/samlp:Response/saml:Assertion/ds:Signature'
+
     @staticmethod
     def decode_base64_and_inflate(value):
         """
@@ -865,7 +868,7 @@ class OneLogin_Saml2_Utils(object):
         return newdoc.saveXML(newdoc.firstChild)
 
     @staticmethod
-    def validate_sign(xml, cert=None, fingerprint=None, fingerprintalg='sha1', validatecert=False, debug=False):
+    def validate_sign(xml, cert=None, fingerprint=None, fingerprintalg='sha1', validatecert=False, debug=False, xpath=None):
         """
         Validates a signature (Message or Assertion).
 
@@ -886,6 +889,9 @@ class OneLogin_Saml2_Utils(object):
 
         :param debug: Activate the xmlsec debug
         :type: bool
+
+        :param xpath: The xpath of the signed element
+        :type: string
         """
         try:
             if xml is None or xml == '':
@@ -918,10 +924,13 @@ class OneLogin_Saml2_Utils(object):
 
             xmlsec.addIDs(elem, ["ID"])
 
-            signature_nodes = OneLogin_Saml2_Utils.query(elem, '/samlp:Response/ds:Signature')
+            if xpath:
+                signature_nodes = OneLogin_Saml2_Utils.query(elem, xpath)
+            else:
+                signature_nodes = OneLogin_Saml2_Utils.query(elem, OneLogin_Saml2_Utils.RESPONSE_SIGNATURE_XPATH)
 
-            if not len(signature_nodes) > 0:
-                signature_nodes += OneLogin_Saml2_Utils.query(elem, '/samlp:Response/saml:Assertion/ds:Signature')
+                if len(signature_nodes) == 0:
+                    signature_nodes = OneLogin_Saml2_Utils.query(elem, OneLogin_Saml2_Utils.ASSERTION_SIGNATURE_XPATH)
 
             if len(signature_nodes) == 1:
                 signature_node = signature_nodes[0]
