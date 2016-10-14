@@ -1,5 +1,26 @@
 # python-saml changelog
 
+### 2.2.0 (Oct 14, 2016)
+* Several security improvements:
+  * Conditions element required and unique.
+  * AuthnStatement element required and unique.
+  * SPNameQualifier must math the SP EntityID
+  * Reject saml:Attribute element with same “Name” attribute
+  * Reject empty nameID
+  * Require Issuer element. (Must match IdP EntityID).
+  * Destination value can't be blank (if present must match ACS URL).
+  * Check that the EncryptedAssertion element only contains 1 Assertion element.
+* Improve Signature validation process
+* [#149](https://github.com/onelogin/python-saml/pull/149) Work-around for xmlsec.initialize
+* [#151](https://github.com/onelogin/python-saml/pull/151) Fix flask demo error handling and improve documentation
+* 
+* [#152](https://github.com/onelogin/python-saml/pull/152) Update LICENSE to include MIT rather than BSD license 
+* [#155](https://github.com/onelogin/python-saml/pull/155) Fix typographical errors in docstring
+* Fix RequestedAttribute Issue
+* Fix __build_signature method. If relay_state is null not be part of the SignQuery
+* [#164](https://github.com/onelogin/python-saml/pull/164) Add support for non-ascii fields in settings
+
+
 ### 2.1.9 (Jun 27, 2016)
 * Change the decrypt assertion process.
 * Add 2 extra validations to prevent Signature wrapping attacks.
