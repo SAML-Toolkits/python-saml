@@ -13,7 +13,6 @@
 * Improve Signature validation process
 * [#149](https://github.com/onelogin/python-saml/pull/149) Work-around for xmlsec.initialize
 * [#151](https://github.com/onelogin/python-saml/pull/151) Fix flask demo error handling and improve documentation
-* 
 * [#152](https://github.com/onelogin/python-saml/pull/152) Update LICENSE to include MIT rather than BSD license 
 * [#155](https://github.com/onelogin/python-saml/pull/155) Fix typographical errors in docstring
 * Fix RequestedAttribute Issue
