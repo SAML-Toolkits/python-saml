@@ -719,6 +719,15 @@ auth.process_slo(keep_local_session=keepLocalSession);
 #### Initiate SLO ####
 
 In order to send a Logout Request to the IdP:
+```python
+from onelogin.saml2.auth import OneLogin_Saml2_Auth
+
+req = prepare_request_for_toolkit(request)
+auth = OneLogin_Saml2_Auth(req)   # Constructor of the SP, loads settings.json
+                                  # and advanced_settings.json
+
+auth.logout()      # Method that builds and sends the LogoutRequest
+```
 
 The Logout Request will be sent signed or unsigned based on the security info of the advanced_settings.json ('logoutRequestSigned').
 
