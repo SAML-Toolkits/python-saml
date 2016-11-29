@@ -1,0 +1,50 @@
+# -*- coding: utf-8 -*-
+
+# Copyright (c) 2014, OneLogin, Inc.
+# All rights reserved.
+
+from base64 import b64decode
+import json
+from lxml import etree
+from os.path import dirname, join, exists
+import unittest
+from teamcity import is_running_under_teamcity
+from teamcity.unittestpy import TeamcityTestRunner
+from xml.dom.minidom import Document, parseString
+
+from onelogin.saml2.constants import OneLogin_Saml2_Constants
+from onelogin.saml2.settings import OneLogin_Saml2_Settings
+from onelogin.saml2.utils import OneLogin_Saml2_Utils
+
+
+class OneLogin_Saml2_Utils_Test(unittest.TestCase):
+    data_path = join(dirname(dirname(dirname(dirname(__file__)))), 'data')
+
+    def file_contents(self, filename):
+        f = open(filename, 'r')
+        content = f.read()
+        f.close()
+        return content
+
+
+    def testExpesify(self):
+        xml = self.file_contents(join(self.data_path, 'responses', 'expensify.xml'))
+        cert = """-----BEGIN CERTIFICATE-----
+MIIC5jCCAc6gAwIBAgIQejzcQ7LOo7NDphYfVqKB8jANBgkqhkiG9w0BAQsFADAv
+MS0wKwYDVQQDEyRBREZTIFNpZ25pbmcgLSBhZGZzLmZpbmlzaG1hc3Rlci5jb20w
+HhcNMTYwMzMwMjA1NjM2WhcNMTcwMzMwMjA1NjM2WjAvMS0wKwYDVQQDEyRBREZT
+IFNpZ25pbmcgLSBhZGZzLmZpbmlzaG1hc3Rlci5jb20wggEiMA0GCSqGSIb3DQEB
+AQUAA4IBDwAwggEKAoIBAQDrnGb3jm22UR0CqYQK55vj5dVMQIitpl5jUHuFgou0
+SsFfI5VJY5KNXQXCJoduXlxl12dRUQrd0h22TCLBWoneuDcor0UV4bRl7QyQWjuX
+M6pEDG8JsNWJEmnoiKGVmnfsaVgKTFZxO+Kydk/GRJauOqAyU7igABDpazMMHjjL
+c9iZ6tHjFjtWrUay3Hu3aaZheQWgzjnENUprgnH3zm5NQT5Dbd72z5TKrb4bbv08
+oInf52dnBNiSz0wa8uZRJPJJH2rGJmWUIJqp2fnhCxysMgf+ny5IfOkpcG4Cb/fk
+d4hoSmY5Bb/dKuD9/pTpmoylcinBtb3bMGASkulyQmENAgMBAAEwDQYJKoZIhvcN
+AQELBQADggEBAEx5l+gRoxUSY1nu6O2Cmu8WpnrFlEoNsko+Z/T34NYIm/2uaX6y
+kHoDSptgplwjtjE6lE0Zygm5R59BAU3tqGG1uHu4G7w++rcE6nnYunC3tZ8iKuzb
+VmkyUFjuf0AaWo/j/pl7zDJV1NHg6zm/NrqKhx4+Sr/LpVdBMOQmU9leqKsfVtkJ
+ktTOx1ChiEqu7R0yfKuaZwSlUfgnVtVS7yvLvk0KIbxhZe9BGdtJ03+XHYE0TeVN
+SpHh6Q1mylYurMX3WLMW5cQ+AcOWiDob2FuMq6wNWoUwOCvUwTu9NFQvuyzFpUrn
+wFgrDzL8lRc9nNA/iZh+pBIu+BM3/wWZLp8=
+-----END CERTIFICATE-----"""
+        self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml, cert, debug=True))

@@ -916,8 +916,10 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         message_wrapper = {'post_data': {'SAMLResponse': message}}
         auth = OneLogin_Saml2_Auth(message_wrapper, old_settings=settings)
         auth.process_response()
-        decrypted_response = self.file_contents(join(self.data_path, 'responses', 'pretty_decrypted_valid_encrypted_assertion.xml.base64.xml'))
-        self.assertEqual(auth.get_last_response_xml(), decrypted_response)
+        decrypted_response = self.file_contents(join(self.data_path, 'responses', 'decrypted_valid_encrypted_assertion.xml'))
+        self.assertEqual(auth.get_last_response_xml(False), decrypted_response)
+        decrypted_response = self.file_contents(join(self.data_path, 'responses', 'pretty_decrypted_valid_encrypted_assertion.xml'))
+        self.assertEqual(auth.get_last_response_xml(True), decrypted_response)
 
     def testGetLastSentRequest(self):
         settings = self.loadSettingsJSON()

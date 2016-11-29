@@ -58,8 +58,8 @@ class OneLogin_Saml2_Auth(object):
         self.__errors = []
         self.__error_reason = None
         self.__last_request_id = None
-        self.__last_request_xml = None
-        self.__last_response_xml = None
+        self.__last_request = None
+        self.__last_response = None
 
     def get_settings(self):
         """
@@ -93,7 +93,7 @@ class OneLogin_Saml2_Auth(object):
         if 'post_data' in self.__request_data and 'SAMLResponse' in self.__request_data['post_data']:
             # AuthnResponse -- HTTP_POST Binding
             response = OneLogin_Saml2_Response(self.__settings, self.__request_data['post_data']['SAMLResponse'])
-            self.__last_response_xml = response.get_xml_document()
+            self.__last_response = response.get_xml_document()
             if response.is_valid(self.__request_data, request_id):
                 self.__attributes = response.get_attributes()
                 self.__nameid = response.get_nameid()
@@ -128,6 +128,7 @@ class OneLogin_Saml2_Auth(object):
 
         if 'get_data' in self.__request_data and 'SAMLResponse' in self.__request_data['get_data']:
             logout_response = OneLogin_Saml2_Logout_Response(self.__settings, self.__request_data['get_data']['SAMLResponse'])
+            self.__logout_response = logout_response.get_xml()
             if not logout_response.is_valid(self.__request_data, request_id):
                 self.__errors.append('invalid_logout_response')
                 self.__error_reason = logout_response.get_error()
@@ -138,6 +139,7 @@ class OneLogin_Saml2_Auth(object):
 
         elif 'get_data' in self.__request_data and 'SAMLRequest' in self.__request_data['get_data']:
             logout_request = OneLogin_Saml2_Logout_Request(self.__settings, self.__request_data['get_data']['SAMLRequest'])
+            self.__last_request = logout_request.get_xml()
             if not logout_request.is_valid(self.__request_data):
                 self.__errors.append('invalid_logout_request')
                 self.__error_reason = logout_request.get_error()
@@ -148,6 +150,7 @@ class OneLogin_Saml2_Auth(object):
                 in_response_to = logout_request.id
                 response_builder = OneLogin_Saml2_Logout_Response(self.__settings)
                 response_builder.build(in_response_to)
+                self.__logout_response = response_builder.get_xml()
                 logout_response = response_builder.get_response()
 
                 parameters = {'SAMLResponse': logout_response}
@@ -288,12 +291,11 @@ class OneLogin_Saml2_Auth(object):
         :rtype: string
         """
         authn_request = OneLogin_Saml2_Authn_Request(self.__settings, force_authn, is_passive, set_nameid_policy)
-
+        self.__last_request = authn_request.get_xml()
         self.__last_request_id = authn_request.get_id()
-
         saml_request = authn_request.get_request()
+
         parameters = {'SAMLRequest': saml_request}
-        self.__last_request_xml = authn_request.get_request_as_xml()
         if return_to is not None:
             parameters['RelayState'] = return_to
         else:
@@ -339,9 +341,8 @@ class OneLogin_Saml2_Auth(object):
             session_index=session_index,
             nq=nq
         )
-
+        self.__last_request = logout_request.get_xml()
         self.__last_request_id = logout_request.id
-
         saml_request = logout_request.get_request()
 
         parameters = {'SAMLRequest': logout_request.get_request()}
@@ -455,15 +456,21 @@ class OneLogin_Saml2_Auth(object):
         signature = dsig_ctx.signBinary(str(msg), sign_algorithm_transform)
         return b64encode(signature)
 
-    def get_last_response_xml(self):
+    def get_last_response_xml(self, pretty_print_if_possible=False):
         """
-        Retrieves the decrypted XML of the last SAML response
+        Retrieves the raw XML (decrypted) of the last SAML response,
+        or the last Logout Response generated or processed
 
         :returns: SAML response XML
         :rtype: string|None
         """
-        if self.__last_response_xml:
-            return etree.tostring(self.__last_response_xml, pretty_print=True)
+        response = None
+        if self.__last_response:
+            if isinstance(self.__last_response, basestring):
+                response = self.__last_response
+            else:
+                response = etree.tostring(self.__last_response, pretty_print=pretty_print_if_possible)
+        return response
 
     def get_last_request_xml(self):
         """
@@ -472,5 +479,4 @@ class OneLogin_Saml2_Auth(object):
         :returns: SAML request XML
         :rtype: string|None
         """
-        if self.__last_request_xml:
-            return self.__last_request_xml
+        return self.__last_request or None

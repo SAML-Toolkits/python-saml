@@ -70,7 +70,7 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         settings = OneLogin_Saml2_Settings(json_settings)
         xml = self.file_contents(join(self.data_path, 'responses', 'valid_encrypted_assertion.xml.base64'))
         response = OneLogin_Saml2_Response(settings, xml)
-        decrypted = self.file_contents(join(self.data_path, 'responses', 'decrypted_valid_encrypted_assertion.xml.base64.xml'))
+        decrypted = self.file_contents(join(self.data_path, 'responses', 'decrypted_valid_encrypted_assertion.xml'))
         self.assertEqual(etree.tostring(response.get_xml_document()), decrypted)
 
     def testReturnNameId(self):

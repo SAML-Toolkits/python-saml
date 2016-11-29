@@ -827,13 +827,13 @@ Main class of OneLogin Python Toolkit
 * ***get_last_error_reason*** Returns the reason of the last error
 * ***get_sso_url*** Gets the SSO url.
 * ***get_slo_url*** Gets the SLO url.
-* ***get_last_request_id*** The ID of the last Request SAML message generated.
+* ***get_last_request_id*** The ID of the last Request SAML message generated (AuthNRequest, LogoutRequest).
 * ***build_request_signature*** Builds the Signature of the SAML Request.
 * ***build_response_signature*** Builds the Signature of the SAML Response.
 * ***get_settings*** Returns the settings info.
 * ***set_strict*** Set the strict mode active/disable.
-* ***get_last_request_xml*** Returns the most recently-constructed XML request
-* ***get_last_response_xml*** Returns the most recently-decrypted XML response
+* ***get_last_request_xml*** Returns the most recently-constructed/processed XML SAML request (AuthNRequest, LogoutRequest)
+* ***get_last_response_xml*** Returns the most recently-constructed/processed XML SAML response (SAMLResponse, LogoutResponse). If the SAMLResponse was encrypted, by default tries to return the decrypted XML.
 
 ####OneLogin_Saml2_Auth - authn_request.py####
 

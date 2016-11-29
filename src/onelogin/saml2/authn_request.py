@@ -150,9 +150,9 @@ class OneLogin_Saml2_Authn_Request(object):
         """
         return self.__id
 
-    def get_request_as_xml(self):
+    def get_xml(self):
         """
-        Return the XML document that will be sent as part of the request
+        Returns the XML that will be sent as part of the request
         :return: XML request body
         :rtype: string
         """

@@ -80,7 +80,7 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
         }
 
         authn_request = OneLogin_Saml2_Authn_Request(settings)
-        inflated = authn_request.get_request_as_xml()
+        inflated = authn_request.get_xml()
         self.assertRegexpMatches(inflated, '^<samlp:AuthnRequest')
         self.assertNotIn('ProviderName="SP test"', inflated)
 
@@ -88,7 +88,7 @@ class OneLogin_Saml2_Authn_Request_Test(unittest.TestCase):
         settings = OneLogin_Saml2_Settings(saml_settings)
 
         authn_request = OneLogin_Saml2_Authn_Request(settings)
-        inflated = authn_request.get_request_as_xml()
+        inflated = authn_request.get_xml()
         self.assertRegexpMatches(inflated, '^<samlp:AuthnRequest')
         self.assertNotIn('ProviderName="SP test"', inflated)
 
