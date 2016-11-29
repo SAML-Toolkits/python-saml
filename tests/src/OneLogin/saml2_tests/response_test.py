@@ -13,7 +13,7 @@ import unittest
 from teamcity import is_running_under_teamcity
 from teamcity.unittestpy import TeamcityTestRunner
 from xml.dom.minidom import parseString
-
+from lxml import etree
 from onelogin.saml2.response import OneLogin_Saml2_Response
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
@@ -59,6 +59,19 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         response_enc = OneLogin_Saml2_Response(settings, xml_enc)
 
         self.assertIsInstance(response_enc, OneLogin_Saml2_Response)
+
+    def test_get_decrypted_xml(self):
+        """
+        Tests that we can retrieve the raw text of an encrypted XML response
+        without going through intermediate steps
+        """
+        json_settings = self.loadSettingsJSON()
+
+        settings = OneLogin_Saml2_Settings(json_settings)
+        xml = self.file_contents(join(self.data_path, 'responses', 'valid_encrypted_assertion.xml.base64'))
+        response = OneLogin_Saml2_Response(settings, xml)
+        decrypted = self.file_contents(join(self.data_path, 'responses', 'decrypted_valid_encrypted_assertion.xml.base64.xml'))
+        self.assertEqual(etree.tostring(response.get_xml_document()), decrypted)
 
     def testReturnNameId(self):
         """

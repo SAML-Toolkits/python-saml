@@ -13,6 +13,7 @@ Initializes the SP SAML instance
 
 from base64 import b64encode
 from urllib import quote_plus
+from lxml import etree
 
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.response import OneLogin_Saml2_Response
@@ -57,6 +58,8 @@ class OneLogin_Saml2_Auth(object):
         self.__errors = []
         self.__error_reason = None
         self.__last_request_id = None
+        self.__last_request_xml = None
+        self.__last_response_xml = None
 
     def get_settings(self):
         """
@@ -90,7 +93,7 @@ class OneLogin_Saml2_Auth(object):
         if 'post_data' in self.__request_data and 'SAMLResponse' in self.__request_data['post_data']:
             # AuthnResponse -- HTTP_POST Binding
             response = OneLogin_Saml2_Response(self.__settings, self.__request_data['post_data']['SAMLResponse'])
-
+            self.__last_response_xml = response.get_xml_document()
             if response.is_valid(self.__request_data, request_id):
                 self.__attributes = response.get_attributes()
                 self.__nameid = response.get_nameid()
@@ -290,7 +293,7 @@ class OneLogin_Saml2_Auth(object):
 
         saml_request = authn_request.get_request()
         parameters = {'SAMLRequest': saml_request}
-
+        self.__last_request_xml = authn_request.get_request_as_xml()
         if return_to is not None:
             parameters['RelayState'] = return_to
         else:
@@ -451,3 +454,23 @@ class OneLogin_Saml2_Auth(object):
 
         signature = dsig_ctx.signBinary(str(msg), sign_algorithm_transform)
         return b64encode(signature)
+
+    def get_last_response_xml(self):
+        """
+        Retrieves the decrypted XML of the last SAML response
+
+        :returns: SAML response XML
+        :rtype: string|None
+        """
+        if self.__last_response_xml:
+            return etree.tostring(self.__last_response_xml, pretty_print=True)
+
+    def get_last_request_xml(self):
+        """
+        Retrieves the raw XML sent in the last SAML request
+
+        :returns: SAML request XML
+        :rtype: string|None
+        """
+        if self.__last_request_xml:
+            return self.__last_request_xml

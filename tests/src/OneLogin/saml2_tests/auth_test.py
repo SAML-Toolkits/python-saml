@@ -910,6 +910,33 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         except Exception as e:
             self.assertIn("Trying to sign the SAMLResponse but can't load the SP private key", e.message)
 
+    def testGetLastDecryptedResponse(self):
+        settings = self.loadSettingsJSON()
+        message = self.file_contents(join(self.data_path, 'responses', 'valid_encrypted_assertion.xml.base64'))
+        message_wrapper = {'post_data': {'SAMLResponse': message}}
+        auth = OneLogin_Saml2_Auth(message_wrapper, old_settings=settings)
+        auth.process_response()
+        decrypted_response = self.file_contents(join(self.data_path, 'responses', 'pretty_decrypted_valid_encrypted_assertion.xml.base64.xml'))
+        self.assertEqual(auth.get_last_response_xml(), decrypted_response)
+
+    def testGetLastSentRequest(self):
+        settings = self.loadSettingsJSON()
+        auth = OneLogin_Saml2_Auth({'http_host': 'localhost', 'script_name': 'thing'}, old_settings=settings)
+        auth.login()
+        expectedFragment = (
+            'Destination="http://idp.example.com/SSOService.php"\n'
+            '    ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"\n'
+            '    AssertionConsumerServiceURL="http://stuff.com/endpoints/endpoints/acs.php"\n'
+            '    >\n'
+            '    <saml:Issuer>http://stuff.com/endpoints/metadata.php</saml:Issuer>\n'
+            '    <samlp:NameIDPolicy\n'
+            '        Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"\n'
+            '        AllowCreate="true" />\n'
+            '    <samlp:RequestedAuthnContext Comparison="exact">\n'
+            '        <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>\n'
+            '    </samlp:RequestedAuthnContext>\n</samlp:AuthnRequest>'
+        )
+        self.assertIn(expectedFragment, auth.get_last_request_xml())
 
 if __name__ == '__main__':
     if is_running_under_teamcity():
