@@ -128,7 +128,7 @@ class OneLogin_Saml2_Auth(object):
 
         if 'get_data' in self.__request_data and 'SAMLResponse' in self.__request_data['get_data']:
             logout_response = OneLogin_Saml2_Logout_Response(self.__settings, self.__request_data['get_data']['SAMLResponse'])
-            self.__logout_response = logout_response.get_xml()
+            self.__last_response = logout_response.get_xml()
             if not logout_response.is_valid(self.__request_data, request_id):
                 self.__errors.append('invalid_logout_response')
                 self.__error_reason = logout_response.get_error()
@@ -150,7 +150,7 @@ class OneLogin_Saml2_Auth(object):
                 in_response_to = logout_request.id
                 response_builder = OneLogin_Saml2_Logout_Response(self.__settings)
                 response_builder.build(in_response_to)
-                self.__logout_response = response_builder.get_xml()
+                self.__last_response = response_builder.get_xml()
                 logout_response = response_builder.get_response()
 
                 parameters = {'SAMLResponse': logout_response}
@@ -465,7 +465,7 @@ class OneLogin_Saml2_Auth(object):
         :rtype: string|None
         """
         response = None
-        if self.__last_response:
+        if self.__last_response is not None:
             if isinstance(self.__last_response, basestring):
                 response = self.__last_response
             else:

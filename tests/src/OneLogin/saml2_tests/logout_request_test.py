@@ -442,6 +442,27 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
         except Exception as e:
             self.assertIn('In order to validate the sign on the Logout Request, the x509cert of the IdP is required', e.message)
 
+    def testGetXML(self):
+        """
+        Tests that we can get the logout request XML directly without
+        going through intermediate steps
+        """
+        request = self.file_contents(join(self.data_path, 'logout_requests', 'logout_request.xml'))
+        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
+
+        logout_request_generated = OneLogin_Saml2_Logout_Request(settings)
+
+        expectedFragment = (
+            'Destination="http://idp.example.com/SingleLogoutService.php">\n'
+            '        <saml:Issuer>http://stuff.com/endpoints/metadata.php</saml:Issuer>\n'
+            '        <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity" SPNameQualifier="http://stuff.com/endpoints/metadata.php">http://idp.example.com/</saml:NameID>\n'
+            '        \n    </samlp:LogoutRequest>'
+        )
+        self.assertIn(expectedFragment, logout_request_generated.get_xml())
+
+        logout_request_processed = OneLogin_Saml2_Logout_Request(settings, b64encode(request))
+        self.assertEqual(request, logout_request_processed.get_xml())
+
 
 if __name__ == '__main__':
     if is_running_under_teamcity():

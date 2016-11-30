@@ -60,18 +60,23 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
 
         self.assertIsInstance(response_enc, OneLogin_Saml2_Response)
 
-    def test_get_decrypted_xml(self):
+    def test_get_xml_document(self):
         """
         Tests that we can retrieve the raw text of an encrypted XML response
         without going through intermediate steps
         """
         json_settings = self.loadSettingsJSON()
-
         settings = OneLogin_Saml2_Settings(json_settings)
-        xml = self.file_contents(join(self.data_path, 'responses', 'valid_encrypted_assertion.xml.base64'))
+
+        xml = self.file_contents(join(self.data_path, 'responses', 'signed_message_response.xml.base64'))
         response = OneLogin_Saml2_Response(settings, xml)
+        prety_xml = self.file_contents(join(self.data_path, 'responses', 'pretty_signed_message_response.xml'))
+        self.assertEqual(etree.tostring(response.get_xml_document(), pretty_print=True), prety_xml)
+
+        xml_2 = self.file_contents(join(self.data_path, 'responses', 'valid_encrypted_assertion.xml.base64'))
+        response_2 = OneLogin_Saml2_Response(settings, xml_2)
         decrypted = self.file_contents(join(self.data_path, 'responses', 'decrypted_valid_encrypted_assertion.xml'))
-        self.assertEqual(etree.tostring(response.get_xml_document()), decrypted)
+        self.assertEqual(etree.tostring(response_2.get_xml_document()), decrypted)
 
     def testReturnNameId(self):
         """
