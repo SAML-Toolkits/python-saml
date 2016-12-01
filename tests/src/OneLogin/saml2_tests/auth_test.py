@@ -910,6 +910,88 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         except Exception as e:
             self.assertIn("Trying to sign the SAMLResponse but can't load the SP private key", e.message)
 
+    def testGetLastSAMLResponse(self):
+        settings = self.loadSettingsJSON()
+        message = self.file_contents(join(self.data_path, 'responses', 'signed_message_response.xml.base64'))
+        message_wrapper = {'post_data': {'SAMLResponse': message}}
+        auth = OneLogin_Saml2_Auth(message_wrapper, old_settings=settings)
+        auth.process_response()
+        expected_message = self.file_contents(join(self.data_path, 'responses', 'pretty_signed_message_response.xml'))
+        self.assertEqual(auth.get_last_response_xml(True), expected_message)
+
+        # with encrypted assertion
+        message = self.file_contents(join(self.data_path, 'responses', 'valid_encrypted_assertion.xml.base64'))
+        message_wrapper = {'post_data': {'SAMLResponse': message}}
+        auth = OneLogin_Saml2_Auth(message_wrapper, old_settings=settings)
+        auth.process_response()
+        decrypted_response = self.file_contents(join(self.data_path, 'responses', 'decrypted_valid_encrypted_assertion.xml'))
+        self.assertEqual(auth.get_last_response_xml(False), decrypted_response)
+        pretty_decrypted_response = self.file_contents(join(self.data_path, 'responses', 'pretty_decrypted_valid_encrypted_assertion.xml'))
+        self.assertEqual(auth.get_last_response_xml(True), pretty_decrypted_response)
+
+    def testGetLastAuthnRequest(self):
+        settings = self.loadSettingsJSON()
+        auth = OneLogin_Saml2_Auth({'http_host': 'localhost', 'script_name': 'thing'}, old_settings=settings)
+        auth.login()
+        expectedFragment = (
+            'Destination="http://idp.example.com/SSOService.php"\n'
+            '    ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"\n'
+            '    AssertionConsumerServiceURL="http://stuff.com/endpoints/endpoints/acs.php"\n'
+            '    >\n'
+            '    <saml:Issuer>http://stuff.com/endpoints/metadata.php</saml:Issuer>\n'
+            '    <samlp:NameIDPolicy\n'
+            '        Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"\n'
+            '        AllowCreate="true" />\n'
+            '    <samlp:RequestedAuthnContext Comparison="exact">\n'
+            '        <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>\n'
+            '    </samlp:RequestedAuthnContext>\n</samlp:AuthnRequest>'
+        )
+        self.assertIn(expectedFragment, auth.get_last_request_xml())
+
+    def testGetLastLogoutRequest(self):
+        settings = self.loadSettingsJSON()
+        auth = OneLogin_Saml2_Auth({'http_host': 'localhost', 'script_name': 'thing'}, old_settings=settings)
+        auth.logout()
+        expectedFragment = (
+            '        Destination="http://idp.example.com/SingleLogoutService.php">\n'
+            '        <saml:Issuer>http://stuff.com/endpoints/metadata.php</saml:Issuer>\n'
+            '        <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity" SPNameQualifier="http://stuff.com/endpoints/metadata.php">http://idp.example.com/</saml:NameID>\n'
+            '        \n    </samlp:LogoutRequest>'
+        )
+        self.assertIn(expectedFragment, auth.get_last_request_xml())
+
+        request = self.file_contents(join(self.data_path, 'logout_requests', 'logout_request.xml'))
+        message = OneLogin_Saml2_Utils.deflate_and_base64_encode(request)
+        message_wrapper = {'get_data': {'SAMLRequest': message}}
+        auth = OneLogin_Saml2_Auth(message_wrapper, old_settings=settings)
+        auth.process_slo()
+        self.assertEqual(request, auth.get_last_request_xml())
+
+    def testGetLastLogoutResponse(self):
+        settings = self.loadSettingsJSON()
+        request = self.file_contents(join(self.data_path, 'logout_requests', 'logout_request.xml'))
+        message = OneLogin_Saml2_Utils.deflate_and_base64_encode(request)
+        message_wrapper = {'get_data': {'SAMLRequest': message}}
+        auth = OneLogin_Saml2_Auth(message_wrapper, old_settings=settings)
+        auth.process_slo()
+        expectedFragment = (
+            'Destination="http://idp.example.com/SingleLogoutService.php"\n'
+            '                      InResponseTo="ONELOGIN_21584ccdfaca36a145ae990442dcd96bfe60151e"\n>\n'
+            '    <saml:Issuer>http://stuff.com/endpoints/metadata.php</saml:Issuer>\n'
+            '    <samlp:Status>\n'
+            '        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />\n'
+            '    </samlp:Status>\n'
+            '</samlp:LogoutResponse>'
+        )
+        self.assertIn(expectedFragment, auth.get_last_response_xml())
+
+        response = self.file_contents(join(self.data_path, 'logout_responses', 'logout_response.xml'))
+        message = OneLogin_Saml2_Utils.deflate_and_base64_encode(response)
+        message_wrapper = {'get_data': {'SAMLResponse': message}}
+        auth = OneLogin_Saml2_Auth(message_wrapper, old_settings=settings)
+        auth.process_slo()
+        self.assertEqual(response, auth.get_last_response_xml())
+
 
 if __name__ == '__main__':
     if is_running_under_teamcity():
