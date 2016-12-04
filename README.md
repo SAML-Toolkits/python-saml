@@ -365,7 +365,7 @@ In addition to the required settings data (idp, sp), extra settings can be defin
 
         // Indicates a requirement for the <saml:Assertion>
         // elements received by this SP to be encrypted.
-        'wantAssertionsEncrypted' => false,
+        "wantAssertionsEncrypted": false,
 
         // Indicates a requirement for the NameID element on the SAMLResponse
         // received by this SP to be present.
@@ -382,16 +382,16 @@ In addition to the required settings data (idp, sp), extra settings can be defin
         // Set to false and no AuthContext will be sent in the AuthNRequest,
         // Set true or don't present this parameter and you will get an AuthContext 'exact' 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport'
         // Set an array with the possible auth context values: array ('urn:oasis:names:tc:SAML:2.0:ac:classes:Password', 'urn:oasis:names:tc:SAML:2.0:ac:classes:X509'),
-        'requestedAuthnContext': true,
+        "requestedAuthnContext": true,
         // Allows the authn comparison parameter to be set, defaults to 'exact' if the setting is not present.
-        'requestedAuthnContextComparison': 'exact',
+        "requestedAuthnContextComparison": "exact",
 
         // In some environment you will need to set how long the published metadata of the Service Provider gonna be valid.
         // is possible to not set the 2 following parameters (or set to null) and default values will be set (2 days, 1 week)
         // Provide the desired Timestamp, for example 2015-06-26T20:00:00Z
-        'metadataValidUntil': null,
+        "metadataValidUntil": null,
         // Provide the desired duration, for example PT518400S (6 days)
-        'metadataCacheDuration': null,
+        "metadataCacheDuration": null,
 
         // Algorithm that the toolkit will use on signing process. Options:
         //    'http://www.w3.org/2000/09/xmldsig#rsa-sha1'
@@ -399,7 +399,7 @@ In addition to the required settings data (idp, sp), extra settings can be defin
         //    'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
         //    'http://www.w3.org/2001/04/xmldsig-more#rsa-sha384'
         //    'http://www.w3.org/2001/04/xmldsig-more#rsa-sha512'
-        'signatureAlgorithm' => 'http://www.w3.org/2000/09/xmldsig#rsa-sha1'
+        "signatureAlgorithm": "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
     },
 
     // Contact information template, it is recommended to supply
