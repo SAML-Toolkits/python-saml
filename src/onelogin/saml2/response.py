@@ -16,7 +16,7 @@ from defusedxml.lxml import fromstring
 from xml.dom.minidom import Document
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
-from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.utils import OneLogin_Saml2_Utils, return_false_on_exception
 
 
 class OneLogin_Saml2_Response(object):
@@ -93,13 +93,21 @@ class OneLogin_Saml2_Response(object):
 
             if self.__settings.is_strict():
                 no_valid_xml_msg = 'Invalid SAML Response. Not match the saml-schema-protocol-2.0.xsd'
-                res = OneLogin_Saml2_Utils.validate_xml(etree.tostring(self.document), 'saml-schema-protocol-2.0.xsd', self.__settings.is_debug_active())
+                res = OneLogin_Saml2_Utils.validate_xml(
+                    etree.tostring(self.document),
+                    'saml-schema-protocol-2.0.xsd',
+                    self.__settings.is_debug_active()
+                )
                 if not isinstance(res, Document):
                     raise Exception(no_valid_xml_msg)
 
                 # If encrypted, check also the decrypted document
                 if self.encrypted:
-                    res = OneLogin_Saml2_Utils.validate_xml(etree.tostring(self.decrypted_document), 'saml-schema-protocol-2.0.xsd', self.__settings.is_debug_active())
+                    res = OneLogin_Saml2_Utils.validate_xml(
+                        etree.tostring(self.decrypted_document),
+                        'saml-schema-protocol-2.0.xsd',
+                        self.__settings.is_debug_active()
+                    )
                     if not isinstance(res, Document):
                         raise Exception(no_valid_xml_msg)
 
@@ -125,8 +133,7 @@ class OneLogin_Saml2_Response(object):
                     raise Exception('The Assertion must include a Conditions element')
 
                 # Validates Assertion timestamps
-                if not self.validate_timestamps():
-                    raise Exception('Timing issues (please check your clock settings)')
+                self.validate_timestamps(raise_exceptions=True)
 
                 # Checks that an AuthnStatement element exists and is unique
                 if not self.check_one_authnstatement():
@@ -217,12 +224,14 @@ class OneLogin_Saml2_Response(object):
                 fingerprintalg = idp_data.get('certFingerprintAlgorithm', None)
 
                 # If find a Signature on the Response, validates it checking the original response
-                if has_signed_response and not OneLogin_Saml2_Utils.validate_sign(self.document, cert, fingerprint, fingerprintalg, xpath=OneLogin_Saml2_Utils.RESPONSE_SIGNATURE_XPATH):
-                    raise Exception('Signature validation failed. SAML Response rejected')
+                if has_signed_response:
+                    # Raise exception if response signature is invalid
+                    OneLogin_Saml2_Utils.validate_sign(self.document, cert, fingerprint, fingerprintalg, xpath=OneLogin_Saml2_Utils.RESPONSE_SIGNATURE_XPATH, raise_exceptions=True)
 
                 document_check_assertion = self.decrypted_document if self.encrypted else self.document
-                if has_signed_assertion and not OneLogin_Saml2_Utils.validate_sign(document_check_assertion, cert, fingerprint, fingerprintalg, xpath=OneLogin_Saml2_Utils.ASSERTION_SIGNATURE_XPATH):
-                    raise Exception('Signature validation failed. SAML Response rejected')
+                if has_signed_assertion:
+                    # Raise exception if assertion signature is invalid
+                    OneLogin_Saml2_Utils.validate_sign(document_check_assertion, cert, fingerprint, fingerprintalg, xpath=OneLogin_Saml2_Utils.ASSERTION_SIGNATURE_XPATH, raise_exceptions=True)
 
             return True
         except Exception as err:
@@ -485,13 +494,20 @@ class OneLogin_Saml2_Response(object):
             signed_elements.append(signed_element)
 
         if signed_elements:
-            if not self.validate_signed_elements(signed_elements):
+            if not self.validate_signed_elements(signed_elements, raise_exceptions=True):
                 raise Exception('Found an unexpected Signature Element. SAML Response rejected')
         return signed_elements
 
+    @return_false_on_exception
     def validate_signed_elements(self, signed_elements):
         """
         Verifies that the document has the expected signed nodes.
+
+        :param signed_elements: The signed elements to be checked
+        :type signed_elements: list
+
+        :param raise_exceptions: Whether to return false on failure or raise an exception
+        :type raise_exceptions: Boolean
         """
         if len(signed_elements) > 2:
             return False
@@ -518,9 +534,13 @@ class OneLogin_Saml2_Response(object):
 
         return True
 
+    @return_false_on_exception
     def validate_timestamps(self):
         """
         Verifies that the document is valid according to Conditions Element
+
+        :param raise_exceptions: Whether to return false on failure or raise an exception
+        :type raise_exceptions: Boolean
 
         :returns: True if the condition is valid, False otherwise
         :rtype: bool
@@ -531,9 +551,9 @@ class OneLogin_Saml2_Response(object):
             nb_attr = conditions_node.get('NotBefore')
             nooa_attr = conditions_node.get('NotOnOrAfter')
             if nb_attr and OneLogin_Saml2_Utils.parse_SAML_to_time(nb_attr) > OneLogin_Saml2_Utils.now() + OneLogin_Saml2_Constants.ALLOWED_CLOCK_DRIFT:
-                return False
+                raise Exception('Could not validate timestamp: not yet valid. Check system clock.')
             if nooa_attr and OneLogin_Saml2_Utils.parse_SAML_to_time(nooa_attr) + OneLogin_Saml2_Constants.ALLOWED_CLOCK_DRIFT <= OneLogin_Saml2_Utils.now():
-                return False
+                raise Exception('Could not validate timestamp: expired. Check system clock.')
         return True
 
     def __query_assertion(self, xpath_expr):
@@ -588,8 +608,10 @@ class OneLogin_Saml2_Response(object):
         Decrypts the Assertion
 
         :raises: Exception if no private key available
+
         :param dom: Encrypted Assertion
         :type dom: Element
+
         :returns: Decrypted Assertion
         :rtype: Element
         """

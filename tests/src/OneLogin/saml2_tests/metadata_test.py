@@ -225,11 +225,8 @@ class OneLogin_Saml2_Metadata_Test(unittest.TestCase):
         self.assertIn('<ds:Reference', signed_metadata)
         self.assertIn('<ds:KeyInfo><ds:X509Data>\n<ds:X509Certificate>', signed_metadata)
 
-        try:
+        with self.assertRaisesRegexp(Exception, 'Empty string supplied as input'):
             OneLogin_Saml2_Metadata.sign_metadata('', key, cert)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('Empty string supplied as input', e.message)
 
     def testAddX509KeyDescriptors(self):
         """
@@ -257,19 +254,13 @@ class OneLogin_Saml2_Metadata_Test(unittest.TestCase):
         self.assertIn('<md:KeyDescriptor use="signing"', metadata_with_descriptors)
         self.assertIn('<md:KeyDescriptor use="encryption"', metadata_with_descriptors)
 
-        try:
+        with self.assertRaisesRegexp(Exception, 'Error parsing metadata'):
             OneLogin_Saml2_Metadata.add_x509_key_descriptors('', cert)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('Error parsing metadata', e.message)
 
         base_path = dirname(dirname(dirname(dirname(__file__))))
         unparsed_metadata = self.file_contents(join(base_path, 'data', 'metadata', 'unparsed_metadata.xml'))
-        try:
+        with self.assertRaisesRegexp(Exception, 'Error parsing metadata'):
             metadata_with_descriptors = OneLogin_Saml2_Metadata.add_x509_key_descriptors(unparsed_metadata, cert)
-            self.assertFalse(True)
-        except Exception as e:
-            self.assertIn('Error parsing metadata', e.message)
 
 
 if __name__ == '__main__':

@@ -142,11 +142,8 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         """
         auth = OneLogin_Saml2_Auth(self.get_request(), old_settings=self.loadSettingsJSON())
 
-        try:
+        with self.assertRaisesRegexp(Exception, 'SAML Response not found'):
             auth.process_response()
-            self.assertFalse(True)
-        except Exception as e:
-            self.assertIn('SAML Response not found', e.message)
 
         self.assertEqual(auth.get_errors(), ['invalid_binding'])
 
@@ -260,11 +257,8 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         Case No Message, An exception is throw
         """
         auth = OneLogin_Saml2_Auth(self.get_request(), old_settings=self.loadSettingsJSON())
-        try:
+        with self.assertRaisesRegexp(Exception, 'SAML LogoutRequest/LogoutResponse not found'):
             auth.process_slo(True)
-        except Exception as e:
-            self.assertIn('SAML LogoutRequest/LogoutResponse not found', e.message)
-        self.assertEqual(auth.get_errors(), ['invalid_binding'])
 
     def testProcessSLOResponseInvalid(self):
         """
@@ -789,12 +783,9 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         del settings_info['idp']['singleLogoutService']
         auth = OneLogin_Saml2_Auth(self.get_request(), old_settings=settings_info)
 
-        try:
+        with self.assertRaisesRegexp(Exception, 'The IdP does not support Single Log Out'):
             # The Header of the redirect produces an Exception
             auth.logout('http://example.com/returnto')
-            self.assertFalse(True)
-        except Exception as e:
-            self.assertIn('The IdP does not support Single Log Out', e.message)
 
     def testLogoutNameIDandSessionIndex(self):
         """
@@ -862,11 +853,8 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         settings = auth.get_settings()
         self.assertFalse(settings.is_strict())
 
-        try:
+        with self.assertRaises(AssertionError):
             auth.set_strict('42')
-            self.assertFalse(True)
-        except Exception as e:
-            self.assertTrue(isinstance(e, AssertionError))
 
     def testBuildRequestSignature(self):
         """
@@ -884,10 +872,8 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         settings['sp']['privatekey'] = ''
         settings['custom_base_path'] = u'invalid/path/'
         auth2 = OneLogin_Saml2_Auth(self.get_request(), old_settings=settings)
-        try:
+        with self.assertRaisesRegexp(Exception, "Trying to sign the SAMLRequest but can't load the SP private key"):
             auth2.build_request_signature(message, relay_state)
-        except Exception as e:
-            self.assertIn("Trying to sign the SAMLRequest but can't load the SP private key", e.message)
 
     def testBuildResponseSignature(self):
         """
@@ -905,10 +891,8 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         settings['sp']['privatekey'] = ''
         settings['custom_base_path'] = u'invalid/path/'
         auth2 = OneLogin_Saml2_Auth(self.get_request(), old_settings=settings)
-        try:
+        with self.assertRaisesRegexp(Exception, "Trying to sign the SAMLResponse but can't load the SP private key"):
             auth2.build_response_signature(message, relay_state)
-        except Exception as e:
-            self.assertIn("Trying to sign the SAMLResponse but can't load the SP private key", e.message)
 
     def testGetLastSAMLResponse(self):
         settings = self.loadSettingsJSON()

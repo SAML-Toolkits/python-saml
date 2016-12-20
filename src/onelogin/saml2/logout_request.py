@@ -298,7 +298,7 @@ class OneLogin_Saml2_Logout_Request(object):
                 if dom.get('NotOnOrAfter', None):
                     na = OneLogin_Saml2_Utils.parse_SAML_to_time(dom.get('NotOnOrAfter'))
                     if na <= OneLogin_Saml2_Utils.now():
-                        raise Exception('Timing issues (please check your clock settings)')
+                        raise Exception('Could not validate timestamp: expired. Check system clock.')
 
                 # Check destination
                 if dom.get('Destination', None):
@@ -334,7 +334,7 @@ class OneLogin_Saml2_Logout_Request(object):
                     signed_query = '%s&RelayState=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'RelayState', lowercase_urlencoding=lowercase_urlencoding))
                 signed_query = '%s&SigAlg=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SigAlg', OneLogin_Saml2_Constants.RSA_SHA1, lowercase_urlencoding=lowercase_urlencoding))
 
-                if 'x509cert' not in idp_data or idp_data['x509cert'] is None:
+                if 'x509cert' not in idp_data or not idp_data['x509cert']:
                     raise Exception('In order to validate the sign on the Logout Request, the x509cert of the IdP is required')
                 cert = idp_data['x509cert']
 
