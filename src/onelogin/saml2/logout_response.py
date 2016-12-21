@@ -68,11 +68,13 @@ class OneLogin_Saml2_Logout_Response(object):
         status = entries[0].attrib['Value']
         return status
 
-    def is_valid(self, request_data, request_id=None):
+    def is_valid(self, request_data, request_id=None, raise_exceptions=False):
         """
         Determines if the SAML LogoutResponse is valid
         :param request_id: The ID of the LogoutRequest sent by this SP to the IdP
         :type request_id: string
+        :param raise_exceptions: Whether to return false on failure or raise an exception
+        :type raise_exceptions: Boolean
         :return: Returns if the SAML LogoutResponse is or not valid
         :rtype: boolean
         """
@@ -89,7 +91,7 @@ class OneLogin_Saml2_Logout_Response(object):
             if self.__settings.is_strict():
                 res = OneLogin_Saml2_Utils.validate_xml(self.document, 'saml-schema-protocol-2.0.xsd', self.__settings.is_debug_active())
                 if not isinstance(res, Document):
-                    raise Exception('Invalid SAML Logout Request. Not match the saml-schema-protocol-2.0.xsd')
+                    raise Exception('Invalid SAML Logout Response. Not match the saml-schema-protocol-2.0.xsd')
 
                 security = self.__settings.get_security_data()
 
@@ -142,6 +144,8 @@ class OneLogin_Saml2_Logout_Response(object):
             debug = self.__settings.is_debug_active()
             if debug:
                 print err.__str__()
+            if raise_exceptions:
+                raise err
             return False
 
     def __query(self, query):

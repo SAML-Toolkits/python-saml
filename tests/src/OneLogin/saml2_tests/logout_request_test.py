@@ -312,6 +312,22 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
         logout_request5 = OneLogin_Saml2_Logout_Request(settings, b64encode(request))
         self.assertTrue(logout_request5.is_valid(request_data))
 
+    def testIsValidRaisesExceptionWhenRaisesArgumentIsTrue(self):
+        request = OneLogin_Saml2_Utils.deflate_and_base64_encode('<xml>invalid</xml>')
+        request_data = {
+            'http_host': 'example.com',
+            'script_name': 'index.html'
+        }
+        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
+        settings.set_strict(True)
+
+        logout_request = OneLogin_Saml2_Logout_Request(settings, request)
+
+        self.assertFalse(logout_request.is_valid(request_data))
+
+        with self.assertRaisesRegexp(Exception, "Invalid SAML Logout Request. Not match the saml-schema-protocol-2.0.xsd"):
+            logout_request.is_valid(request_data, raise_exceptions=True)
+
     def testIsValidSign(self):
         """
         Tests the is_valid method of the OneLogin_Saml2_LogoutRequest

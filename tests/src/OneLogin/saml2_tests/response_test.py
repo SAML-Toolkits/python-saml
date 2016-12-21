@@ -1227,6 +1227,18 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
         response_7.is_valid(request_data)
         self.assertEqual('No Signature found. SAML Response rejected', response_7.get_error())
 
+    def testIsValidRaisesExceptionWhenRaisesArgumentIsTrue(self):
+        message = b64encode('<xml>invalid</xml>')
+        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
+        settings.set_strict(True)
+
+        response = OneLogin_Saml2_Response(settings, message)
+
+        self.assertFalse(response.is_valid(self.get_request_data()))
+
+        with self.assertRaisesRegexp(Exception, "Unsupported SAML version"):
+            response.is_valid(self.get_request_data(), raise_exceptions=True)
+
     def testIsValidSign(self):
         """
         Tests the is_valid method of the OneLogin_Saml2_Response
