@@ -15,6 +15,7 @@ from xml.dom.minidom import parseString
 from onelogin.saml2.logout_request import OneLogin_Saml2_Logout_Request
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.errors import OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError
 
 
 class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
@@ -113,7 +114,7 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
         self.assertEqual(expected_name_id_data, name_id_data_2)
 
         request_2 = self.file_contents(join(self.data_path, 'logout_requests', 'logout_request_encrypted_nameid.xml'))
-        with self.assertRaisesRegexp(Exception, 'Key is required in order to decrypt the NameID'):
+        with self.assertRaisesRegexp(OneLogin_Saml2_Error, 'Key is required in order to decrypt the NameID'):
             OneLogin_Saml2_Logout_Request.get_nameid_data(request_2)
 
         settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
@@ -130,11 +131,11 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
         encrypted_id_nodes = dom_2.getElementsByTagName('saml:EncryptedID')
         encrypted_data = encrypted_id_nodes[0].firstChild.nextSibling
         encrypted_id_nodes[0].removeChild(encrypted_data)
-        with self.assertRaisesRegexp(Exception, 'Not NameID found in the Logout Request'):
+        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'Not NameID found in the Logout Request'):
             OneLogin_Saml2_Logout_Request.get_nameid_data(dom_2.toxml(), key)
 
         inv_request = self.file_contents(join(self.data_path, 'logout_requests', 'invalids', 'no_nameId.xml'))
-        with self.assertRaisesRegexp(Exception, 'Not NameID found in the Logout Request'):
+        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'Not NameID found in the Logout Request'):
             OneLogin_Saml2_Logout_Request.get_nameid_data(inv_request)
 
     def testGetNameId(self):
@@ -146,7 +147,7 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
         self.assertEqual(name_id, 'ONELOGIN_1e442c129e1f822c8096086a1103c5ee2c7cae1c')
 
         request_2 = self.file_contents(join(self.data_path, 'logout_requests', 'logout_request_encrypted_nameid.xml'))
-        with self.assertRaisesRegexp(Exception, 'Key is required in order to decrypt the NameID'):
+        with self.assertRaisesRegexp(OneLogin_Saml2_Error, 'Key is required in order to decrypt the NameID'):
             OneLogin_Saml2_Logout_Request.get_nameid(request_2)
 
         settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
@@ -325,7 +326,7 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
 
         self.assertFalse(logout_request.is_valid(request_data))
 
-        with self.assertRaisesRegexp(Exception, "Invalid SAML Logout Request. Not match the saml-schema-protocol-2.0.xsd"):
+        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, "Invalid SAML Logout Request. Not match the saml-schema-protocol-2.0.xsd"):
             logout_request.is_valid(request_data, raise_exceptions=True)
 
     def testIsValidSign(self):

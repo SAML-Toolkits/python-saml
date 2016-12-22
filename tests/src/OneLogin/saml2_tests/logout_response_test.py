@@ -15,6 +15,7 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.logout_response import OneLogin_Saml2_Logout_Response
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
 
 class OneLogin_Saml2_Logout_Response_Test(unittest.TestCase):
@@ -211,7 +212,7 @@ class OneLogin_Saml2_Logout_Response_Test(unittest.TestCase):
         settings.set_strict(True)
         response_2 = OneLogin_Saml2_Logout_Response(settings, message)
         self.assertFalse(response_2.is_valid(request_data))
-        self.assertIn('The LogoutRequest was received at', response_2.get_error())
+        self.assertIn('The LogoutResponse was received at', response_2.get_error())
 
         # Empty destination
         dom = parseString(OneLogin_Saml2_Utils.decode_base64_and_inflate(message))
@@ -242,7 +243,7 @@ class OneLogin_Saml2_Logout_Response_Test(unittest.TestCase):
 
         self.assertFalse(response.is_valid(request_data))
 
-        with self.assertRaisesRegexp(Exception, "Invalid SAML Logout Response. Not match the saml-schema-protocol-2.0.xsd"):
+        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, "Invalid SAML Logout Response. Not match the saml-schema-protocol-2.0.xsd"):
             response.is_valid(request_data, raise_exceptions=True)
 
     def testIsInValidSign(self):
@@ -356,7 +357,7 @@ class OneLogin_Saml2_Logout_Response_Test(unittest.TestCase):
         settings.set_strict(True)
         response_2 = OneLogin_Saml2_Logout_Response(settings, message)
         self.assertFalse(response_2.is_valid(request_data))
-        self.assertIn('The LogoutRequest was received at', response_2.get_error())
+        self.assertIn('The LogoutResponse was received at', response_2.get_error())
 
         plain_message = OneLogin_Saml2_Utils.decode_base64_and_inflate(message)
         current_url = OneLogin_Saml2_Utils.get_self_url_no_query(request_data)

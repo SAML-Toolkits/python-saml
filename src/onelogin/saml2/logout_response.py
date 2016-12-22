@@ -17,6 +17,7 @@ from defusedxml.minidom import parseString
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.errors import OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError
 
 
 class OneLogin_Saml2_Logout_Response(object):
@@ -91,7 +92,10 @@ class OneLogin_Saml2_Logout_Response(object):
             if self.__settings.is_strict():
                 res = OneLogin_Saml2_Utils.validate_xml(self.document, 'saml-schema-protocol-2.0.xsd', self.__settings.is_debug_active())
                 if not isinstance(res, Document):
-                    raise Exception('Invalid SAML Logout Response. Not match the saml-schema-protocol-2.0.xsd')
+                    raise OneLogin_Saml2_ValidationError(
+                        'Invalid SAML Logout Response. Not match the saml-schema-protocol-2.0.xsd',
+                        OneLogin_Saml2_ValidationError.INVALID_XML_FORMAT
+                    )
 
                 security = self.__settings.get_security_data()
 
@@ -99,12 +103,18 @@ class OneLogin_Saml2_Logout_Response(object):
                 if request_id is not None and self.document.documentElement.hasAttribute('InResponseTo'):
                     in_response_to = self.document.documentElement.getAttribute('InResponseTo')
                     if request_id != in_response_to:
-                        raise Exception('The InResponseTo of the Logout Response: %s, does not match the ID of the Logout request sent by the SP: %s' % (in_response_to, request_id))
+                        raise OneLogin_Saml2_ValidationError(
+                            'The InResponseTo of the Logout Response: %s, does not match the ID of the Logout request sent by the SP: %s' % (in_response_to, request_id),
+                            OneLogin_Saml2_ValidationError.WRONG_INRESPONSETO
+                        )
 
                 # Check issuer
                 issuer = self.get_issuer()
                 if issuer is not None and issuer != idp_entity_id:
-                    raise Exception('Invalid issuer in the Logout Request')
+                    raise OneLogin_Saml2_ValidationError(
+                        'Invalid issuer in the Logout Request',
+                        OneLogin_Saml2_ValidationError.WRONG_ISSUER
+                    )
 
                 current_url = OneLogin_Saml2_Utils.get_self_url_no_query(request_data)
 
@@ -113,11 +123,17 @@ class OneLogin_Saml2_Logout_Response(object):
                     destination = self.document.documentElement.getAttribute('Destination')
                     if destination != '':
                         if current_url not in destination:
-                            raise Exception('The LogoutRequest was received at $currentURL instead of $destination')
+                            raise OneLogin_Saml2_ValidationError(
+                                'The LogoutResponse was received at %s instead of %s' % (current_url, destination),
+                                OneLogin_Saml2_ValidationError.WRONG_DESTINATION
+                            )
 
                 if security['wantMessagesSigned']:
                     if 'Signature' not in get_data:
-                        raise Exception('The Message of the Logout Response is not signed and the SP require it')
+                        raise OneLogin_Saml2_ValidationError(
+                            'The Message of the Logout Response is not signed and the SP require it',
+                            OneLogin_Saml2_ValidationError.NO_SIGNED_RESPONSE
+                        )
 
             if 'Signature' in get_data:
                 if 'SigAlg' not in get_data:
@@ -131,11 +147,17 @@ class OneLogin_Saml2_Logout_Response(object):
                 signed_query = '%s&SigAlg=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SigAlg', OneLogin_Saml2_Constants.RSA_SHA1, lowercase_urlencoding=lowercase_urlencoding))
 
                 if 'x509cert' not in idp_data or not idp_data['x509cert']:
-                    raise Exception('In order to validate the sign on the Logout Response, the x509cert of the IdP is required')
+                    raise OneLogin_Saml2_Error(
+                        'In order to validate the sign on the Logout Response, the x509cert of the IdP is required',
+                        OneLogin_Saml2_Error.CERT_NOT_FOUND
+                    )
                 cert = idp_data['x509cert']
 
                 if not OneLogin_Saml2_Utils.validate_binary_sign(signed_query, b64decode(get_data['Signature']), cert, sign_alg):
-                    raise Exception('Signature validation failed. Logout Response rejected')
+                    raise OneLogin_Saml2_ValidationError(
+                        'Signature validation failed. Logout Response rejected',
+                        OneLogin_Saml2_ValidationError.INVALID_SIGNATURE
+                    )
 
             return True
         # pylint: disable=R0801

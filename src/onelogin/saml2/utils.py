@@ -33,7 +33,8 @@ import dm.xmlsec.binding as xmlsec
 from dm.xmlsec.binding.tmpl import EncData, Signature
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
-from onelogin.saml2.errors import OneLogin_Saml2_Error
+from onelogin.saml2.errors import OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError
+
 
 if not globals().get('xmlsec_setup', False):
     xmlsec.initialize()
@@ -652,8 +653,10 @@ class OneLogin_Saml2_Utils(object):
             xml = name_id_container.toxml()
             elem = fromstring(xml)
 
+            error_callback_method = None
             if debug:
-                xmlsec.set_error_callback(print_xmlsec_errors)
+                error_callback_method = print_xmlsec_errors
+            xmlsec.set_error_callback(error_callback_method)
 
             # Load the public cert
             mngr = xmlsec.KeysMngr()
@@ -717,11 +720,17 @@ class OneLogin_Saml2_Utils(object):
 
         status_entry = OneLogin_Saml2_Utils.query(dom, '/samlp:Response/samlp:Status')
         if len(status_entry) != 1:
-            raise Exception('Missing valid Status on response')
+            raise OneLogin_Saml2_ValidationError(
+                'Missing Status on response',
+                OneLogin_Saml2_ValidationError.MISSING_STATUS
+            )
 
         code_entry = OneLogin_Saml2_Utils.query(dom, '/samlp:Response/samlp:Status/samlp:StatusCode', status_entry[0])
         if len(code_entry) != 1:
-            raise Exception('Missing valid Status Code on response')
+            raise OneLogin_Saml2_ValidationError(
+                'Missing Status Code on response',
+                OneLogin_Saml2_ValidationError.MISSING_STATUS_CODE
+            )
         code = code_entry[0].values()[0]
         status['code'] = code
 
@@ -758,8 +767,10 @@ class OneLogin_Saml2_Utils(object):
         elif isinstance(encrypted_data, basestring):
             encrypted_data = fromstring(str(encrypted_data))
 
+        error_callback_method = None
         if debug:
-            xmlsec.set_error_callback(print_xmlsec_errors)
+            error_callback_method = print_xmlsec_errors
+        xmlsec.set_error_callback(error_callback_method)
 
         mngr = xmlsec.KeysMngr()
 
@@ -831,8 +842,10 @@ class OneLogin_Saml2_Utils(object):
         else:
             raise Exception('Error parsing xml string')
 
+        error_callback_method = None
         if debug:
-            xmlsec.set_error_callback(print_xmlsec_errors)
+            error_callback_method = print_xmlsec_errors
+        xmlsec.set_error_callback(error_callback_method)
 
         # Sign the metadata with our private key.
         sign_algorithm_transform_map = {
@@ -941,8 +954,10 @@ class OneLogin_Saml2_Utils(object):
         else:
             raise Exception('Error parsing xml string')
 
+        error_callback_method = None
         if debug:
-            xmlsec.set_error_callback(print_xmlsec_errors)
+            error_callback_method = print_xmlsec_errors
+        xmlsec.set_error_callback(error_callback_method)
 
         xmlsec.addIDs(elem, ["ID"])
 
@@ -959,7 +974,7 @@ class OneLogin_Saml2_Utils(object):
 
             return OneLogin_Saml2_Utils.validate_node_sign(signature_node, elem, cert, fingerprint, fingerprintalg, validatecert, debug, raise_exceptions=True)
         else:
-            raise Exception('Expected exactly one signature node; got {}.'.format(len(signature_nodes)))
+            raise OneLogin_Saml2_ValidationError('Expected exactly one signature node; got {}.'.format(len(signature_nodes)), OneLogin_Saml2_ValidationError.WRONG_NUMBER_OF_SIGNATURES)
 
     @staticmethod
     @return_false_on_exception
@@ -1008,8 +1023,10 @@ class OneLogin_Saml2_Utils(object):
         else:
             raise Exception('Error parsing xml string')
 
+        error_callback_method = None
         if debug:
-            xmlsec.set_error_callback(print_xmlsec_errors)
+            error_callback_method = print_xmlsec_errors
+        xmlsec.set_error_callback(error_callback_method)
 
         xmlsec.addIDs(elem, ["ID"])
 
@@ -1059,8 +1076,10 @@ class OneLogin_Saml2_Utils(object):
         :param raise_exceptions: Whether to return false on failure or raise an exception
         :type raise_exceptions: Boolean
         """
+        error_callback_method = None
         if debug:
-            xmlsec.set_error_callback(print_xmlsec_errors)
+            error_callback_method = print_xmlsec_errors
+        xmlsec.set_error_callback(error_callback_method)
 
         xmlsec.addIDs(elem, ["ID"])
 
@@ -1080,7 +1099,10 @@ class OneLogin_Saml2_Utils(object):
         #        reference_elem[0].set('URI', '#%s' % signature_node.getparent().get('ID'))
 
         if cert is None or cert == '':
-            raise Exception('Could not validate node signature: No certificate provided.')
+            raise OneLogin_Saml2_Error(
+                'Could not validate node signature: No certificate provided.',
+                OneLogin_Saml2_Error.CERT_NOT_FOUND
+            )
 
         file_cert = OneLogin_Saml2_Utils.write_temp_file(cert)
 
@@ -1095,10 +1117,9 @@ class OneLogin_Saml2_Utils(object):
         file_cert.close()
 
         dsig_ctx.setEnabledKeyData([xmlsec.KeyDataX509])
-        try:
-            dsig_ctx.verify(signature_node)
-        except Exception:
-            raise Exception('Signature validation failed. SAML Response rejected')
+
+        dsig_ctx.verify(signature_node)
+
         return True
 
     @staticmethod
@@ -1126,8 +1147,10 @@ class OneLogin_Saml2_Utils(object):
         :param raise_exceptions: Whether to return false on failure or raise an exception
         :type raise_exceptions: Boolean
         """
+        error_callback_method = None
         if debug:
-            xmlsec.set_error_callback(print_xmlsec_errors)
+            error_callback_method = print_xmlsec_errors
+        xmlsec.set_error_callback(error_callback_method)
 
         dsig_ctx = xmlsec.DSigCtx()
 

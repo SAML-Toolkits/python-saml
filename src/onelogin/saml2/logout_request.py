@@ -17,6 +17,7 @@ from xml.dom.minidom import Document
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.errors import OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError
 
 
 class OneLogin_Saml2_Logout_Request(object):
@@ -179,7 +180,10 @@ class OneLogin_Saml2_Logout_Request(object):
 
         if len(encrypted_entries) == 1:
             if key is None:
-                raise Exception('Key is required in order to decrypt the NameID')
+                raise OneLogin_Saml2_Error(
+                    'Private Key is required in order to decrypt the NameID, check settings',
+                    OneLogin_Saml2_Error.PRIVATE_KEY_NOT_FOUND
+                )
 
             encrypted_data_nodes = OneLogin_Saml2_Utils.query(elem, '/samlp:LogoutRequest/saml:EncryptedID/xenc:EncryptedData')
             if len(encrypted_data_nodes) == 1:
@@ -191,7 +195,10 @@ class OneLogin_Saml2_Logout_Request(object):
                 name_id = entries[0]
 
         if name_id is None:
-            raise Exception('Not NameID found in the Logout Request')
+            raise OneLogin_Saml2_ValidationError(
+                'Not NameID found in the Logout Request',
+                OneLogin_Saml2_ValidationError.NO_NAMEID
+            )
 
         name_id_data = {
             'Value': name_id.text
@@ -289,7 +296,10 @@ class OneLogin_Saml2_Logout_Request(object):
             if self.__settings.is_strict():
                 res = OneLogin_Saml2_Utils.validate_xml(dom, 'saml-schema-protocol-2.0.xsd', self.__settings.is_debug_active())
                 if not isinstance(res, Document):
-                    raise Exception('Invalid SAML Logout Request. Not match the saml-schema-protocol-2.0.xsd')
+                    raise OneLogin_Saml2_ValidationError(
+                        'Invalid SAML Logout Request. Not match the saml-schema-protocol-2.0.xsd',
+                        OneLogin_Saml2_ValidationError.INVALID_XML_FORMAT
+                    )
 
                 security = self.__settings.get_security_data()
 
@@ -318,11 +328,17 @@ class OneLogin_Saml2_Logout_Request(object):
                 # Check issuer
                 issuer = OneLogin_Saml2_Logout_Request.get_issuer(dom)
                 if issuer is not None and issuer != idp_entity_id:
-                    raise Exception('Invalid issuer in the Logout Request')
+                    raise OneLogin_Saml2_ValidationError(
+                        'Invalid issuer in the Logout Request',
+                        OneLogin_Saml2_ValidationError.WRONG_ISSUER
+                    )
 
                 if security['wantMessagesSigned']:
                     if 'Signature' not in get_data:
-                        raise Exception('The Message of the Logout Request is not signed and the SP require it')
+                        raise OneLogin_Saml2_ValidationError(
+                            'The Message of the Logout Request is not signed and the SP require it',
+                            OneLogin_Saml2_ValidationError.NO_SIGNED_RESPONSE
+                        )
 
             if 'Signature' in get_data:
                 if 'SigAlg' not in get_data:
@@ -336,11 +352,17 @@ class OneLogin_Saml2_Logout_Request(object):
                 signed_query = '%s&SigAlg=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SigAlg', OneLogin_Saml2_Constants.RSA_SHA1, lowercase_urlencoding=lowercase_urlencoding))
 
                 if 'x509cert' not in idp_data or not idp_data['x509cert']:
-                    raise Exception('In order to validate the sign on the Logout Request, the x509cert of the IdP is required')
+                    raise OneLogin_Saml2_Error(
+                        'In order to validate the sign on the Logout Request, the x509cert of the IdP is required',
+                        OneLogin_Saml2_Error.CERT_NOT_FOUND
+                    )
                 cert = idp_data['x509cert']
 
                 if not OneLogin_Saml2_Utils.validate_binary_sign(signed_query, b64decode(get_data['Signature']), cert, sign_alg):
-                    raise Exception('Signature validation failed. Logout Request rejected')
+                    raise OneLogin_Saml2_ValidationError(
+                        'Signature validation failed. Logout Request rejected',
+                        OneLogin_Saml2_ValidationError.INVALID_SIGNATURE
+                    )
 
             return True
         except Exception as err:
