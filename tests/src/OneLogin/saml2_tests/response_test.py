@@ -61,7 +61,7 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
 
         self.assertIsInstance(response_enc, OneLogin_Saml2_Response)
 
-    def test_get_xml_document(self):
+    def testGetXMLDocument(self):
         """
         Tests that we can retrieve the raw text of an encrypted XML response
         without going through intermediate steps

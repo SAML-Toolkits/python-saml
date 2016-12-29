@@ -109,6 +109,7 @@ class OneLogin_Saml2_ValidationError(Exception):
     DUPLICATED_ATTRIBUTE_NAME_FOUND = 41
     INVALID_SIGNATURE = 42
     WRONG_NUMBER_OF_SIGNATURES = 43
+    RESPONSE_EXPIRED = 44
 
     def __init__(self, message, code=0, errors=None):
         """

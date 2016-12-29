@@ -309,7 +309,10 @@ class OneLogin_Saml2_Logout_Request(object):
                 if dom.get('NotOnOrAfter', None):
                     na = OneLogin_Saml2_Utils.parse_SAML_to_time(dom.get('NotOnOrAfter'))
                     if na <= OneLogin_Saml2_Utils.now():
-                        raise Exception('Could not validate timestamp: expired. Check system clock.')
+                        raise OneLogin_Saml2_ValidationError(
+                            'Could not validate timestamp: expired. Check system clock.',
+                            OneLogin_Saml2_ValidationError.RESPONSE_EXPIRED
+                        )
 
                 # Check destination
                 if dom.get('Destination', None):
@@ -322,7 +325,8 @@ class OneLogin_Saml2_Logout_Request(object):
                                 {
                                     'currentURL': current_url,
                                     'destination': destination,
-                                }
+                                },
+                                OneLogin_Saml2_ValidationError.WRONG_DESTINATION
                             )
 
                 # Check issuer
