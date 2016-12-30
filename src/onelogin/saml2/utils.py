@@ -1118,7 +1118,14 @@ class OneLogin_Saml2_Utils(object):
 
         dsig_ctx.setEnabledKeyData([xmlsec.KeyDataX509])
 
-        dsig_ctx.verify(signature_node)
+        try:
+            dsig_ctx.verify(signature_node)
+        except Exception as err:
+            raise OneLogin_Saml2_ValidationError(
+                'Signature validation failed. SAML Response rejected. %s',
+                OneLogin_Saml2_ValidationError.INVALID_SIGNATURE,
+                err.__str__()
+            )
 
         return True
 

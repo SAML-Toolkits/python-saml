@@ -417,7 +417,7 @@ class OneLogin_Saml2_Response(object):
 
             if security.get('wantNameId', True):
                 raise OneLogin_Saml2_ValidationError(
-                    'Not NameID found in the assertion of the Response',
+                    'NameID not found in the assertion of the Response',
                     OneLogin_Saml2_ValidationError.NO_NAMEID
                 )
         else:

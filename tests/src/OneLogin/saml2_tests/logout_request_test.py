@@ -131,11 +131,11 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
         encrypted_id_nodes = dom_2.getElementsByTagName('saml:EncryptedID')
         encrypted_data = encrypted_id_nodes[0].firstChild.nextSibling
         encrypted_id_nodes[0].removeChild(encrypted_data)
-        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'Not NameID found in the Logout Request'):
+        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'NameID not found in the Logout Request'):
             OneLogin_Saml2_Logout_Request.get_nameid_data(dom_2.toxml(), key)
 
         inv_request = self.file_contents(join(self.data_path, 'logout_requests', 'invalids', 'no_nameId.xml'))
-        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'Not NameID found in the Logout Request'):
+        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'NameID not found in the Logout Request'):
             OneLogin_Saml2_Logout_Request.get_nameid_data(inv_request)
 
     def testGetNameId(self):
