@@ -271,7 +271,7 @@ class OneLogin_Saml2_Response(object):
                 if security.get('wantAssertionsSigned', False) and not has_signed_assertion:
                     raise OneLogin_Saml2_ValidationError(
                         'The Assertion of the Response is not signed and the SP require it',
-                        OneLogin_Saml2_ValidationError.NO_SIGNED_RESPONSE
+                        OneLogin_Saml2_ValidationError.NO_SIGNED_MESSAGE
                     )
 
                 if security.get('wantMessagesSigned', False) and not has_signed_response:
