@@ -432,7 +432,7 @@ class OneLogin_Saml2_Auth(object):
         if not key:
             raise OneLogin_Saml2_Error(
                 "Trying to sign the %s but can't load the SP private key" % saml_type,
-                OneLogin_Saml2_Error.SP_CERTS_NOT_FOUND
+                OneLogin_Saml2_Error.PRIVATE_KEY_NOT_FOUND
             )
 
         dsig_ctx = xmlsec.DSigCtx()

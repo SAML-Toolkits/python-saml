@@ -59,46 +59,29 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         self.assertEqual(len(settings.get_errors()), 0)
 
         settings_info['idp']['singleSignOnService']['url'] = 'invalid_url'
-        try:
-            settings_2 = OneLogin_Saml2_Settings(settings_info)
-            self.assertNotEqual(len(settings_2.get_errors()), 0)
-        except Exception as e:
-            self.assertIn('Invalid dict settings: idp_sso_url_invalid', e.message)
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: idp_sso_url_invalid'):
+            OneLogin_Saml2_Settings(settings_info)
 
         settings_info['idp']['singleSignOnService']['url'] = 'http://invalid_domain'
-        try:
-            settings_3 = OneLogin_Saml2_Settings(settings_info)
-            self.assertNotEqual(len(settings_3.get_errors()), 0)
-        except Exception as e:
-            self.assertIn('Invalid dict settings: idp_sso_url_invalid', e.message)
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: idp_sso_url_invalid'):
+            OneLogin_Saml2_Settings(settings_info)
 
         del settings_info['sp']
         del settings_info['idp']
-        try:
-            settings_4 = OneLogin_Saml2_Settings(settings_info)
-            self.assertNotEqual(len(settings_4.get_errors()), 0)
-        except Exception as e:
-            self.assertIn('Invalid dict settings', e.message)
-            self.assertIn('idp_not_found', e.message)
-            self.assertIn('sp_not_found', e.message)
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: idp_not_found,sp_not_found'):
+            OneLogin_Saml2_Settings(settings_info)
 
         settings_info = self.loadSettingsJSON()
         settings_info['security']['authnRequestsSigned'] = True
         settings_info['custom_base_path'] = dirname(__file__)
-        try:
-            settings_5 = OneLogin_Saml2_Settings(settings_info)
-            self.assertNotEqual(len(settings_5.get_errors()), 0)
-        except Exception as e:
-            self.assertIn('Invalid dict settings: sp_cert_not_found_and_required', e.message)
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: sp_cert_not_found_and_required'):
+            OneLogin_Saml2_Settings(settings_info)
 
         settings_info = self.loadSettingsJSON()
         settings_info['security']['nameIdEncrypted'] = True
         del settings_info['idp']['x509cert']
-        try:
-            settings_6 = OneLogin_Saml2_Settings(settings_info)
-            self.assertNotEqual(len(settings_6.get_errors()), 0)
-        except Exception as e:
-            self.assertIn('Invalid dict settings: idp_cert_not_found_and_required', e.message)
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: idp_cert_not_found_and_required'):
+            OneLogin_Saml2_Settings(settings_info)
 
     def testLoadSettingsFromInvalidData(self):
         """
@@ -107,11 +90,8 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         """
         invalid_settings = ('param1', 'param2')
 
-        try:
+        with self.assertRaisesRegexp(Exception, 'Unsupported settings object'):
             settings = OneLogin_Saml2_Settings(invalid_settings)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('Unsupported settings object', e.message)
 
         settings = OneLogin_Saml2_Settings(custom_base_path=self.settings_path)
         self.assertEqual(len(settings.get_errors()), 0)
@@ -126,10 +106,8 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         self.assertEqual(len(settings.get_errors()), 0)
 
         custom_base_path = dirname(__file__)
-        try:
+        with self.assertRaisesRegexp(Exception, 'Settings file not found'):
             OneLogin_Saml2_Settings(custom_base_path=custom_base_path)
-        except Exception as e:
-            self.assertIn('Settings file not found', e.message)
 
         custom_base_path = join(dirname(dirname(dirname(dirname(__file__)))), 'data', 'customPath')
         settings_3 = OneLogin_Saml2_Settings(custom_base_path=custom_base_path)
@@ -269,19 +247,12 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         The checkSettings method is private and is used at the constructor
         """
         settings_info = {}
-        try:
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: invalid_syntax'):
             OneLogin_Saml2_Settings(settings_info)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('Invalid dict settings: invalid_syntax', e.message)
 
         settings_info['strict'] = True
-        try:
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: idp_not_found,sp_not_found'):
             OneLogin_Saml2_Settings(settings_info)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('idp_not_found', e.message)
-            self.assertIn('sp_not_found', e.message)
 
         settings_info['idp'] = {}
         settings_info['idp']['x509cert'] = ''
@@ -289,26 +260,16 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         settings_info['sp']['entityID'] = 'SPentityId'
         settings_info['security'] = {}
         settings_info['security']['signMetadata'] = False
-        try:
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: idp_entityId_not_found,idp_sso_not_found,sp_entityId_not_found,sp_acs_not_found'):
             OneLogin_Saml2_Settings(settings_info)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('idp_entityId_not_found', e.message)
-            self.assertIn('idp_sso_not_found', e.message)
-            self.assertIn('sp_entityId_not_found', e.message)
-            self.assertIn('sp_acs_not_found', e.message)
 
         # AttributeConsumingService tests
         # serviceName, requestedAttributes are required
         settings_info['sp']['attributeConsumingService'] = {
             "serviceDescription": "Test Service"
         }
-        try:
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: idp_entityId_not_found,idp_sso_not_found,sp_entityId_not_found,sp_acs_not_found,sp_attributeConsumingService_serviceName_not_found,sp_attributeConsumingService_requestedAttributes_not_found'):
             OneLogin_Saml2_Settings(settings_info)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('sp_attributeConsumingService_serviceName_not_found', e.message)
-            self.assertIn('sp_attributeConsumingService_requestedAttributes_not_found', e.message)
 
         # requestedAttributes/name is required
         settings_info['sp']['attributeConsumingService'] = {
@@ -321,14 +282,8 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
             }
             ]
         }
-        try:
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: idp_entityId_not_found,idp_sso_not_found,sp_entityId_not_found,sp_acs_not_found,sp_attributeConsumingService_serviceName_type_invalid,sp_attributeConsumingService_requestedAttributes_name_not_found,sp_attributeConsumingService_requestedAttributes_isRequired_type_invalid,sp_attributeConsumingService_serviceDescription_type_invalid'):
             OneLogin_Saml2_Settings(settings_info)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('sp_attributeConsumingService_requestedAttributes_name_not_found', e.message)
-            self.assertIn('sp_attributeConsumingService_requestedAttributes_isRequired_type_invalid', e.message)
-            self.assertIn('sp_attributeConsumingService_serviceDescription_type_invalid', e.message)
-            self.assertIn('sp_attributeConsumingService_serviceName_type_invalid', e.message)
 
         settings_info['idp']['entityID'] = 'entityId'
         settings_info['idp']['singleSignOnService'] = {}
@@ -339,21 +294,12 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         settings_info['sp']['assertionConsumerService']['url'] = 'invalid_value'
         settings_info['sp']['singleLogoutService'] = {}
         settings_info['sp']['singleLogoutService']['url'] = 'invalid_value'
-        try:
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: idp_entityId_not_found,idp_sso_url_invalid,idp_slo_url_invalid,sp_entityId_not_found,sp_acs_url_invalid,sp_attributeConsumingService_serviceName_type_invalid,sp_attributeConsumingService_requestedAttributes_name_not_found,sp_attributeConsumingService_requestedAttributes_isRequired_type_invalid,sp_attributeConsumingService_serviceDescription_type_invalid,sp_sls_url_invalid'):
             OneLogin_Saml2_Settings(settings_info)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('idp_sso_url_invalid', e.message)
-            self.assertIn('idp_slo_url_invalid', e.message)
-            self.assertIn('sp_acs_url_invalid', e.message)
-            self.assertIn('sp_sls_url_invalid', e.message)
 
         settings_info['security']['wantAssertionsSigned'] = True
-        try:
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: idp_entityId_not_found,idp_sso_url_invalid,idp_slo_url_invalid,idp_cert_or_fingerprint_not_found_and_required,sp_entityId_not_found,sp_acs_url_invalid,sp_attributeConsumingService_serviceName_type_invalid,sp_attributeConsumingService_requestedAttributes_name_not_found,sp_attributeConsumingService_requestedAttributes_isRequired_type_invalid,sp_attributeConsumingService_serviceDescription_type_invalid,sp_sls_url_invalid'):
             OneLogin_Saml2_Settings(settings_info)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('idp_cert_or_fingerprint_not_found_and_required', e.message)
 
         settings_info = self.loadSettingsJSON()
         settings_info['security']['signMetadata'] = {}
@@ -372,13 +318,8 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
                 'emailAddress': 'auxiliar@example.com'
             }
         }
-        try:
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: sp_signMetadata_invalid,contact_type_invalid,contact_not_enought_data,organization_not_enought_data'):
             OneLogin_Saml2_Settings(settings_info)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('sp_signMetadata_invalid', e.message)
-            self.assertIn('organization_not_enought_data', e.message)
-            self.assertIn('contact_type_invalid', e.message)
 
     def testGetSPMetadata(self):
         """
@@ -481,41 +422,29 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
             settings_info['security'] = {}
         settings_info['security']['signMetadata'] = {}
 
-        try:
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: sp_signMetadata_invalid'):
             OneLogin_Saml2_Settings(settings_info)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('sp_signMetadata_invalid', e.message)
 
         settings_info['security']['signMetadata'] = {
             'keyFileName': 'noexist.key',
             'certFileName': 'sp.crt'
         }
         settings = OneLogin_Saml2_Settings(settings_info)
-        try:
+        with self.assertRaisesRegexp(Exception, 'Private key file not readable'):
             settings.get_sp_metadata()
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('Private key file not readable', e.message)
 
         settings_info['security']['signMetadata'] = {
             'keyFileName': 'sp.key',
             'certFileName': 'noexist.crt'
         }
         settings = OneLogin_Saml2_Settings(settings_info)
-        try:
+        with self.assertRaisesRegexp(Exception, 'Public cert file not readable'):
             settings.get_sp_metadata()
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('Public cert file not readable', e.message)
 
         settings_info['security']['signMetadata'] = 'invalid_value'
         settings = OneLogin_Saml2_Settings(settings_info)
-        try:
+        with self.assertRaisesRegexp(Exception, 'Invalid Setting: signMetadata value of the sp is not valid'):
             settings.get_sp_metadata()
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('Invalid Setting: signMetadata value of the sp is not valid', e.message)
 
     def testValidateMetadata(self):
         """
@@ -558,11 +487,8 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         """
         settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
         metadata = ''
-        try:
+        with self.assertRaisesRegexp(Exception, 'Empty string supplied as input'):
             errors = settings.validate_metadata(metadata)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('Empty string supplied as input', e.message)
 
         metadata = '<no xml>'
         errors = settings.validate_metadata(metadata)
@@ -717,11 +643,8 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         settings.set_strict(False)
         self.assertFalse(settings.is_strict())
 
-        try:
+        with self.assertRaises(AssertionError):
             settings.set_strict('a')
-            1 / 0
-        except Exception as e:
-            self.assertIsInstance(e, AssertionError)
 
     def testIsStrict(self):
         """

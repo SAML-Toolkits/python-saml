@@ -15,6 +15,7 @@ from xml.dom.minidom import Document, parseString
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.errors import OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError
 
 
 class OneLogin_Saml2_Utils_Test(unittest.TestCase):
@@ -167,11 +168,9 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         target_url3 = OneLogin_Saml2_Utils.redirect(url3, {}, request_data)
         self.assertIn('test=true', target_url3)
 
-        try:
+        with self.assertRaisesRegexp(Exception, 'Redirect to invalid URL'):
             target_url4 = OneLogin_Saml2_Utils.redirect(url4, {}, request_data)
             self.assertTrue(target_url4 == 42)
-        except Exception as e:
-            self.assertIn('Redirect to invalid URL', e.message)
 
         # Review parameter prefix
         parameters1 = {
@@ -207,11 +206,8 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         Tests the get_self_host method of the OneLogin_Saml2_Utils
         """
         request_data = {}
-        try:
+        with self.assertRaisesRegexp(Exception, 'No hostname defined'):
             OneLogin_Saml2_Utils.get_self_host(request_data)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertEqual('No hostname defined', e.message)
 
         request_data = {
             'server_name': 'example.com'
@@ -301,11 +297,8 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         request_data2 = {
             'request_uri': 'example.com/onelogin/sso'
         }
-        try:
-            self.assertEqual('https://example.com', OneLogin_Saml2_Utils.get_self_url_host(request_data2))
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertEqual('No hostname defined', e.message)
+        with self.assertRaisesRegexp(Exception, 'No hostname defined'):
+            OneLogin_Saml2_Utils.get_self_url_host(request_data2)
 
     def testGetSelfURL(self):
         """
@@ -434,21 +427,15 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         xml_inv = b64decode(xml_inv)
         dom_inv = etree.fromstring(xml_inv)
 
-        try:
-            status_inv = OneLogin_Saml2_Utils.get_status(dom_inv)
-            self.assertEqual(status_inv, 42)
-        except Exception as e:
-            self.assertEqual('Missing valid Status on response', e.message)
+        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'Missing Status on response'):
+            OneLogin_Saml2_Utils.get_status(dom_inv)
 
         xml_inv2 = self.file_contents(join(self.data_path, 'responses', 'invalids', 'no_status_code.xml.base64'))
         xml_inv2 = b64decode(xml_inv2)
         dom_inv2 = etree.fromstring(xml_inv2)
 
-        try:
-            status_inv2 = OneLogin_Saml2_Utils.get_status(dom_inv2)
-            self.assertEqual(status_inv2, 42)
-        except Exception as e:
-            self.assertEqual('Missing valid Status Code on response', e.message)
+        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'Missing Status Code on response'):
+            OneLogin_Saml2_Utils.get_status(dom_inv2)
 
     def testParseDuration(self):
         """
@@ -464,11 +451,8 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         self.assertTrue(parsed_duration_2 > parsed_duration)
 
         invalid_duration = 'PT1Y'
-        try:
-            parsed_duration_3 = OneLogin_Saml2_Utils.parse_duration(invalid_duration)
-            self.assertEqual(parsed_duration_3, 42)
-        except Exception as e:
-            self.assertIn('Unrecognised ISO 8601 date format', e.message)
+        with self.assertRaisesRegexp(Exception, 'Unrecognised ISO 8601 date format'):
+            OneLogin_Saml2_Utils.parse_duration(invalid_duration)
 
         new_duration = 'P1Y1M'
         parsed_duration_4 = OneLogin_Saml2_Utils.parse_duration(new_duration, timestamp)
@@ -486,11 +470,8 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         saml_time = '2013-12-10T04:39:31Z'
         self.assertEqual(time, OneLogin_Saml2_Utils.parse_SAML_to_time(saml_time))
 
-        try:
+        with self.assertRaisesRegexp(Exception, 'does not match format'):
             OneLogin_Saml2_Utils.parse_SAML_to_time('invalidSAMLTime')
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('does not match format', e.message)
 
         # Now test if toolkit supports miliseconds
         saml_time2 = '2013-12-10T04:39:31.120Z'
@@ -504,11 +485,8 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         saml_time = '2013-12-10T04:39:31Z'
         self.assertEqual(saml_time, OneLogin_Saml2_Utils.parse_time_to_SAML(time))
 
-        try:
+        with self.assertRaisesRegexp(Exception, 'could not convert string to float'):
             OneLogin_Saml2_Utils.parse_time_to_SAML('invalidtime')
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertIn('could not convert string to float', e.message)
 
     def testGetExpireTime(self):
         """
@@ -740,41 +718,31 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         key2 = f.read()
         f.close()
 
-        try:
+        with self.assertRaisesRegexp(Exception, "('failed to decrypt', -1)"):
             OneLogin_Saml2_Utils.decrypt_element(encrypted_data, key2)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertEqual('failed to decrypt', e[0])
 
         key_3_file_name = join(self.data_path, 'misc', 'sp3.key')
         f = open(key_3_file_name, 'r')
         key3 = f.read()
         f.close()
-        try:
+        with self.assertRaisesRegexp(Exception, "('failed to decrypt', -1)"):
             OneLogin_Saml2_Utils.decrypt_element(encrypted_data, key3)
-            self.assertTrue(False)
-        except Exception as e:
-            self.assertEqual('failed to decrypt', e[0])
 
         xml_nameid_enc_2 = b64decode(self.file_contents(join(self.data_path, 'responses', 'invalids', 'encrypted_nameID_without_EncMethod.xml.base64')))
         dom_nameid_enc_2 = parseString(xml_nameid_enc_2)
         encrypted_nameid_nodes_2 = dom_nameid_enc_2.getElementsByTagName('saml:EncryptedID')
         encrypted_data_2 = encrypted_nameid_nodes_2[0].firstChild
-        try:
+
+        with self.assertRaisesRegexp(Exception, "('failed to decrypt', -1)"):
             OneLogin_Saml2_Utils.decrypt_element(encrypted_data_2, key)
-            self.assertTrue(False)
-        except:
-            pass
 
         xml_nameid_enc_3 = b64decode(self.file_contents(join(self.data_path, 'responses', 'invalids', 'encrypted_nameID_without_keyinfo.xml.base64')))
         dom_nameid_enc_3 = parseString(xml_nameid_enc_3)
         encrypted_nameid_nodes_3 = dom_nameid_enc_3.getElementsByTagName('saml:EncryptedID')
         encrypted_data_3 = encrypted_nameid_nodes_3[0].firstChild
-        try:
+
+        with self.assertRaisesRegexp(Exception, "('failed to decrypt', -1)"):
             OneLogin_Saml2_Utils.decrypt_element(encrypted_data_3, key)
-            self.assertTrue(False)
-        except:
-            pass
 
     def testAddSign(self):
         """
@@ -839,10 +807,8 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         ds_signature_8 = res_8.firstChild.firstChild.nextSibling.firstChild.nextSibling
         self.assertIn('ds:Signature', ds_signature_8.tagName)
 
-        try:
+        with self.assertRaisesRegexp(Exception, 'Error parsing xml string'):
             OneLogin_Saml2_Utils.add_sign(1, key, cert)
-        except Exception as e:
-            self.assertEqual('Error parsing xml string', e.message)
 
     def testValidateSign(self):
         """
@@ -858,21 +824,22 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         fingerprint_2 = OneLogin_Saml2_Utils.calculate_x509_fingerprint(cert_2)
         fingerprint_2_256 = OneLogin_Saml2_Utils.calculate_x509_fingerprint(cert_2, 'sha256')
 
-        try:
-            self.assertFalse(OneLogin_Saml2_Utils.validate_sign('', cert))
-        except Exception as e:
-            self.assertEqual('Empty string supplied as input', e.message)
+        self.assertFalse(OneLogin_Saml2_Utils.validate_sign('', cert, raise_exceptions=False))
+        self.assertFalse(OneLogin_Saml2_Utils.validate_sign(1, cert, raise_exceptions=False))
 
-        try:
-            self.assertFalse(OneLogin_Saml2_Utils.validate_sign(1, cert))
-        except Exception as e:
-            self.assertEqual('Error parsing xml string', e.message)
+        with self.assertRaisesRegexp(Exception, 'Empty string supplied as input'):
+            OneLogin_Saml2_Utils.validate_sign('', cert, raise_exceptions=True)
+
+        with self.assertRaisesRegexp(Exception, 'Error parsing xml string'):
+            OneLogin_Saml2_Utils.validate_sign(1, cert, raise_exceptions=True)
 
         # expired cert
         xml_metadata_signed = self.file_contents(join(self.data_path, 'metadata', 'signed_metadata_settings1.xml'))
         self.assertTrue(OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed, cert))
         # expired cert, verified it
         self.assertFalse(OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed, cert, validatecert=True))
+        with self.assertRaisesRegexp(Exception, "('verifying failed with return value', -1)"):
+            OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed, cert, validatecert=True, raise_exceptions=True)
 
         xml_metadata_signed_2 = self.file_contents(join(self.data_path, 'metadata', 'signed_metadata_settings2.xml'))
         self.assertTrue(OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed_2, cert_2))
@@ -884,6 +851,8 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert))
         # expired cert, verified it
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert, validatecert=True))
+        with self.assertRaisesRegexp(Exception, "('verifying failed with return value', -1)"):
+            OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert, validatecert=True, raise_exceptions=True)
 
         # modified cert
         other_cert_path = join(dirname(__file__), '..', '..', '..', 'certs')
@@ -892,6 +861,10 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         f.close()
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert_x))
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert_x, validatecert=True))
+        with self.assertRaisesRegexp(Exception, "('signature verification failed', 2)"):
+            OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert_x, raise_exceptions=True)
+        with self.assertRaisesRegexp(Exception, "('verifying failed with return value', -1)"):
+            OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed, cert_x, validatecert=True, raise_exceptions=True)
 
         xml_response_msg_signed_2 = b64decode(self.file_contents(join(self.data_path, 'responses', 'signed_message_response2.xml.base64')))
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_response_msg_signed_2, cert_2))
@@ -905,6 +878,8 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_response_assert_signed, cert))
         # expired cert, verified it
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(xml_response_assert_signed, cert, validatecert=True))
+        with self.assertRaisesRegexp(Exception, "('verifying failed with return value', -1)"):
+            OneLogin_Saml2_Utils.validate_sign(xml_response_assert_signed, cert, validatecert=True, raise_exceptions=True)
 
         xml_response_assert_signed_2 = b64decode(self.file_contents(join(self.data_path, 'responses', 'signed_assertion_response2.xml.base64')))
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_response_assert_signed_2, cert_2))
@@ -916,6 +891,8 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_response_double_signed, cert))
         # expired cert, verified it
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(xml_response_double_signed, cert, validatecert=True))
+        with self.assertRaisesRegexp(Exception, "('verifying failed with return value', -1)"):
+            OneLogin_Saml2_Utils.validate_sign(xml_response_double_signed, cert, validatecert=True, raise_exceptions=True)
 
         xml_response_double_signed_2 = b64decode(self.file_contents(join(self.data_path, 'responses', 'double_signed_response2.xml.base64')))
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(xml_response_double_signed_2, cert_2))
@@ -929,32 +906,46 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         dom.firstChild.getAttributeNode('ID').nodeValue = u'_34fg27g212d63k1f923845324475802ac0fc24530b'
         # Reference validation failed
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(dom, cert_2))
+        with self.assertRaisesRegexp(Exception, "('verifying failed with return value', -1)"):
+            OneLogin_Saml2_Utils.validate_sign(dom, cert_2, raise_exceptions=True)
 
         invalid_fingerprint = 'afe71c34ef740bc87434be13a2263d31271da1f9'
         # Wrong fingerprint
         self.assertFalse(OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed_2, None, invalid_fingerprint))
+        with self.assertRaisesRegexp(OneLogin_Saml2_Error, 'Could not validate node signature: No certificate provided.'):
+            OneLogin_Saml2_Utils.validate_metadata_sign(xml_metadata_signed_2, None, invalid_fingerprint, raise_exceptions=True)
 
         dom_2 = parseString(xml_response_double_signed_2)
         self.assertTrue(OneLogin_Saml2_Utils.validate_sign(dom_2, cert_2))
         dom_2.firstChild.firstChild.firstChild.nodeValue = 'https://example.com/other-idp'
         # Modified message
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(dom_2, cert_2))
+        with self.assertRaisesRegexp(Exception, "('signature verification failed', 2)"):
+            OneLogin_Saml2_Utils.validate_sign(dom_2, cert_2, raise_exceptions=True)
 
         # Try to validate directly the Assertion
         dom_3 = parseString(xml_response_double_signed_2)
         assert_elem_3 = dom_3.firstChild.firstChild.nextSibling.nextSibling.nextSibling
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(assert_elem_3, cert_2))
+        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, "Expected exactly one signature node; got 0."):
+            OneLogin_Saml2_Utils.validate_sign(assert_elem_3, cert_2, raise_exceptions=True)
 
         # Wrong scheme
         no_signed = b64decode(self.file_contents(join(self.data_path, 'responses', 'invalids', 'no_signature.xml.base64')))
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(no_signed, cert))
+        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, "Expected exactly one signature node; got 0."):
+            OneLogin_Saml2_Utils.validate_sign(no_signed, cert, raise_exceptions=True)
 
         no_key = b64decode(self.file_contents(join(self.data_path, 'responses', 'invalids', 'no_key.xml.base64')))
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(no_key, cert))
+        with self.assertRaisesRegexp(Exception, "('verifying failed with return value', -1)"):
+            OneLogin_Saml2_Utils.validate_sign(no_key, cert, raise_exceptions=True)
 
         # Signature Wrapping attack
         wrapping_attack1 = b64decode(self.file_contents(join(self.data_path, 'responses', 'invalids', 'signature_wrapping_attack.xml.base64')))
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(wrapping_attack1, cert))
+        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, "Expected exactly one signature node; got 0."):
+            OneLogin_Saml2_Utils.validate_sign(wrapping_attack1, cert, raise_exceptions=True)
 
 
 if __name__ == '__main__':
