@@ -14,7 +14,7 @@ Python3: [python3-saml](https://github.com/onelogin/python3-saml).
 
 #### Warning ####
 
-Update python-saml to 2.2.0, this version includes a security patch that contains extra validations that will prevent signature wrapping attacks.
+Update python-saml to 2.2.0, this version includes a security patch that contains extra validations that will prevent signature wrapping attacks. [CVE-2016-1000252](https://github.com/distributedweaknessfiling/DWF-Database-Artifacts/blob/master/DWF/2016/1000252/CVE-2016-1000252.json)
 
 python-saml < v2.2.0 is vulnerable and allows signature wrapping!
 
