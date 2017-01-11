@@ -1,5 +1,13 @@
 # python-saml changelog
 
+### 2.2.1 (Jan 11, 2017)
+* [#175]((https://github.com/onelogin/python-saml/pull/175)  Optionally raise detailed exceptions vs. returning False.
+Implement a more specific exception class for handling some validation errors. Improve/Fix tests
+* [#171](https://github.com/onelogin/python-saml/pull/171) Add hooks to retrieve last-sent and last-received requests and responses
+* Improved inResponse validation on Responses
+* [#173](https://github.com/onelogin/python-saml/pull/173) Fix attributeConsumingService serviceName format in README
+
+
 ### 2.2.0 (Oct 14, 2016)
 * Several security improvements:
   * Conditions element required and unique.
