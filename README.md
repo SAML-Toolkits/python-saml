@@ -48,8 +48,8 @@ since 2002, but lately it is becoming popular due its advantages:
 General description
 -------------------
 
-OneLogin's SAML Python toolkit lets you turn you Python application into an SP
-(Service Provider) that can connect to a IdP (Identity Provider).
+OneLogin's SAML Python toolkit lets you turn your Python application into a SP
+(Service Provider) that can be connected to an IdP (Identity Provider).
 
 Supports:
 
