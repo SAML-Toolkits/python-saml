@@ -52,6 +52,7 @@ class OneLogin_Saml2_Auth(object):
         self.__settings = OneLogin_Saml2_Settings(old_settings, custom_base_path)
         self.__attributes = []
         self.__nameid = None
+        self.__nameid_format = None
         self.__session_index = None
         self.__session_expiration = None
         self.__authenticated = False
@@ -97,6 +98,7 @@ class OneLogin_Saml2_Auth(object):
             if response.is_valid(self.__request_data, request_id):
                 self.__attributes = response.get_attributes()
                 self.__nameid = response.get_nameid()
+                self.__nameid_format = response.get_nameid_format()
                 self.__session_index = response.get_session_index()
                 self.__session_expiration = response.get_session_not_on_or_after()
                 self.__authenticated = True
@@ -213,6 +215,15 @@ class OneLogin_Saml2_Auth(object):
         :rtype: string|None
         """
         return self.__nameid
+
+    def get_nameid_format(self):
+        """
+        Returns the nameID Format.
+
+        :returns: NameID Format
+        :rtype: string|None
+        """
+        return self.__nameid_format
 
     def get_session_index(self):
         """
