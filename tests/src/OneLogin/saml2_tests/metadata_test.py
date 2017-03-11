@@ -14,6 +14,7 @@ from teamcity.unittestpy import TeamcityTestRunner
 
 from onelogin.saml2.metadata import OneLogin_Saml2_Metadata
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
+from onelogin.saml2.constants import OneLogin_Saml2_Constants
 
 
 class OneLogin_Saml2_Metadata_Test(unittest.TestCase):
@@ -222,11 +223,31 @@ class OneLogin_Saml2_Metadata_Test(unittest.TestCase):
 
         self.assertIn('<ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>', signed_metadata)
         self.assertIn('<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>', signed_metadata)
+        self.assertIn('<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>', signed_metadata)
         self.assertIn('<ds:Reference', signed_metadata)
         self.assertIn('<ds:KeyInfo><ds:X509Data>\n<ds:X509Certificate>', signed_metadata)
 
         with self.assertRaisesRegexp(Exception, 'Empty string supplied as input'):
             OneLogin_Saml2_Metadata.sign_metadata('', key, cert)
+
+        signed_metadata_2 = OneLogin_Saml2_Metadata.sign_metadata(metadata, key, cert, OneLogin_Saml2_Constants.RSA_SHA256, OneLogin_Saml2_Constants.SHA384)
+        self.assertIn('<md:SPSSODescriptor', signed_metadata_2)
+        self.assertIn('entityID="http://stuff.com/endpoints/metadata.php"', signed_metadata_2)
+        self.assertIn('AuthnRequestsSigned="false"', signed_metadata_2)
+        self.assertIn('WantAssertionsSigned="false"', signed_metadata_2)
+
+        self.assertIn('<md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"', signed_metadata_2)
+        self.assertIn('Location="http://stuff.com/endpoints/endpoints/acs.php"', signed_metadata_2)
+        self.assertIn('<md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"', signed_metadata_2)
+        self.assertIn(' Location="http://stuff.com/endpoints/endpoints/sls.php"/>', signed_metadata_2)
+
+        self.assertIn('<md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>', signed_metadata_2)
+
+        self.assertIn('<ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>', signed_metadata_2)
+        self.assertIn('<ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#sha384"/>', signed_metadata_2)
+        self.assertIn('<ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>', signed_metadata_2)
+        self.assertIn('<ds:Reference', signed_metadata_2)
+        self.assertIn('<ds:KeyInfo><ds:X509Data>\n<ds:X509Certificate>', signed_metadata_2)
 
     def testAddX509KeyDescriptors(self):
         """
