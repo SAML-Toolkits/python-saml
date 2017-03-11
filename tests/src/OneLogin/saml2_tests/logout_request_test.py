@@ -138,6 +138,10 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
         with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'NameID not found in the Logout Request'):
             OneLogin_Saml2_Logout_Request.get_nameid_data(inv_request)
 
+        logout_request = OneLogin_Saml2_Logout_Request(settings, None, expected_name_id_data['Value'], None, expected_name_id_data['Value'], expected_name_id_data['Format'])
+        dom = parseString(logout_request.get_xml())
+        name_id_data_3 = OneLogin_Saml2_Logout_Request.get_nameid_data(dom)
+
     def testGetNameId(self):
         """
         Tests the get_nameid of the OneLogin_Saml2_LogoutRequest
