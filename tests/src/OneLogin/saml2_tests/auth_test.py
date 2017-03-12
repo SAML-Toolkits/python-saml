@@ -826,6 +826,7 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         auth.process_response()
 
         name_id_from_response = auth.get_nameid()
+        name_id_format_from_response = auth.get_nameid_format()
 
         target_url = auth.logout()
         parsed_query = parse_qs(urlparse(target_url)[4])
@@ -833,7 +834,21 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         logout_request = OneLogin_Saml2_Utils.decode_base64_and_inflate(parsed_query['SAMLRequest'][0])
 
         name_id_from_request = OneLogin_Saml2_Logout_Request.get_nameid(logout_request)
+        name_id_format_from_request = OneLogin_Saml2_Logout_Request.get_nameid_format(logout_request)
         self.assertEqual(name_id_from_response, name_id_from_request)
+        self.assertEqual(name_id_format_from_response, name_id_format_from_request)
+
+        new_name_id = "new_name_id"
+        new_name_id_format = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+        target_url_2 = auth.logout(name_id=new_name_id, name_id_format=new_name_id_format)
+        parsed_query = parse_qs(urlparse(target_url_2)[4])
+        self.assertIn('SAMLRequest', parsed_query)
+        logout_request = OneLogin_Saml2_Utils.decode_base64_and_inflate(parsed_query['SAMLRequest'][0])
+
+        name_id_from_request = OneLogin_Saml2_Logout_Request.get_nameid(logout_request)
+        name_id_format_from_request = OneLogin_Saml2_Logout_Request.get_nameid_format(logout_request)
+        self.assertEqual(new_name_id, name_id_from_request)
+        self.assertEqual(new_name_id_format, name_id_format_from_request)
 
     def testSetStrict(self):
         """

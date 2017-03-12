@@ -232,6 +232,23 @@ class OneLogin_Saml2_Logout_Request(object):
         return name_id['Value']
 
     @staticmethod
+    def get_nameid_format(request, key=None):
+        """
+        Gets the NameID Format of the Logout Request Message
+        :param request: Logout Request Message
+        :type request: string|DOMDocument
+        :param key: The SP key
+        :type key: string
+        :return: Name ID Value
+        :rtype: string
+        """
+        name_id_format = None
+        name_id_data = OneLogin_Saml2_Logout_Request.get_nameid_data(request, key)
+        if name_id_data and 'Format' in name_id_data.keys():
+            name_id_format = name_id_data['Format']
+        return name_id_format
+
+    @staticmethod
     def get_issuer(request):
         """
         Gets the Issuer of the Logout Request Message
