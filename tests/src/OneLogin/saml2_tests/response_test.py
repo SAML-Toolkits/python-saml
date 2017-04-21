@@ -1390,7 +1390,6 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
                 'script_name': 'newonelogin/demo1/index.php?acs'
             }))
 
-
     def testStatusCheckBeforeAssertionCheck(self):
         """
         Tests the status of a response is checked before the assertion count. As failed statuses will have no assertions
