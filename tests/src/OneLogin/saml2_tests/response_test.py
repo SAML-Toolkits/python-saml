@@ -1391,6 +1391,17 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
             }))
 
 
+    def testStatusCheckBeforeAssertionCheck(self):
+        """
+        Tests the status of a response is checked before the assertion count. As failed statuses will have no assertions
+        """
+        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
+        xml_2 = self.file_contents(join(self.data_path, 'responses', 'invalids', 'status_code_responder.xml.base64'))
+        response_2 = OneLogin_Saml2_Response(settings, xml_2)
+        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'The status code of the Response was not Success, was Responder'):
+            response_2.is_valid(self.get_request_data(), raise_exceptions=True)
+
+
 if __name__ == '__main__':
     if is_running_under_teamcity():
         runner = TeamcityTestRunner()
