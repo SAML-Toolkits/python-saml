@@ -144,7 +144,7 @@ the classes and methods that are described in a later section.
 
 This folder contains a Django project that will be used as demo to show how to add SAML support to the Django Framework. 'demo' is the main folder of the django project (with its settings.py, views.py, urls.py), 'templates' is the django templates of the project and 'saml' is a folder that contains the 'certs' folder that could be used to store the x509 public and private key, and the saml toolkit settings (settings.json and advanced_settings.json).
 
-***Notice about certs***
+*** Notice about certs ***
 
 SAML requires a x.509 cert to sign and encrypt elements like NameID, Message, Assertion, Metadata.
 
@@ -572,7 +572,7 @@ auth.get_last_request_id()
 Related to the SP there are 3 important endpoints: The metadata view, the ACS view and the SLS view.
 The toolkit provides examples of those views in the demos, but lets see an example.
 
-***SP Metadata***
+*** SP Metadata ***
 
 This code will provide the XML metadata file of our SP, based on the info that we provided in the settings files.
 
@@ -598,7 +598,7 @@ saml_settings = OneLogin_Saml2_Settings(settings=None, custom_base_path=None, sp
 ```
 to get the settings object and with the sp_validation_only=True parameter we will avoid the IdP Settings validation.
 
-***Attribute Consumer Service(ACS)***
+*** Attribute Consumer Service(ACS) ***
 
 This code handles the SAML response that the IdP forwards to the SP through the user's client.
 
@@ -664,7 +664,7 @@ print auth.get_attribute('cn')
 Before trying to get an attribute, check that the user is authenticated. If the user isn't authenticated, an empty dict will be returned. For example, if we call to get_attributes before a auth.process_response, the get_attributes() will return an empty dict.
 
 
-***Single Logout Service (SLS)***
+*** Single Logout Service (SLS) ***
 
 This code handles the Logout Request and the Logout Responses.
 
@@ -765,7 +765,7 @@ If a match on the LogoutResponse ID and the LogoutRequest ID to be sent is requi
 auth.get_last_request_id()
 ```
 
-####Example of a view that initiates the SSO request and handles the response (is the acs target)####
+#### Example of a view that initiates the SSO request and handles the response (is the acs target) ####
 
 We can code a unique file that initiates the SSO process, handle the response, get the attributes, initiate the slo and processes the logout response.
 
@@ -820,7 +820,7 @@ else:
 
 Described below are the main classes and methods that can be invoked from the SAML2 library.
 
-####OneLogin_Saml2_Auth - auth.py####
+#### OneLogin_Saml2_Auth - auth.py ####
 
 Main class of OneLogin Python Toolkit
 
@@ -848,7 +848,7 @@ Main class of OneLogin Python Toolkit
 * ***get_last_request_xml*** Returns the most recently-constructed/processed XML SAML request (AuthNRequest, LogoutRequest)
 * ***get_last_response_xml*** Returns the most recently-constructed/processed XML SAML response (SAMLResponse, LogoutResponse). If the SAMLResponse had an encrypted assertion, decrypts it.
 
-####OneLogin_Saml2_Auth - authn_request.py####
+#### OneLogin_Saml2_Auth - authn_request.py ####
 
 SAML 2 Authentication Request class
 
@@ -857,7 +857,7 @@ SAML 2 Authentication Request class
 * ***get_id*** Returns the AuthNRequest ID.
 * ***get_xml*** Returns the XML that will be sent as part of the request.
 
-####OneLogin_Saml2_Response - response.py####
+#### OneLogin_Saml2_Response - response.py ####
 
 SAML 2 Authentication Response class
 
@@ -876,7 +876,7 @@ SAML 2 Authentication Response class
 * ***get_error*** After execute a validation process, if fails this method returns the cause
 * ***get_xml_document*** Returns the SAML Response document (If contains an encrypted assertion, decrypts it).
 
-####OneLogin_Saml2_LogoutRequest - logout_request.py####
+#### OneLogin_Saml2_LogoutRequest - logout_request.py ####
 
 SAML 2 Logout Request class
 
@@ -891,7 +891,7 @@ SAML 2 Logout Request class
 * ***get_error*** After execute a validation process, if fails this method returns the cause.
 * ***get_xml*** Returns the XML that will be sent as part of the request or that was received at the SP
 
-####OneLogin_Saml2_LogoutResponse - logout_response.py####
+#### OneLogin_Saml2_LogoutResponse - logout_response.py ####
 
 SAML 2 Logout Response class
 
@@ -905,7 +905,7 @@ SAML 2 Logout Response class
 * ***get_xml*** Returns the XML that will be sent as part of the response or that was received at the SP
 
 
-####OneLogin_Saml2_Settings - settings.py####
+#### OneLogin_Saml2_Settings - settings.py ####
 
 Configuration of the OneLogin Python Toolkit
 
@@ -937,7 +937,7 @@ Configuration of the OneLogin Python Toolkit
 * ***is_strict*** Returns if the 'strict' mode is active.
 * ***is_debug_active*** Returns if the debug is active.
 
-####OneLogin_Saml2_Metadata - metadata.py####
+#### OneLogin_Saml2_Metadata - metadata.py ####
 
 A class that contains functionality related to the metadata of the SP
 
@@ -945,7 +945,7 @@ A class that contains functionality related to the metadata of the SP
 * ***sign_metadata*** Signs the metadata with the key/cert provided.
 * ***add_x509_key_descriptors*** Adds the x509 descriptors (sign/encriptation) to the metadata
 
-####OneLogin_Saml2_Utils - utils.py####
+#### OneLogin_Saml2_Utils - utils.py ####
 
 Auxiliary class that contains several methods
 
@@ -981,7 +981,7 @@ Auxiliary class that contains several methods
 * ***def get_encoded_parameter*** Return an url encoded get parameter value
 * ***extract_raw_query_parameter***
 
-####OneLogin_Saml2_IdPMetadataParser - idp_metadata_parser.py####
+#### OneLogin_Saml2_IdPMetadataParser - idp_metadata_parser.py ####
 
 A class that contains methods to obtain and parse metadata from IdP
 
@@ -1006,7 +1006,7 @@ how it deployed. New demos using other python frameworks are welcome as a contri
 We said that this toolkit includes a django application demo and a flask applicacion demo,
 lets see how fast is deploy them.
 
-***Virtualenv***
+*** Virtualenv ***
 
 The use of a [virtualenv](http://virtualenv.readthedocs.org/en/latest/) is
 highly recommended.
@@ -1051,7 +1051,7 @@ Now, with the virtualenv loaded, you can run the demo like this:
 
 You'll have the demo running at http://localhost:8000
 
-####Content####
+#### Content ####
 
 The flask project contains:
 
@@ -1063,7 +1063,7 @@ The flask project contains:
 * ***saml*** Is a folder that contains the 'certs' folder that could be used to store the x509 public and private key, and the saml toolkit settings (settings.json and advanced_settings.json).
 
 
-####SP setup####
+#### SP setup ####
 
 The Onelogin's Python Toolkit allows you to provide the settings info in 2 ways: settings files or define a setting dict. In the demo-flask it used the first method.
 
@@ -1071,11 +1071,11 @@ In the index.py file we define the app.config['SAML_PATH'], that will target to 
 
 First we need to edit the saml/settings.json, configure the SP part and  review the metadata of the IdP and complete the IdP info.  Later edit the saml/advanced_settings.json files and configure the how the toolkit will work. Check the settings section of this document if you have any doubt.
 
-####IdP setup####
+#### IdP setup ####
 
 Once the SP is configured, the metadata of the SP is published at the /metadata url. Based on that info, configure the IdP.
 
-####How it works####
+#### How it works ####
 
 1. First time you access to the main view 'http://localhost:8000', you can select to login and return to the same view or login and be redirected to /?attrs (attrs view).
 
@@ -1120,7 +1120,7 @@ Note that many of the configuration files expect HTTPS. This is not required by 
 
 If you want to integrate a production django application, take a look on this SAMLServiceProviderBackend that uses our toolkit to add SAML support: https://github.com/KristianOellegaard/django-saml-service-provider
 
-####Content####
+#### Content ####
 
 The django project contains:
 
@@ -1136,7 +1136,7 @@ The django project contains:
 
 * ***templates***. Is the folder where django stores the templates of the project. It was implemented a base.html template that is extended by index.html and attrs.html, the templates of our simple demo that shows messages, user attributes when available and login and logout links.
 
-####SP setup####
+#### SP setup ####
 
 The Onelogin's Python Toolkit allows you to provide the settings info in 2 ways: settings files or define a setting dict. In the demo-django it used the first method.
 
@@ -1144,11 +1144,11 @@ After set the SAML_FOLDER in the demo/settings.py, the settings of the python to
 
 First we need to edit the saml/settings.json, configure the SP part and  review the metadata of the IdP and complete the IdP info.  Later edit the saml/advanced_settings.json files and configure the how the toolkit will work. Check the settings section of this document if you have any doubt.
 
-####IdP setup####
+#### IdP setup ####
 
 Once the SP is configured, the metadata of the SP is published at the /metadata url. Based on that info, configure the IdP.
 
-####How it works####
+#### How it works ####
 
 This demo works very similar to the flask-demo (We did it intentionally).
 
@@ -1177,7 +1177,7 @@ Now you can run the demo like this:
 
 If that worked, the demo is now running at http://localhost:6543.
 
-####Content####
+#### Content ####
 
 The Pyramid project contains:
 
@@ -1191,7 +1191,7 @@ The Pyramid project contains:
 * ***saml*** is a folder that contains the 'certs' folder that could be used to store the x509 public and private key, and the saml toolkit settings (settings.json and advanced_settings.json).
 
 
-####SP setup####
+#### SP setup ####
 
 The Onelogin's Python Toolkit allows you to provide the settings info in 2 ways: settings files or define a setting dict. In demo_pyramid the first method is used.
 
@@ -1203,7 +1203,7 @@ First we need to edit the saml/settings.json, configure the SP part and review t
 
 Once the SP is configured, the metadata of the SP is published at the /metadata/ url. Based on that info, configure the IdP.
 
-####How it works####
+#### How it works ####
 
 1. First time you access to the main view 'http://localhost:6543', you can select to login and return to the same view or login and be redirected to /?attrs (attrs view).
 
