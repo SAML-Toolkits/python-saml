@@ -1199,7 +1199,7 @@ In the views.py file we define the SAML_PATH, which will target the 'saml' folde
 
 First we need to edit the saml/settings.json, configure the SP part and review the metadata of the IdP and complete the IdP info.  Later edit the saml/advanced_settings.json files and configure the how the toolkit will work. Check the settings section of this document if you have any doubt.
 
-####IdP setup####
+#### IdP setup ####
 
 Once the SP is configured, the metadata of the SP is published at the /metadata/ url. Based on that info, configure the IdP.
 
