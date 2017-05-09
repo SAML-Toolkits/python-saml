@@ -10,6 +10,7 @@ Metadata class of OneLogin's Python Toolkit.
 """
 
 import urllib2
+import ssl
 
 from copy import deepcopy
 from defusedxml.lxml import fromstring
@@ -24,7 +25,7 @@ class OneLogin_Saml2_IdPMetadataParser(object):
     """
 
     @staticmethod
-    def get_metadata(url):
+    def get_metadata(url, validate_cert=True):
         """
         Gets the metadata XML from the provided URL
 
@@ -35,7 +36,13 @@ class OneLogin_Saml2_IdPMetadataParser(object):
         :rtype: string
         """
         valid = False
-        response = urllib2.urlopen(url)
+        if validate_cert:
+            response = urllib2.urlopen(url)
+        else:
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            response = urllib2.urlopen(url, context=ctx)
         xml = response.read()
 
         if xml:
@@ -53,7 +60,7 @@ class OneLogin_Saml2_IdPMetadataParser(object):
         return xml
 
     @staticmethod
-    def parse_remote(url, **kwargs):
+    def parse_remote(url, validate_cert=True, **kwargs):
         """
         Gets the metadata XML from the provided URL and parse it, returning a dict with extracted data
 
@@ -63,7 +70,7 @@ class OneLogin_Saml2_IdPMetadataParser(object):
         :returns: settings dict with extracted data
         :rtype: dict
         """
-        idp_metadata = OneLogin_Saml2_IdPMetadataParser.get_metadata(url)
+        idp_metadata = OneLogin_Saml2_IdPMetadataParser.get_metadata(url, validate_cert)
         return OneLogin_Saml2_IdPMetadataParser.parse(idp_metadata, **kwargs)
 
     @staticmethod
