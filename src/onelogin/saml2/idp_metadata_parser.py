@@ -60,24 +60,29 @@ class OneLogin_Saml2_IdPMetadataParser(object):
         return xml
 
     @staticmethod
-    def parse_remote(url, validate_cert=True, **kwargs):
+    def parse_remote(url, validate_cert=True, entity_id=None, **kwargs):
         """
         Gets the metadata XML from the provided URL and parse it, returning a dict with extracted data
 
         :param url: Url where the XML of the Identity Provider Metadata is published.
         :type url: string
 
+        :param entity_id: Specify the entity_id of the EntityDescriptor that you want to parse a XML
+                          that contains multiple EntityDescriptor.
+        :type entity_id: string
+
         :returns: settings dict with extracted data
         :rtype: dict
         """
         idp_metadata = OneLogin_Saml2_IdPMetadataParser.get_metadata(url, validate_cert)
-        return OneLogin_Saml2_IdPMetadataParser.parse(idp_metadata, **kwargs)
+        return OneLogin_Saml2_IdPMetadataParser.parse(idp_metadata, entity_id=entity_id, **kwargs)
 
     @staticmethod
     def parse(
             idp_metadata,
             required_sso_binding=OneLogin_Saml2_Constants.BINDING_HTTP_REDIRECT,
-            required_slo_binding=OneLogin_Saml2_Constants.BINDING_HTTP_REDIRECT):
+            required_slo_binding=OneLogin_Saml2_Constants.BINDING_HTTP_REDIRECT,
+            entity_id=None):
         """
         Parse the Identity Provider metadata and return a dict with extracted data.
 
@@ -104,13 +109,22 @@ class OneLogin_Saml2_IdPMetadataParser(object):
         :type required_slo_binding: one of OneLogin_Saml2_Constants.BINDING_HTTP_REDIRECT
             or OneLogin_Saml2_Constants.BINDING_HTTP_POST
 
+        :param entity_id: Specify the entity_id of the EntityDescriptor that you want to parse a XML
+                          that contains multiple EntityDescriptor.
+        :type entity_id: string
+
         :returns: settings dict with extracted data
         :rtype: dict
         """
         data = {}
 
         dom = fromstring(idp_metadata)
-        entity_descriptor_nodes = OneLogin_Saml2_Utils.query(dom, '//md:EntityDescriptor')
+
+        entity_desc_path = '//md:EntityDescriptor'
+        if entity_id:
+            entity_desc_path += "[@entityID='%s']" % entity_id
+
+        entity_descriptor_nodes = OneLogin_Saml2_Utils.query(dom, entity_desc_path)
 
         idp_entity_id = want_authn_requests_signed = idp_name_id_format = idp_sso_url = idp_slo_url = idp_x509_cert = None
 
