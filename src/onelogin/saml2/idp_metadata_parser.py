@@ -233,9 +233,9 @@ class OneLogin_Saml2_IdPMetadataParser(object):
 
         # previously I will take care of cert stuff
         if 'idp' in new_metadata_settings and 'idp' in result_settings:
-            if new_metadata_settings['idp'].get('x509cert', None) and result_settings['idp'].get('x509certMulti',None):
+            if new_metadata_settings['idp'].get('x509cert', None) and result_settings['idp'].get('x509certMulti', None):
                 del result_settings['idp']['x509certMulti']
-            if new_metadata_settings['idp'].get('x509certMulti', None) and result_settings['idp'].get('x509cert',None):
+            if new_metadata_settings['idp'].get('x509certMulti', None) and result_settings['idp'].get('x509cert', None):
                 del result_settings['idp']['x509cert']
 
         # Merge `new_metadata_settings` into `result_settings`.
