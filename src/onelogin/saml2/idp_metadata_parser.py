@@ -126,7 +126,7 @@ class OneLogin_Saml2_IdPMetadataParser(object):
 
         entity_descriptor_nodes = OneLogin_Saml2_Utils.query(dom, entity_desc_path)
 
-        idp_entity_id = want_authn_requests_signed = idp_name_id_format = idp_sso_url = idp_slo_url = idp_x509_cert = None
+        idp_entity_id = want_authn_requests_signed = idp_name_id_format = idp_sso_url = idp_slo_url = certs = None
 
         if len(entity_descriptor_nodes) > 0:
             for entity_descriptor_node in entity_descriptor_nodes:
@@ -157,9 +157,19 @@ class OneLogin_Saml2_IdPMetadataParser(object):
                     if len(slo_nodes) > 0:
                         idp_slo_url = slo_nodes[0].get('Location', None)
 
-                    cert_nodes = OneLogin_Saml2_Utils.query(idp_descriptor_node, "./md:KeyDescriptor[@use='signing']/ds:KeyInfo/ds:X509Data/ds:X509Certificate")
-                    if len(cert_nodes) > 0:
-                        idp_x509_cert = cert_nodes[0].text
+                    signing_nodes = OneLogin_Saml2_Utils.query(idp_descriptor_node, "./md:KeyDescriptor[not(contains(@use, 'signing'))]/ds:KeyInfo/ds:X509Data/ds:X509Certificate")
+                    encryption_nodes = OneLogin_Saml2_Utils.query(idp_descriptor_node, "./md:KeyDescriptor[not(contains(@use, 'encryption'))]/ds:KeyInfo/ds:X509Data/ds:X509Certificate")
+
+                    if len(signing_nodes) > 0 or len(encryption_nodes) > 0:
+                        certs = {}
+                        if len(signing_nodes) > 0:
+                            certs['signing'] = []
+                            for cert_node in signing_nodes:
+                                certs['signing'].append(''.join(cert_node.text.split()))
+                        if len(encryption_nodes) > 0:
+                            certs['encryption'] = []
+                            for cert_node in encryption_nodes:
+                                certs['encryption'].append(''.join(cert_node.text.split()))
 
                     data['idp'] = {}
 
@@ -176,8 +186,17 @@ class OneLogin_Saml2_IdPMetadataParser(object):
                         data['idp']['singleLogoutService']['url'] = idp_slo_url
                         data['idp']['singleLogoutService']['binding'] = required_slo_binding
 
-                    if idp_x509_cert is not None:
-                        data['idp']['x509cert'] = idp_x509_cert
+                    if certs is not None:
+                        if len(certs) == 1 or \
+                            (('signing' in certs and len(certs['signing']) == 1) and
+                             ('encryption' in certs and len(certs['encryption']) == 1 and
+                             certs['signing'][0] == certs['encryption'][0])):
+                            if 'signing' in certs:
+                                data['idp']['x509cert'] = certs['signing'][0]
+                            else:
+                                data['idp']['x509cert'] = certs['encryption'][0]
+                        else:
+                            data['idp']['x509certMulti'] = certs
 
                     if want_authn_requests_signed is not None:
                         data['security'] = {}
@@ -211,6 +230,14 @@ class OneLogin_Saml2_IdPMetadataParser(object):
         # Guarantee to not modify original data (`settings.copy()` would not
         # be sufficient, as it's just a shallow copy).
         result_settings = deepcopy(settings)
+
+        # previously I will take care of cert stuff
+        if 'idp' in new_metadata_settings and 'idp' in result_settings:
+            if new_metadata_settings['idp'].get('x509cert', None) and result_settings['idp'].get('x509certMulti',None):
+                del result_settings['idp']['x509certMulti']
+            if new_metadata_settings['idp'].get('x509certMulti', None) and result_settings['idp'].get('x509cert',None):
+                del result_settings['idp']['x509cert']
+
         # Merge `new_metadata_settings` into `result_settings`.
         dict_deep_merge(result_settings, new_metadata_settings)
         return result_settings
