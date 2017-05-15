@@ -135,84 +135,82 @@ class OneLogin_Saml2_IdPMetadataParser(object):
         idp_entity_id = want_authn_requests_signed = idp_name_id_format = idp_sso_url = idp_slo_url = certs = None
 
         if len(entity_descriptor_nodes) > 0:
-            for entity_descriptor_node in entity_descriptor_nodes:
-                idp_descriptor_nodes = OneLogin_Saml2_Utils.query(entity_descriptor_node, './md:IDPSSODescriptor')
-                if len(idp_descriptor_nodes) > 0:
-                    idp_descriptor_node = idp_descriptor_nodes[0]
+            entity_descriptor_node = entity_descriptor_nodes[0]
+            idp_descriptor_nodes = OneLogin_Saml2_Utils.query(entity_descriptor_node, './md:IDPSSODescriptor')
+            if len(idp_descriptor_nodes) > 0:
+                idp_descriptor_node = idp_descriptor_nodes[0]
 
-                    idp_entity_id = entity_descriptor_node.get('entityID', None)
+                idp_entity_id = entity_descriptor_node.get('entityID', None)
 
-                    want_authn_requests_signed = entity_descriptor_node.get('WantAuthnRequestsSigned', None)
+                want_authn_requests_signed = entity_descriptor_node.get('WantAuthnRequestsSigned', None)
 
-                    name_id_format_nodes = OneLogin_Saml2_Utils.query(idp_descriptor_node, './md:NameIDFormat')
-                    if len(name_id_format_nodes) > 0:
-                        idp_name_id_format = name_id_format_nodes[0].text
+                name_id_format_nodes = OneLogin_Saml2_Utils.query(idp_descriptor_node, './md:NameIDFormat')
+                if len(name_id_format_nodes) > 0:
+                    idp_name_id_format = name_id_format_nodes[0].text
 
-                    sso_nodes = OneLogin_Saml2_Utils.query(
-                        idp_descriptor_node,
-                        "./md:SingleSignOnService[@Binding='%s']" % required_sso_binding
-                    )
+                sso_nodes = OneLogin_Saml2_Utils.query(
+                    idp_descriptor_node,
+                    "./md:SingleSignOnService[@Binding='%s']" % required_sso_binding
+                )
 
-                    if len(sso_nodes) > 0:
-                        idp_sso_url = sso_nodes[0].get('Location', None)
+                if len(sso_nodes) > 0:
+                    idp_sso_url = sso_nodes[0].get('Location', None)
 
-                    slo_nodes = OneLogin_Saml2_Utils.query(
-                        idp_descriptor_node,
-                        "./md:SingleLogoutService[@Binding='%s']" % required_slo_binding
-                    )
-                    if len(slo_nodes) > 0:
-                        idp_slo_url = slo_nodes[0].get('Location', None)
+                slo_nodes = OneLogin_Saml2_Utils.query(
+                    idp_descriptor_node,
+                    "./md:SingleLogoutService[@Binding='%s']" % required_slo_binding
+                )
+                if len(slo_nodes) > 0:
+                    idp_slo_url = slo_nodes[0].get('Location', None)
 
-                    signing_nodes = OneLogin_Saml2_Utils.query(idp_descriptor_node, "./md:KeyDescriptor[not(contains(@use, 'encryption'))]/ds:KeyInfo/ds:X509Data/ds:X509Certificate")
-                    encryption_nodes = OneLogin_Saml2_Utils.query(idp_descriptor_node, "./md:KeyDescriptor[not(contains(@use, 'signing'))]/ds:KeyInfo/ds:X509Data/ds:X509Certificate")
+                signing_nodes = OneLogin_Saml2_Utils.query(idp_descriptor_node, "./md:KeyDescriptor[not(contains(@use, 'encryption'))]/ds:KeyInfo/ds:X509Data/ds:X509Certificate")
+                encryption_nodes = OneLogin_Saml2_Utils.query(idp_descriptor_node, "./md:KeyDescriptor[not(contains(@use, 'signing'))]/ds:KeyInfo/ds:X509Data/ds:X509Certificate")
 
-                    if len(signing_nodes) > 0 or len(encryption_nodes) > 0:
-                        certs = {}
-                        if len(signing_nodes) > 0:
-                            certs['signing'] = []
-                            for cert_node in signing_nodes:
-                                certs['signing'].append(''.join(cert_node.text.split()))
-                        if len(encryption_nodes) > 0:
-                            certs['encryption'] = []
-                            for cert_node in encryption_nodes:
-                                certs['encryption'].append(''.join(cert_node.text.split()))
+                if len(signing_nodes) > 0 or len(encryption_nodes) > 0:
+                    certs = {}
+                    if len(signing_nodes) > 0:
+                        certs['signing'] = []
+                        for cert_node in signing_nodes:
+                            certs['signing'].append(''.join(cert_node.text.split()))
+                    if len(encryption_nodes) > 0:
+                        certs['encryption'] = []
+                        for cert_node in encryption_nodes:
+                            certs['encryption'].append(''.join(cert_node.text.split()))
 
-                    data['idp'] = {}
+                data['idp'] = {}
 
-                    if idp_entity_id is not None:
-                        data['idp']['entityId'] = idp_entity_id
+                if idp_entity_id is not None:
+                    data['idp']['entityId'] = idp_entity_id
 
-                    if idp_sso_url is not None:
-                        data['idp']['singleSignOnService'] = {}
-                        data['idp']['singleSignOnService']['url'] = idp_sso_url
-                        data['idp']['singleSignOnService']['binding'] = required_sso_binding
+                if idp_sso_url is not None:
+                    data['idp']['singleSignOnService'] = {}
+                    data['idp']['singleSignOnService']['url'] = idp_sso_url
+                    data['idp']['singleSignOnService']['binding'] = required_sso_binding
 
-                    if idp_slo_url is not None:
-                        data['idp']['singleLogoutService'] = {}
-                        data['idp']['singleLogoutService']['url'] = idp_slo_url
-                        data['idp']['singleLogoutService']['binding'] = required_slo_binding
+                if idp_slo_url is not None:
+                    data['idp']['singleLogoutService'] = {}
+                    data['idp']['singleLogoutService']['url'] = idp_slo_url
+                    data['idp']['singleLogoutService']['binding'] = required_slo_binding
 
-                    if certs is not None:
-                        if len(certs) == 1 or \
-                            (('signing' in certs and len(certs['signing']) == 1) and
-                             ('encryption' in certs and len(certs['encryption']) == 1 and
-                             certs['signing'][0] == certs['encryption'][0])):
-                            if 'signing' in certs:
-                                data['idp']['x509cert'] = certs['signing'][0]
-                            else:
-                                data['idp']['x509cert'] = certs['encryption'][0]
+                if certs is not None:
+                    if len(certs) == 1 or \
+                        (('signing' in certs and len(certs['signing']) == 1) and
+                         ('encryption' in certs and len(certs['encryption']) == 1 and
+                         certs['signing'][0] == certs['encryption'][0])):
+                        if 'signing' in certs:
+                            data['idp']['x509cert'] = certs['signing'][0]
                         else:
-                            data['idp']['x509certMulti'] = certs
+                            data['idp']['x509cert'] = certs['encryption'][0]
+                    else:
+                        data['idp']['x509certMulti'] = certs
 
-                    if want_authn_requests_signed is not None:
-                        data['security'] = {}
-                        data['security']['authnRequestsSigned'] = want_authn_requests_signed
+                if want_authn_requests_signed is not None:
+                    data['security'] = {}
+                    data['security']['authnRequestsSigned'] = want_authn_requests_signed
 
-                    if idp_name_id_format:
-                        data['sp'] = {}
-                        data['sp']['NameIDFormat'] = idp_name_id_format
-
-                    break
+                if idp_name_id_format:
+                    data['sp'] = {}
+                    data['sp']['NameIDFormat'] = idp_name_id_format
         return data
 
     @staticmethod
