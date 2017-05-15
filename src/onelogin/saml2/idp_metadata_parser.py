@@ -32,6 +32,9 @@ class OneLogin_Saml2_IdPMetadataParser(object):
         :param url: Url where the XML of the Identity Provider Metadata is published.
         :type url: string
 
+        :param validate_cert: If the url uses https schema, that flag enables or not the verification of the associated certificate.
+        :type validate_cert: bool
+
         :returns: metadata XML
         :rtype: string
         """
@@ -66,6 +69,9 @@ class OneLogin_Saml2_IdPMetadataParser(object):
 
         :param url: Url where the XML of the Identity Provider Metadata is published.
         :type url: string
+
+        :param validate_cert: If the url uses https schema, that flag enables or not the verification of the associated certificate.
+        :type validate_cert: bool
 
         :param entity_id: Specify the entity_id of the EntityDescriptor that you want to parse a XML
                           that contains multiple EntityDescriptor.
