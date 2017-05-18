@@ -227,7 +227,7 @@ class OneLogin_Saml2_Metadata(object):
         return OneLogin_Saml2_Utils.add_sign(metadata, key, cert, False, sign_algorithm, digest_algorithm)
 
     @staticmethod
-    def add_x509_key_descriptors(metadata, cert=None):
+    def add_x509_key_descriptors(metadata, cert=None, add_encryption=True):
         """
         Adds the x509 descriptors (sign/encryption) to the metadata
         The same cert will be used for sign/encrypt
@@ -237,6 +237,9 @@ class OneLogin_Saml2_Metadata(object):
 
         :param cert: x509 cert
         :type cert: string
+
+        :param add_encryption: Determines if the KeyDescriptor[use="encryption"] should be added.
+        :type add_encryption: boolean
 
         :returns: Metadata with KeyDescriptors
         :rtype: string
@@ -265,18 +268,18 @@ class OneLogin_Saml2_Metadata(object):
 
         sp_sso_descriptor = entity_descriptor.getElementsByTagName('md:SPSSODescriptor')[0]
         sp_sso_descriptor.insertBefore(key_descriptor.cloneNode(True), sp_sso_descriptor.firstChild)
-        sp_sso_descriptor.insertBefore(key_descriptor.cloneNode(True), sp_sso_descriptor.firstChild)
+        if add_encryption:        
+            sp_sso_descriptor.insertBefore(key_descriptor.cloneNode(True), sp_sso_descriptor.firstChild)
 
         signing = xml.getElementsByTagName('md:KeyDescriptor')[0]
         signing.setAttribute('use', 'signing')
-
-        encryption = xml.getElementsByTagName('md:KeyDescriptor')[1]
-        encryption.setAttribute('use', 'encryption')
-
         signing.appendChild(key_info)
-        encryption.appendChild(key_info.cloneNode(True))
-
         signing.setAttribute('xmlns:ds', OneLogin_Saml2_Constants.NS_DS)
-        encryption.setAttribute('xmlns:ds', OneLogin_Saml2_Constants.NS_DS)
+
+        if add_encryption:
+            encryption = xml.getElementsByTagName('md:KeyDescriptor')[1]
+            encryption.setAttribute('use', 'encryption')
+            encryption.appendChild(key_info.cloneNode(True))
+            encryption.setAttribute('xmlns:ds', OneLogin_Saml2_Constants.NS_DS)
 
         return xml.toxml()
