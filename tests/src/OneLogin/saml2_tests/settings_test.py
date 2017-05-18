@@ -165,6 +165,21 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         settings_3 = OneLogin_Saml2_Settings(settings_data, custom_base_path=custom_base_path)
         self.assertIsNone(settings_3.get_sp_cert())
 
+    def testGetSPCertNew(self):
+        """
+        Tests the get_sp_cert_new method of the OneLogin_Saml2_Settings
+        """
+        settings_data = self.loadSettingsJSON()
+        cert = "-----BEGIN CERTIFICATE-----\nMIICgTCCAeoCCQCbOlrWDdX7FTANBgkqhkiG9w0BAQUFADCBhDELMAkGA1UEBhMC\nTk8xGDAWBgNVBAgTD0FuZHJlYXMgU29sYmVyZzEMMAoGA1UEBxMDRm9vMRAwDgYD\nVQQKEwdVTklORVRUMRgwFgYDVQQDEw9mZWlkZS5lcmxhbmcubm8xITAfBgkqhkiG\n9w0BCQEWEmFuZHJlYXNAdW5pbmV0dC5ubzAeFw0wNzA2MTUxMjAxMzVaFw0wNzA4\nMTQxMjAxMzVaMIGEMQswCQYDVQQGEwJOTzEYMBYGA1UECBMPQW5kcmVhcyBTb2xi\nZXJnMQwwCgYDVQQHEwNGb28xEDAOBgNVBAoTB1VOSU5FVFQxGDAWBgNVBAMTD2Zl\naWRlLmVybGFuZy5ubzEhMB8GCSqGSIb3DQEJARYSYW5kcmVhc0B1bmluZXR0Lm5v\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDivbhR7P516x/S3BqKxupQe0LO\nNoliupiBOesCO3SHbDrl3+q9IbfnfmE04rNuMcPsIxB161TdDpIesLCn7c8aPHIS\nKOtPlAeTZSnb8QAu7aRjZq3+PbrP5uW3TcfCGPtKTytHOge/OlJbo078dVhXQ14d\n1EDwXJW1rRXuUt4C8QIDAQABMA0GCSqGSIb3DQEBBQUAA4GBACDVfp86HObqY+e8\nBUoWQ9+VMQx1ASDohBjwOsg2WykUqRXF+dLfcUH9dWR63CtZIKFDbStNomPnQz7n\nbK+onygwBspVEbnHuUihZq3ZUdmumQqCw4Uvs/1Uvq3orOo/WJVhTyvLgFVK2Qar\nQ4/67OZfHd7R+POBXhophSMv1ZOo\n-----END CERTIFICATE-----\n"
+        settings = OneLogin_Saml2_Settings(settings_data)
+        self.assertEqual(cert, settings.get_sp_cert())
+        self.assertIsNone(settings.get_sp_cert_new())
+
+        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON('settings7.json'))
+        cert_new = "-----BEGIN CERTIFICATE-----\nMIICVDCCAb2gAwIBAgIBADANBgkqhkiG9w0BAQ0FADBHMQswCQYDVQQGEwJ1czEQ\nMA4GA1UECAwHZXhhbXBsZTEQMA4GA1UECgwHZXhhbXBsZTEUMBIGA1UEAwwLZXhh\nbXBsZS5jb20wHhcNMTcwNDA3MDgzMDAzWhcNMjcwNDA1MDgzMDAzWjBHMQswCQYD\nVQQGEwJ1czEQMA4GA1UECAwHZXhhbXBsZTEQMA4GA1UECgwHZXhhbXBsZTEUMBIG\nA1UEAwwLZXhhbXBsZS5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAKhP\nS4/0azxbQekHHewQGKD7Pivr3CDpsrKxY3xlVanxj427OwzOb5KUVzsDEazumt6s\nZFY8HfidsjXY4EYA4ZzyL7ciIAR5vlAsIYN9nJ4AwVDnN/RjVwj+TN6BqWPLpVIp\nHc6Dl005HyE0zJnk1DZDn2tQVrIzbD3FhCp7YeotAgMBAAGjUDBOMB0GA1UdDgQW\nBBRYZx4thASfNvR/E7NsCF2IaZ7wIDAfBgNVHSMEGDAWgBRYZx4thASfNvR/E7Ns\nCF2IaZ7wIDAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBDQUAA4GBACz4aobx9aG3\nkh+rNyrlgM3K6dYfnKG1/YH5sJCAOvg8kDr0fQAQifH8lFVWumKUMoAe0bFTfwWt\np/VJ8MprrEJth6PFeZdczpuv+fpLcNj2VmNVJqvQYvS4m36OnBFh1QFZW8UrbFIf\ndtm2nuZ+twSKqfKwjLdqcoX0p39h7Uw/\n-----END CERTIFICATE-----\n"
+        self.assertEqual(cert, settings.get_sp_cert())
+        self.assertEqual(cert_new, settings.get_sp_cert_new())
+
     def testGetSPKey(self):
         """
         Tests the get_sp_key method of the OneLogin_Saml2_Settings
@@ -337,6 +352,23 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         self.assertIn('<md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://stuff.com/endpoints/endpoints/acs.php" index="1"/>', metadata)
         self.assertIn('<md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://stuff.com/endpoints/endpoints/sls.php"/>', metadata)
         self.assertIn('<md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>', metadata)
+        self.assertEquals(2, metadata.count('<md:KeyDescriptor'))
+        self.assertEquals(1, metadata.count('<md:KeyDescriptor use="signing"'))
+        self.assertEquals(1, metadata.count('<md:KeyDescriptor use="encryption"'))
+
+    def testGetSPMetadataWithx509certNew(self):
+        """
+        Tests the getSPMetadata method of the OneLogin_Saml2_Settings
+        Case with x509certNew
+        """
+        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON('settings7.json'))
+        metadata = settings.get_sp_metadata()
+
+        self.assertNotEqual(len(metadata), 0)
+        self.assertIn('<md:SPSSODescriptor', metadata)
+        self.assertEquals(4, metadata.count('<md:KeyDescriptor'))
+        self.assertEquals(2, metadata.count('<md:KeyDescriptor use="signing"'))
+        self.assertEquals(2, metadata.count('<md:KeyDescriptor use="encryption"'))
 
     def testGetUnicodeSPMetadata(self):
         """
@@ -527,6 +559,18 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         x509cert = 'MIICgTCCAeoCCQCbOlrWDdX7FTANBgkqhkiG9w0BAQUFADCBhDELMAkGA1UEBhMCTk8xGDAWBgNVBAgTD0FuZHJlYXMgU29sYmVyZzEMMAoGA1UEBxMDRm9vMRAwDgYDVQQKEwdVTklORVRUMRgwFgYDVQQDEw9mZWlkZS5lcmxhbmcubm8xITAfBgkqhkiG9w0BCQEWEmFuZHJlYXNAdW5pbmV0dC5ubzAeFw0wNzA2MTUxMjAxMzVaFw0wNzA4MTQxMjAxMzVaMIGEMQswCQYDVQQGEwJOTzEYMBYGA1UECBMPQW5kcmVhcyBTb2xiZXJnMQwwCgYDVQQHEwNGb28xEDAOBgNVBAoTB1VOSU5FVFQxGDAWBgNVBAMTD2ZlaWRlLmVybGFuZy5ubzEhMB8GCSqGSIb3DQEJARYSYW5kcmVhc0B1bmluZXR0Lm5vMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDivbhR7P516x/S3BqKxupQe0LONoliupiBOesCO3SHbDrl3+q9IbfnfmE04rNuMcPsIxB161TdDpIesLCn7c8aPHISKOtPlAeTZSnb8QAu7aRjZq3+PbrP5uW3TcfCGPtKTytHOge/OlJbo078dVhXQ14d1EDwXJW1rRXuUt4C8QIDAQABMA0GCSqGSIb3DQEBBQUAA4GBACDVfp86HObqY+e8BUoWQ9+VMQx1ASDohBjwOsg2WykUqRXF+dLfcUH9dWR63CtZIKFDbStNomPnQz7nbK+onygwBspVEbnHuUihZq3ZUdmumQqCw4Uvs/1Uvq3orOo/WJVhTyvLgFVK2QarQ4/67OZfHd7R+POBXhophSMv1ZOo'
         formated_x509_cert = OneLogin_Saml2_Utils.format_cert(x509cert)
         self.assertEqual(formated_x509_cert, idp_data['x509cert'])
+
+        settings2 = OneLogin_Saml2_Settings(self.loadSettingsJSON('settings8.json'))
+        idp_data2 = settings2.get_idp_data()
+        self.assertNotEqual(len(idp_data2), 0)
+        self.assertIn('x509certMulti', idp_data2)
+        self.assertIn('signing', idp_data2['x509certMulti'])
+        self.assertIn('encryption', idp_data2['x509certMulti'])
+        x509cert2 = 'MIICbDCCAdWgAwIBAgIBADANBgkqhkiG9w0BAQ0FADBTMQswCQYDVQQGEwJ1czETMBEGA1UECAwKQ2FsaWZvcm5pYTEVMBMGA1UECgwMT25lbG9naW4gSW5jMRgwFgYDVQQDDA9pZHAuZXhhbXBsZS5jb20wHhcNMTQwOTIzMTIyNDA4WhcNNDIwMjA4MTIyNDA4WjBTMQswCQYDVQQGEwJ1czETMBEGA1UECAwKQ2FsaWZvcm5pYTEVMBMGA1UECgwMT25lbG9naW4gSW5jMRgwFgYDVQQDDA9pZHAuZXhhbXBsZS5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAOWA+YHU7cvPOrBOfxCscsYTJB+kH3MaA9BFrSHFS+KcR6cw7oPSktIJxUgvDpQbtfNcOkE/tuOPBDoech7AXfvH6d7Bw7xtW8PPJ2mB5Hn/HGW2roYhxmfh3tR5SdwN6i4ERVF8eLkvwCHsNQyK2Ref0DAJvpBNZMHCpS24916/AgMBAAGjUDBOMB0GA1UdDgQWBBQ77/qVeiigfhYDITplCNtJKZTM8DAfBgNVHSMEGDAWgBQ77/qVeiigfhYDITplCNtJKZTM8DAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBDQUAA4GBAJO2j/1uO80E5C2PM6Fk9mzerrbkxl7AZ/mvlbOn+sNZE+VZ1AntYuG8ekbJpJtG1YfRfc7EA9mEtqvv4dhv7zBy4nK49OR+KpIBjItWB5kYvrqMLKBa32sMbgqqUqeF1ENXKjpvLSuPdfGJZA3dNa/+Dyb8GGqWe707zLyc5F8m'
+        formated_x509_cert2 = OneLogin_Saml2_Utils.format_cert(x509cert2)
+        self.assertEqual(formated_x509_cert2, idp_data2['x509certMulti']['signing'][0])
+        self.assertEqual(formated_x509_cert, idp_data2['x509certMulti']['signing'][1])
+        self.assertEqual(formated_x509_cert, idp_data2['x509certMulti']['encryption'][0])
 
     def testGetSPData(self):
         """

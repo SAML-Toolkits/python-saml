@@ -44,9 +44,6 @@ class OneLogin_Saml2_SignedResponse_Test(unittest.TestCase):
         response = OneLogin_Saml2_Response(settings, b64encode(message))
 
         self.assertEquals('someone@example.org', response.get_nameid())
-        from onelogin.saml2.utils import OneLogin_Saml2_Utils
-        assertion_nodes = OneLogin_Saml2_Utils.query(response.document, '//saml:Assertion')
-        self.assertEquals(len(assertion_nodes), 1)
 
     def testResponseAndAssertionSigned(self):
         """

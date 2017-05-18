@@ -22,15 +22,13 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
     data_path = join(dirname(dirname(dirname(dirname(__file__)))), 'data')
     settings_path = join(dirname(dirname(dirname(dirname(__file__)))), 'settings')
 
-    def loadSettingsJSON(self):
-        filename = join(self.settings_path, 'settings1.json')
+    def loadSettingsJSON(self, name='settings1.json'):
+        filename = join(self.settings_path, name)
         if exists(filename):
             stream = open(filename, 'r')
             settings = json.load(stream)
             stream.close()
             return settings
-        else:
-            raise Exception('Settings json file does not exist')
 
     def file_contents(self, filename):
         f = open(filename, 'r')
@@ -56,6 +54,27 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
         payload = exploded['SAMLRequest'][0]
         inflated = OneLogin_Saml2_Utils.decode_base64_and_inflate(payload)
         self.assertRegexpMatches(inflated, '^<samlp:LogoutRequest')
+
+    def testConstructorEncryptIdUsingX509certMulti(self):
+        """
+        Tests the OneLogin_Saml2_LogoutRequest Constructor.
+        Case: Able to generate encryptedID with MultiCert
+        """
+        settings_info = self.loadSettingsJSON('settings8.json')
+        settings_info['security']['nameIdEncrypted'] = True
+        settings = OneLogin_Saml2_Settings(settings_info)
+
+        logout_request = OneLogin_Saml2_Logout_Request(settings)
+
+        parameters = {'SAMLRequest': logout_request.get_request()}
+        logout_url = OneLogin_Saml2_Utils.redirect('http://idp.example.com/SingleLogoutService.php', parameters, True)
+        self.assertRegexpMatches(logout_url, '^http://idp\.example\.com\/SingleLogoutService\.php\?SAMLRequest=')
+        url_parts = urlparse(logout_url)
+        exploded = parse_qs(url_parts.query)
+        payload = exploded['SAMLRequest'][0]
+        inflated = OneLogin_Saml2_Utils.decode_base64_and_inflate(payload)
+        self.assertRegexpMatches(inflated, '^<samlp:LogoutRequest')
+        self.assertRegexpMatches(inflated, '<saml:EncryptedID>')
 
     def testCreateDeflatedSAMLLogoutRequestURLParameter(self):
         """
@@ -425,6 +444,26 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
         logout_request7 = OneLogin_Saml2_Logout_Request(settings_2, b64encode(request_2))
         self.assertFalse(logout_request7.is_valid(request_data))
         self.assertEqual('In order to validate the sign on the Logout Request, the x509cert of the IdP is required', logout_request7.get_error())
+
+    def testIsValidSignUsingX509certMulti(self):
+        """
+        Tests the is_valid method of the OneLogin_Saml2_LogoutRequest
+        """
+        request_data = {
+            'http_host': 'example.com',
+            'script_name': 'index.html',
+            'get_data': {
+                'SAMLRequest': 'fZJNa+MwEIb/itHdiTz6sC0SQyEsBPoB27KHXoIsj7cGW3IlGfLzV7G7kN1DL2KYmeedmRcdgp7GWT26326JP/FzwRCz6zTaoNbKkSzeKqfDEJTVEwYVjXp9eHpUsKNq9i4640Zyh3xP6BDQx8FZkp1PR3KpqexAl72QmpUCS8SW01IiZz2TVVGD4X1VQYlAsl/oQyKPJAklPIQFzzZEbWNK0YLnlOVA3wqpQCoB7yQ7pWsGq+NKfcQ4q/0+xKXvd8ZNe7Td7AYbw10UxrCbP2aSPbv4Yl/8Qx/R3+SB5bTOoXiDQvFNvjnc7lXrIr75kh+6eYdXPc0jrkMO+/umjXhOtpxP2Q/nJx2/9+uWGbq8X1tV9NqGAW0kzaVvoe1AAJeCSWqYaUVRM2SilKKuqDTpFSlszdcK29RthVm9YriZebYdXpsLdhVAB7VJzif3haYMqqTVcl0JMBR4y+s2zak3sf/4v8l/vlHzBw==',
+                'RelayState': '_1037fbc88ec82ce8e770b2bed1119747bb812a07e6',
+                'SigAlg': 'http://www.w3.org/2000/09/xmldsig#rsa-sha1',
+                'Signature': 'Ouxo9BV6zmq4yrgamT9EbSKy/UmvSxGS8z26lIMgKOEP4LFR/N23RftdANmo4HafrzSfA0YTXwhKDqbOByS0j+Ql8OdQOes7vGioSjo5qq/Bi+5i6jXwQfphnfcHAQiJL4gYVIifkhhHRWpvYeiysF1Y9J02me0izwazFmoRXr4='
+            }
+        }
+        settings_info = self.loadSettingsJSON('settings8.json')
+        settings_info['strict'] = False
+        settings = OneLogin_Saml2_Settings(settings_info)
+        logout_request = OneLogin_Saml2_Logout_Request(settings, request_data['get_data']['SAMLRequest'])
+        self.assertTrue(logout_request.is_valid(request_data))
 
     def testGetXML(self):
         """

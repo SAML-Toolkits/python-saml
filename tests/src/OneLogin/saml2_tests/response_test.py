@@ -22,12 +22,10 @@ from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
 class OneLogin_Saml2_Response_Test(unittest.TestCase):
     data_path = join(dirname(dirname(dirname(dirname(__file__)))), 'data')
+    settings_path = join(dirname(dirname(dirname(dirname(__file__)))), 'settings')
 
-    def loadSettingsJSON(self, filename=None):
-        if filename:
-            filename = join(dirname(dirname(dirname(dirname(__file__)))), 'settings', filename)
-        else:
-            filename = join(dirname(dirname(dirname(dirname(__file__)))), 'settings', 'settings1.json')
+    def loadSettingsJSON(self, name='settings1.json'):
+        filename = join(self.settings_path, name)
         if exists(filename):
             stream = open(filename, 'r')
             settings = json.load(stream)
@@ -1353,6 +1351,16 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
         response_9 = OneLogin_Saml2_Response(settings, xml_9)
         # Modified message
         self.assertFalse(response_9.is_valid(self.get_request_data()))
+
+    def testIsValidSignUsingX509certMulti(self):
+        """
+        Tests the is_valid method of the OneLogin_Saml2_Response
+        Case Using x509certMulti
+        """
+        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON('settings8.json'))
+        xml = self.file_contents(join(self.data_path, 'responses', 'signed_message_response.xml.base64'))
+        response = OneLogin_Saml2_Response(settings, xml)
+        self.assertTrue(response.is_valid(self.get_request_data()))
 
     def testIsValidSignWithEmptyReferenceURI(self):
         settings_info = self.loadSettingsJSON()

@@ -22,15 +22,13 @@ class OneLogin_Saml2_Logout_Response_Test(unittest.TestCase):
     data_path = join(dirname(dirname(dirname(dirname(__file__)))), 'data')
     settings_path = join(dirname(dirname(dirname(dirname(__file__)))), 'settings')
 
-    def loadSettingsJSON(self):
-        filename = join(self.settings_path, 'settings1.json')
+    def loadSettingsJSON(self, name='settings1.json'):
+        filename = join(self.settings_path, name)
         if exists(filename):
             stream = open(filename, 'r')
             settings = json.load(stream)
             stream.close()
             return settings
-        else:
-            raise Exception('Settings json file does not exist')
 
     def file_contents(self, filename):
         f = open(filename, 'r')
@@ -366,6 +364,26 @@ class OneLogin_Saml2_Logout_Response_Test(unittest.TestCase):
 
         response_3 = OneLogin_Saml2_Logout_Response(settings, message_3)
         self.assertTrue(response_3.is_valid(request_data))
+
+    def testIsValidSignUsingX509certMulti(self):
+        """
+        Tests the is_valid method of the OneLogin_Saml2_LogoutResponse
+        """
+        request_data = {
+            'http_host': 'example.com',
+            'script_name': 'index.html',
+            'get_data': {
+                'SAMLResponse': 'fZHbasJAEIZfJey9ZrNZc1gSodRSBKtQxYveyGQz1kCyu2Q24OM3jS21UHo3p++f4Z+CoGud2th3O/hXJGcNYXDtWkNqapVs6I2yQA0pAx2S8lrtH142Ssy5cr31VtuW3SH/E0CEvW+sYcF6VbLTIktFLMWZgxQR8DSP85wDB4GJGMOqShYVaoBUsOCIPY1kyUahEScacG3Ig/FjiUdyxuOZ4IcoUVGq4vSNBSsk3xjwE3Xx3qkwJD+cz3NtuxBN7WxjPN1F1NLcXdwob77tONiS7bZPm93zenvCqopxgVJmuU50jREsZF4noKWAOuNZJbNznnBky+LTDDVd2S+/dje1m+MVOtfidEER3g8Vt2fsPfiBfmePtsbgCO2A/9tL07TaD1ojEQuXtw0/ouFfD19+AA==',
+                'RelayState': 'http://stuff.com/endpoints/endpoints/index.php',
+                'SigAlg': 'http://www.w3.org/2000/09/xmldsig#rsa-sha1',
+                'Signature': 'OV9c4R0COSjN69fAKCpV7Uj/yx6/KFxvbluVCzdK3UuortpNMpgHFF2wYNlMSG9GcYGk6p3I8nB7Z+1TQchMWZOlO/StjAqgtZhtpiwPcWryNuq8vm/6hnJ3zMDhHTS7F8KG4qkCXmJ9sQD3Y31UNcuygBwIbNakvhDT5Qo9Nsw='
+            }
+        }
+        settings_info = self.loadSettingsJSON('settings8.json')
+        settings_info['strict'] = False
+        settings = OneLogin_Saml2_Settings(settings_info)
+        logout_response = OneLogin_Saml2_Logout_Response(settings, request_data['get_data']['SAMLResponse'])
+        self.assertTrue(logout_response.is_valid(request_data))
 
     def testGetXML(self):
         """
