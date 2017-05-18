@@ -365,7 +365,7 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         metadata = settings.get_sp_metadata()
         self.assertEquals(2, metadata.count('<md:KeyDescriptor'))
         self.assertEquals(1, metadata.count('<md:KeyDescriptor use="signing"'))
-        self.assertEquals(1, metadata.count('<md:KeyDescriptor use="encryption"'))        
+        self.assertEquals(1, metadata.count('<md:KeyDescriptor use="encryption"'))
 
     def testGetSPMetadataWithx509certNew(self):
         """

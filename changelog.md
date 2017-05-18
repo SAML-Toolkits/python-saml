@@ -1,7 +1,23 @@
 # python-saml changelog
+### 2.2.2 (May 18, 2017)
+* Be able to relax SSL Certificate verification when retrieving idp metadata
+* [#195](https://github.com/onelogin/python-saml/pull/195) Be able to register future SP x509cert on the settings and publish it on SP metadata
+* [#195](https://github.com/onelogin/python-saml/pull/195) Be able to register more than 1 Identity Provider x509cert, linked with an specific use (signing or encryption
+* [#195](https://github.com/onelogin/python-saml/pull/195) Allow metadata to be retrieved from source containing data of multiple entities
+* [#195](https://github.com/onelogin/python-saml/pull/195) Adapt IdP XML metadata parser to take care of multiple IdP certtificates and be able to inject the data obtained on the settings.
+* [#194](https://github.com/onelogin/python-saml/pull/194) Publish KeyDescriptor[use=encryption] only when required
+* [#190](https://github.com/onelogin/python-saml/pull/190) Checking the status of response before assertion count
+* Add Pyramid demo example
+* Allows underscores in URL hosts
+* NameID Format improvements
+* [#184](https://github.com/onelogin/python-saml/pull/184) Be able to provide a NameIDFormat to LogoutRequest
+* [#180](https://github.com/onelogin/python-saml/pull/180) Add DigestMethod support. (Add sign_algorithm and digest_algorithm parameters to sign_metadata and add_sign)
+* Validate serial number as string to work around libxml2 limitation
+* Make the Issuer on the Response Optional
+
 
 ### 2.2.1 (Jan 11, 2017)
-* [#175]((https://github.com/onelogin/python-saml/pull/175)  Optionally raise detailed exceptions vs. returning False.
+* [#175](https://github.com/onelogin/python-saml/pull/175)  Optionally raise detailed exceptions vs. returning False.
 Implement a more specific exception class for handling some validation errors. Improve/Fix tests
 * [#171](https://github.com/onelogin/python-saml/pull/171) Add hooks to retrieve last-sent and last-received requests and responses
 * Improved inResponse validation on Responses
