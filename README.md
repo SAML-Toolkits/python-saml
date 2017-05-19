@@ -543,6 +543,7 @@ This parameter has the following scheme:
 
 ```javascript
 req = {
+    "https": ""  
     "http_host": "",
     "script_name": "",
     "server_port": "",
@@ -574,7 +575,7 @@ def prepare_from_flask_request(request):
         'post_data': request.form.copy()
     }
 ```
-
+The https dictionary entry should be set to on for https requests and off for http
 
 #### Initiate SSO ####
 
