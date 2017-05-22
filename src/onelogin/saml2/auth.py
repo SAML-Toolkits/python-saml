@@ -138,6 +138,7 @@ class OneLogin_Saml2_Auth(object):
                 self.__errors.append('logout_not_success')
             elif not keep_local_session:
                 OneLogin_Saml2_Utils.delete_local_session(delete_session_cb)
+            return self.__request_data['get_data'].get('RelayState') or '/'
 
         elif 'get_data' in self.__request_data and 'SAMLRequest' in self.__request_data['get_data']:
             logout_request = OneLogin_Saml2_Logout_Request(self.__settings, self.__request_data['get_data']['SAMLRequest'])
