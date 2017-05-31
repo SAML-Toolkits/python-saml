@@ -268,7 +268,7 @@ class OneLogin_Saml2_Metadata(object):
 
         sp_sso_descriptor = entity_descriptor.getElementsByTagName('md:SPSSODescriptor')[0]
         sp_sso_descriptor.insertBefore(key_descriptor.cloneNode(True), sp_sso_descriptor.firstChild)
-        if add_encryption:        
+        if add_encryption:
             sp_sso_descriptor.insertBefore(key_descriptor.cloneNode(True), sp_sso_descriptor.firstChild)
 
         signing = xml.getElementsByTagName('md:KeyDescriptor')[0]

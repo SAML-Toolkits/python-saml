@@ -655,11 +655,11 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         OneLogin_Saml2_Utils.delete_local_session()
         self.assertEqual(1, local_session_test)
 
-        dscb = lambda: self.session_cear()
+        dscb = lambda: self.session_clear()
         OneLogin_Saml2_Utils.delete_local_session(dscb)
         self.assertEqual(0, local_session_test)
 
-    def session_cear(self):
+    def session_clear(self):
         """
         Auxiliar method to test the delete_local_session method of the OneLogin_Saml2_Utils
         """
