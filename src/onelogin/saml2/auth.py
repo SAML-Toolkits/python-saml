@@ -13,7 +13,7 @@ Initializes the SP SAML instance
 
 from base64 import b64encode
 from urllib import quote_plus
-from lxml import etree
+from defusedxml.lxml import tostring
 
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.response import OneLogin_Saml2_Response
@@ -486,7 +486,7 @@ class OneLogin_Saml2_Auth(object):
             if isinstance(self.__last_response, basestring):
                 response = self.__last_response
             else:
-                response = etree.tostring(self.__last_response, pretty_print=pretty_print_if_possible)
+                response = tostring(self.__last_response, pretty_print=pretty_print_if_possible)
         return response
 
     def get_last_request_xml(self):

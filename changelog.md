@@ -1,4 +1,8 @@
 # python-saml changelog
+### 2.2.3 (Jun 15, 2017)
+* Replace some etree.tostring calls, that were introduced recfently,  by the sanitized call provided by defusedxml
+* Update dm.xmlsec.binding requirement to 1.3.3 version
+
 ### 2.2.2 (May 18, 2017)
 * Be able to relax SSL Certificate verification when retrieving idp metadata
 * [#195](https://github.com/onelogin/python-saml/pull/195) Be able to register future SP x509cert on the settings and publish it on SP metadata

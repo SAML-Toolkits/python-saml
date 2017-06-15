@@ -153,7 +153,7 @@ class OneLogin_Saml2_Utils(object):
 
             return 'invalid_xml'
 
-        return parseString(etree.tostring(dom, encoding='unicode').encode('utf-8'))
+        return parseString(tostring(dom, encoding='unicode').encode('utf-8'))
 
     @staticmethod
     def format_cert(cert, heads=True):
@@ -680,7 +680,7 @@ class OneLogin_Saml2_Utils(object):
 
             edata = enc_ctx.encryptXml(enc_data, elem[0])
 
-            newdoc = parseString(etree.tostring(edata, encoding='unicode').encode('utf-8'))
+            newdoc = parseString(tostring(edata, encoding='unicode').encode('utf-8'))
 
             if newdoc.hasChildNodes():
                 child = newdoc.firstChild
@@ -897,7 +897,7 @@ class OneLogin_Saml2_Utils(object):
         dsig_ctx.signKey = sign_key
         dsig_ctx.sign(signature)
 
-        newdoc = parseString(etree.tostring(elem, encoding='unicode').encode('utf-8'))
+        newdoc = parseString(tostring(elem, encoding='unicode').encode('utf-8'))
 
         signature_nodes = newdoc.getElementsByTagName("Signature")
 

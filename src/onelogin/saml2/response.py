@@ -11,8 +11,7 @@ SAML Response class of OneLogin's Python Toolkit.
 
 from base64 import b64decode
 from copy import deepcopy
-from lxml import etree
-from defusedxml.lxml import fromstring
+from defusedxml.lxml import tostring, fromstring
 from xml.dom.minidom import Document
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
@@ -107,7 +106,7 @@ class OneLogin_Saml2_Response(object):
             if self.__settings.is_strict():
                 no_valid_xml_msg = 'Invalid SAML Response. Not match the saml-schema-protocol-2.0.xsd'
                 res = OneLogin_Saml2_Utils.validate_xml(
-                    etree.tostring(self.document),
+                    tostring(self.document),
                     'saml-schema-protocol-2.0.xsd',
                     self.__settings.is_debug_active()
                 )
@@ -120,7 +119,7 @@ class OneLogin_Saml2_Response(object):
                 # If encrypted, check also the decrypted document
                 if self.encrypted:
                     res = OneLogin_Saml2_Utils.validate_xml(
-                        etree.tostring(self.decrypted_document),
+                        tostring(self.decrypted_document),
                         'saml-schema-protocol-2.0.xsd',
                         self.__settings.is_debug_active()
                     )
