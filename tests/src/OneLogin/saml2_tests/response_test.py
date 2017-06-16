@@ -135,6 +135,12 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'An empty NameID value found'):
             response_9.get_nameid()
 
+        json_settings['security']['wantNameId'] = False
+        settings = OneLogin_Saml2_Settings(json_settings)
+
+        nameid_9 = response_9.get_nameid()
+        self.assertEqual(None, nameid_9)
+
     def testReturnNameIdFormat(self):
         """
         Tests the get_nameid_format method of the OneLogin_Saml2_Response
@@ -192,6 +198,12 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         response_9 = OneLogin_Saml2_Response(settings, xml_6)
         with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'An empty NameID value found'):
             response_9.get_nameid_format()
+
+        json_settings['security']['wantNameId'] = False
+        settings = OneLogin_Saml2_Settings(json_settings)
+
+        nameid_9 = response_9.get_nameid_format()
+        self.assertEqual(None, nameid_9)
 
     def testGetNameIdData(self):
         """
@@ -268,6 +280,12 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         response_9 = OneLogin_Saml2_Response(settings, xml_6)
         with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'An empty NameID value found'):
             response_9.get_nameid_data()
+
+        json_settings['security']['wantNameId'] = False
+        settings = OneLogin_Saml2_Settings(json_settings)
+
+        nameid_data_9 = response_9.get_nameid_data()
+        self.assertEqual({}, nameid_data_9)
 
     def testCheckStatus(self):
         """
