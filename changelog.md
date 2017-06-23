@@ -1,4 +1,7 @@
 # python-saml changelog
+### 2.2.4 (unreleased)
+* Get NameID when element decrypted twice
+
 ### 2.2.3 (Jun 15, 2017)
 * Replace some etree.tostring calls, that were introduced recfently,  by the sanitized call provided by defusedxml
 * Update dm.xmlsec.binding requirement to 1.3.3 version
