@@ -10,6 +10,7 @@ Auxiliary class of OneLogin's Python Toolkit.
 """
 
 import base64
+from copy import deepcopy
 from datetime import datetime
 import calendar
 from hashlib import sha1, sha256, sha384, sha512
@@ -746,7 +747,7 @@ class OneLogin_Saml2_Utils(object):
         return status
 
     @staticmethod
-    def decrypt_element(encrypted_data, key, debug=False):
+    def decrypt_element(encrypted_data, key, debug=False, inplace=False):
         """
         Decrypts an encrypted element.
 
@@ -759,6 +760,9 @@ class OneLogin_Saml2_Utils(object):
         :param debug: Activate the xmlsec debug
         :type: bool
 
+        :param inplace: update passed data with decrypted result
+        :type: bool
+
         :returns: The decrypted element.
         :rtype: lxml.etree.Element
         """
@@ -766,6 +770,8 @@ class OneLogin_Saml2_Utils(object):
             encrypted_data = fromstring(str(encrypted_data.toxml()))
         elif isinstance(encrypted_data, basestring):
             encrypted_data = fromstring(str(encrypted_data))
+        elif not inplace and isinstance(encrypted_data, etree._Element):
+            encrypted_data = deepcopy(encrypted_data)
 
         error_callback_method = None
         if debug:
