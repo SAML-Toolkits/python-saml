@@ -80,10 +80,15 @@ class OneLogin_Saml2_Logout_Request(object):
                     nameIdFormat = name_id_format
                 else:
                     nameIdFormat = sp_data['NameIDFormat']
-                spNameQualifier = None
             else:
-                name_id = idp_data['entityId']
                 nameIdFormat = OneLogin_Saml2_Constants.NAMEID_ENTITY
+
+            spNameQualifier = None
+            if nameIdFormat == OneLogin_Saml2_Constants.NAMEID_ENTITY:
+                name_id = idp_data['entityId']
+                nq = None
+            elif nq is not None:
+                # We only gonna include SPNameQualifier if NameQualifier is provided
                 spNameQualifier = sp_data['entityId']
 
             name_id_obj = OneLogin_Saml2_Utils.generate_name_id(

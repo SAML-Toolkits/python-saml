@@ -154,9 +154,11 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
             OneLogin_Saml2_Logout_Request.get_nameid_data(dom_2.toxml(), key)
 
         idp_data = settings.get_idp_data()
+        sp_data = settings.get_sp_data()
         expected_name_id_data = {
             'Format': 'urn:oasis:names:tc:SAML:2.0:nameid-format:emailAddress',
             'NameQualifier': idp_data['entityId'],
+            'SPNameQualifier': sp_data['entityId'],
             'Value': 'ONELOGIN_9c86c4542ab9d6fce07f2f7fd335287b9b3cdf69'
         }
 
@@ -168,6 +170,24 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
         dom = parseString(logout_request.get_xml())
         name_id_data_3 = OneLogin_Saml2_Logout_Request.get_nameid_data(dom)
         self.assertEqual(expected_name_id_data, name_id_data_3)
+
+        expected_name_id_data = {
+            'Format': 'urn:oasis:names:tc:SAML:2.0:nameid-format:emailAddress',
+            'Value': 'ONELOGIN_9c86c4542ab9d6fce07f2f7fd335287b9b3cdf69'
+        }
+        logout_request = OneLogin_Saml2_Logout_Request(settings, None, expected_name_id_data['Value'], None, None, expected_name_id_data['Format'])
+        dom = parseString(logout_request.get_xml())
+        name_id_data_4 = OneLogin_Saml2_Logout_Request.get_nameid_data(dom)
+        self.assertEqual(expected_name_id_data, name_id_data_4)
+
+        expected_name_id_data = {
+            'Format': 'urn:oasis:names:tc:SAML:2.0:nameid-format:entity',
+            'Value': 'http://idp.example.com/'
+        }
+        logout_request = OneLogin_Saml2_Logout_Request(settings)
+        dom = parseString(logout_request.get_xml())
+        name_id_data_5 = OneLogin_Saml2_Logout_Request.get_nameid_data(dom)
+        self.assertEqual(expected_name_id_data, name_id_data_5)
 
     def testGetNameId(self):
         """
@@ -478,7 +498,7 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
         expectedFragment = (
             'Destination="http://idp.example.com/SingleLogoutService.php">\n'
             '        <saml:Issuer>http://stuff.com/endpoints/metadata.php</saml:Issuer>\n'
-            '        <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity" SPNameQualifier="http://stuff.com/endpoints/metadata.php">http://idp.example.com/</saml:NameID>\n'
+            '        <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">http://idp.example.com/</saml:NameID>\n'
             '        \n    </samlp:LogoutRequest>'
         )
         self.assertIn(expectedFragment, logout_request_generated.get_xml())
