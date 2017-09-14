@@ -43,6 +43,7 @@ class OneLogin_Saml2_Response(object):
         self.document = fromstring(self.response)
         self.decrypted_document = None
         self.encrypted = None
+        self.valid_scd_not_on_or_after = None
 
         # Quick check for the presence of EncryptedAssertion
         encrypted_assertion_nodes = self.__query('/samlp:Response/saml:EncryptedAssertion')
@@ -258,6 +259,10 @@ class OneLogin_Saml2_Response(object):
                             parsed_nb = OneLogin_Saml2_Utils.parse_SAML_to_time(nb)
                             if parsed_nb > OneLogin_Saml2_Utils.now():
                                 continue
+
+                        if nooa:
+                            self.valid_scd_not_on_or_after = OneLogin_Saml2_Utils.parse_SAML_to_time(nooa)
+
                         any_subject_confirmation = True
                         break
 
@@ -486,6 +491,12 @@ class OneLogin_Saml2_Response(object):
         if authn_statement_nodes:
             not_on_or_after = OneLogin_Saml2_Utils.parse_SAML_to_time(authn_statement_nodes[0].get('SessionNotOnOrAfter'))
         return not_on_or_after
+
+    def get_assertion_not_on_or_after(self):
+        """
+        Returns the NotOnOrAfter value of the valid SubjectConfirmationData node if any
+        """
+        return self.valid_scd_not_on_or_after
 
     def get_session_index(self):
         """
@@ -820,3 +831,22 @@ class OneLogin_Saml2_Response(object):
             return self.decrypted_document
         else:
             return self.document
+
+    def get_id(self):
+        """
+        :returns: the ID of the response
+        :rtype: string
+        """
+        return self.document.get('ID', None)
+
+    def get_assertion_id(self):
+        """
+        :returns: the ID of the assertion in the response
+        :rtype: string
+        """
+        if not self.validate_num_assertions():
+            raise OneLogin_Saml2_ValidationError(
+                'SAML Response must contain 1 assertion',
+                OneLogin_Saml2_ValidationError.WRONG_NUMBER_OF_ASSERTIONS
+            )
+        return self.__query_assertion('')[0].get('ID', None)

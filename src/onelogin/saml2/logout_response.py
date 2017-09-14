@@ -40,10 +40,12 @@ class OneLogin_Saml2_Logout_Response(object):
         """
         self.__settings = settings
         self.__error = None
+        self.id = None
 
         if response is not None:
             self.__logout_response = OneLogin_Saml2_Utils.decode_base64_and_inflate(response)
             self.document = parseString(self.__logout_response)
+            self.id = self.document.documentElement.getAttribute('ID')
 
     def get_issuer(self):
         """
