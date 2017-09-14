@@ -82,6 +82,7 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         Tests the get_nameid method of the OneLogin_Saml2_Response
         """
         json_settings = self.loadSettingsJSON()
+        json_settings['strict'] = True
 
         settings = OneLogin_Saml2_Settings(json_settings)
         xml = self.file_contents(join(self.data_path, 'responses', 'response1.xml.base64'))
@@ -135,11 +136,18 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'An empty NameID value found'):
             response_9.get_nameid()
 
+        json_settings['security']['wantNameId'] = False
+        settings = OneLogin_Saml2_Settings(json_settings)
+
+        nameid_9 = response_9.get_nameid()
+        self.assertEqual(None, nameid_9)
+
     def testReturnNameIdFormat(self):
         """
         Tests the get_nameid_format method of the OneLogin_Saml2_Response
         """
         json_settings = self.loadSettingsJSON()
+        json_settings['strict'] = True
 
         settings = OneLogin_Saml2_Settings(json_settings)
         xml = self.file_contents(join(self.data_path, 'responses', 'response1.xml.base64'))
@@ -193,11 +201,18 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'An empty NameID value found'):
             response_9.get_nameid_format()
 
+        json_settings['security']['wantNameId'] = False
+        settings = OneLogin_Saml2_Settings(json_settings)
+
+        nameid_9 = response_9.get_nameid_format()
+        self.assertEqual('urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress', nameid_9)
+
     def testGetNameIdData(self):
         """
         Tests the get_nameid_data method of the OneLogin_Saml2_Response
         """
         json_settings = self.loadSettingsJSON()
+        json_settings['strict'] = True
 
         settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
         xml = self.file_contents(join(self.data_path, 'responses', 'response1.xml.base64'))
@@ -231,8 +246,9 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
 
         xml_4 = self.file_contents(join(self.data_path, 'responses', 'invalids', 'no_nameid.xml.base64'))
         response_4 = OneLogin_Saml2_Response(settings, xml_4)
-        with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'NameID not found in the assertion of the Response'):
-            response_4.get_nameid_data()
+
+        nameid_data_4 = response_4.get_nameid_data()
+        self.assertEqual({}, nameid_data_4)
 
         json_settings['security']['wantNameId'] = True
         settings = OneLogin_Saml2_Settings(json_settings)
@@ -262,12 +278,22 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         response_8 = OneLogin_Saml2_Response(settings, xml_5)
         with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'The SPNameQualifier value mistmatch the SP entityID value.'):
             response_8.get_nameid_data()
-            self.assertTrue(False)
 
         xml_6 = self.file_contents(join(self.data_path, 'responses', 'invalids', 'empty_nameid.xml.base64'))
         response_9 = OneLogin_Saml2_Response(settings, xml_6)
         with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, 'An empty NameID value found'):
             response_9.get_nameid_data()
+
+        json_settings['security']['wantNameId'] = False
+        settings = OneLogin_Saml2_Settings(json_settings)
+
+        nameid_data_9 = response_9.get_nameid_data()
+
+        expected_nameid_data_4 = {
+            'Value': None,
+            'Format': 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
+        }
+        self.assertEqual(expected_nameid_data_4, nameid_data_9)
 
     def testCheckStatus(self):
         """
