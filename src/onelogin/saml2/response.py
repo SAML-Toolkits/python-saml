@@ -425,8 +425,6 @@ class OneLogin_Saml2_Response(object):
         is_strict = self.__settings.is_strict()
         want_nameid = self.__settings.get_security_data().get('wantNameId', True)
         if nameid is None:
-            security = self.__settings.get_security_data()
-
             if is_strict and want_nameid:
                 raise OneLogin_Saml2_ValidationError(
                     'NameID not found in the assertion of the Response',
@@ -443,7 +441,7 @@ class OneLogin_Saml2_Response(object):
             for attr in ['Format', 'SPNameQualifier', 'NameQualifier']:
                 value = nameid.get(attr, None)
                 if value:
-                    if self.__settings.is_strict() and attr == 'SPNameQualifier':
+                    if is_strict and attr == 'SPNameQualifier':
                         sp_data = self.__settings.get_sp_data()
                         sp_entity_id = sp_data.get('entityId', '')
                         if sp_entity_id != value:
