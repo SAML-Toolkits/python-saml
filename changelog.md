@@ -1,6 +1,11 @@
 # python-saml changelog
-### 2.2.4 (unreleased)
-* Get NameID when element decrypted twice
+### 2.3.0 (Sep 15, 2017)
+* [#205](https://github.com/onelogin/python-saml/pull/205) Improve decrypt method, Add an option to decrypt an element in place or copy it before decryption.
+* [#204](https://github.com/onelogin/python-saml/pull/204) On a LogoutRequest if the NameIdFormat is entity, NameQualifier and SPNameQualifier will be ommited. If the NameIdFormat is not entity and a NameQualifier is provided, then the SPNameQualifier will be also added.
+* Be able to get at the auth object the last processed ID (response/assertion) and the last generated ID.
+* Reset errorReason attribute of the auth object before each Process method
+* Fix issue on getting multiple certs when only sign or encryption certs
+* Allow empty nameid if setting wantNameId is false. Only raise Exceptions when strict mode is enabled
 
 ### 2.2.3 (Jun 15, 2017)
 * Replace some etree.tostring calls, that were introduced recfently,  by the sanitized call provided by defusedxml
