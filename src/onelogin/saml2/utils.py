@@ -612,7 +612,7 @@ class OneLogin_Saml2_Utils(object):
         return formated_fingerprint.lower()
 
     @staticmethod
-    def generate_name_id(value, sp_nq, sp_format, cert=None, debug=False, nq=None):
+    def generate_name_id(value, sp_nq, sp_format=None, cert=None, debug=False, nq=None):
         """
         Generates a nameID.
 
@@ -646,7 +646,8 @@ class OneLogin_Saml2_Utils(object):
             name_id.setAttribute('SPNameQualifier', sp_nq)
         if nq is not None:
             name_id.setAttribute('NameQualifier', nq)
-        name_id.setAttribute('Format', sp_format)
+        if sp_format is not None:
+            name_id.setAttribute('Format', sp_format)
         name_id.appendChild(doc.createTextNode(value))
         name_id_container.appendChild(name_id)
 
