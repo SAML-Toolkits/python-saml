@@ -877,7 +877,11 @@ class OneLogin_Saml2_Utils(object):
             issuer = issuer[0]
             issuer.addnext(signature)
         else:
-            elem[0].insert(0, signature)
+            entity_descriptor = OneLogin_Saml2_Utils.query(elem, '//md:EntityDescriptor')
+            if len(entity_descriptor) > 0:
+                elem.insert(0, signature)
+            else:
+                elem[0].insert(0, signature)
 
         digest_algorithm_transform_map = {
             OneLogin_Saml2_Constants.SHA1: xmlsec.TransformSha1,
