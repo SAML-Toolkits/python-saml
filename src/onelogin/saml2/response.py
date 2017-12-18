@@ -531,7 +531,7 @@ class OneLogin_Saml2_Response(object):
                 )
 
             values = []
-            for attr in attribute_node.iterchildren('{%s}AttributeValue' % OneLogin_Saml2_Constants.NSMAP['saml']):
+            for attr in attribute_node.iterchildren('{%s}AttributeValue' % OneLogin_Saml2_Constants.NSMAP[OneLogin_Saml2_Constants.NS_PREFIX_SAML]):
                 # Remove any whitespace (which may be present where attributes are
                 # nested inside NameID children).
                 if attr.text:
@@ -540,7 +540,7 @@ class OneLogin_Saml2_Response(object):
                         values.append(text)
 
                 # Parse any nested NameID children
-                for nameid in attr.iterchildren('{%s}NameID' % OneLogin_Saml2_Constants.NSMAP['saml']):
+                for nameid in attr.iterchildren('{%s}NameID' % OneLogin_Saml2_Constants.NSMAP[OneLogin_Saml2_Constants.NS_PREFIX_SAML]):
                     values.append({
                         'NameID': {
                             'Format': nameid.get('Format'),
