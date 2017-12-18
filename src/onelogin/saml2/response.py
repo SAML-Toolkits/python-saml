@@ -133,14 +133,19 @@ class OneLogin_Saml2_Response(object):
                 security = self.__settings.get_security_data()
                 current_url = OneLogin_Saml2_Utils.get_self_url_no_query(request_data)
 
-                # Check if the InResponseTo of the Response matchs the ID of the AuthNRequest (requestId) if provided
                 in_response_to = self.document.get('InResponseTo', None)
-                if in_response_to is not None and request_id is not None:
-                    if in_response_to != request_id:
-                        raise OneLogin_Saml2_ValidationError(
-                            'The InResponseTo of the Response: %s, does not match the ID of the AuthNRequest sent by the SP: %s' % (in_response_to, request_id),
-                            OneLogin_Saml2_ValidationError.WRONG_INRESPONSETO
-                        )
+                if request_id is None and in_response_to is not None and security.get('rejectUnsolicitedResponsesWithInResponseTo', False):
+                    raise OneLogin_Saml2_ValidationError(
+                        'The Response has an InResponseTo attribute: %s while no InResponseTo was expected' % in_response_to,
+                        OneLogin_Saml2_ValidationError.WRONG_INRESPONSETO
+                    )
+
+                # Check if the InResponseTo of the Response matchs the ID of the AuthNRequest (requestId) if provided
+                if request_id is not None and in_response_to != request_id:
+                    raise OneLogin_Saml2_ValidationError(
+                        'The InResponseTo of the Response: %s, does not match the ID of the AuthNRequest sent by the SP: %s' % (in_response_to, request_id),
+                        OneLogin_Saml2_ValidationError.WRONG_INRESPONSETO
+                    )
 
                 if not self.encrypted and security.get('wantAssertionsEncrypted', False):
                     raise OneLogin_Saml2_ValidationError(
@@ -244,7 +249,9 @@ class OneLogin_Saml2_Response(object):
                         continue
                     else:
                         irt = sc_data.get('InResponseTo', None)
-                        if in_response_to and irt and irt != in_response_to:
+                        if (in_response_to is None and irt is not None and
+                           security.get('rejectUnsolicitedResponsesWithInResponseTo', False)) or \
+                           in_response_to and irt and irt != in_response_to:
                             continue
                         recipient = sc_data.get('Recipient', None)
                         if recipient and current_url not in recipient:

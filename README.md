@@ -414,6 +414,11 @@ In addition to the required settings data (idp, sp), extra settings can be defin
         // Indicates a requirement for the AttributeStatement element
         "wantAttributeStatement": true,
 
+        // Rejects SAML responses with a InResponseTo attribute when request_id
+        // not provided in the process_response method that later call the 
+        // response is_valid method with that parameter.
+        "rejectUnsolicitedResponsesWithInResponseTo": false,
+
         // Authentication context.
         // Set to false and no AuthContext will be sent in the AuthNRequest,
         // Set true or don't present this parameter and you will get an AuthContext 'exact' 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport'

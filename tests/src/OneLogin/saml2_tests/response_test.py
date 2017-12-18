@@ -1173,6 +1173,54 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
         response.is_valid(request_data, valid_request_id)
         self.assertEqual('No Signature found. SAML Response rejected', response.get_error())
 
+    def testRejectUnsolicitedResponsesWithInResponseTo(self):
+        settings_info = self.loadSettingsJSON()
+        settings_info['strict'] = True
+        settings_info['security']['rejectUnsolicitedResponsesWithInResponseTo'] = False
+        settings = OneLogin_Saml2_Settings(settings_info)
+        request_data = {
+            'http_host': 'stuff.com',
+            'script_name': 'endpoints/endpoints/acs.php'
+        }
+
+        xml = self.file_contents(join(self.data_path, 'responses', 'unsigned_response.xml.base64'))
+        response = OneLogin_Saml2_Response(settings, xml)
+        response.is_valid(request_data)
+        self.assertEqual('No Signature found. SAML Response rejected', response.get_error())
+
+        settings_info['security']['rejectUnsolicitedResponsesWithInResponseTo'] = True
+        settings = OneLogin_Saml2_Settings(settings_info)
+        response = OneLogin_Saml2_Response(settings, xml)
+        response.is_valid(request_data)
+        self.assertEqual('The Response has an InResponseTo attribute: _57bcbf70-7b1f-012e-c821-782bcb13bb38 while no InResponseTo was expected', response.get_error())
+
+        settings_info['idp']['entityId'] = 'https://pitbulk.no-ip.org/simplesaml/saml2/idp/metadata.php'
+        settings_info['sp']['entityId'] = 'https://pitbulk.no-ip.org/newonelogin/demo1/metadata.php'
+        request_data = {
+            'https': 'on',
+            'http_host': 'pitbulk.no-ip.org',
+            'script_name': 'newonelogin/demo1/index.php?acs'
+        }
+        not_on_or_after = datetime.strptime('2014-02-19T09:37:01Z', '%Y-%m-%dT%H:%M:%SZ')
+        not_on_or_after -= timedelta(seconds=150)
+
+        # InResponseTo on the SubjectConfirmation only
+        xml = self.file_contents(join(self.data_path, 'responses', 'valid_response_without_inresponseto.xml.base64'))
+        settings_info['security']['rejectUnsolicitedResponsesWithInResponseTo'] = False
+        settings = OneLogin_Saml2_Settings(settings_info)
+        response = OneLogin_Saml2_Response(settings, xml)
+
+        with freeze_time(not_on_or_after):
+            self.assertTrue(response.is_valid(request_data))
+
+        settings_info['security']['rejectUnsolicitedResponsesWithInResponseTo'] = True
+        settings = OneLogin_Saml2_Settings(settings_info)
+        response = OneLogin_Saml2_Response(settings, xml)
+
+        with freeze_time(not_on_or_after):
+            self.assertFalse(response.is_valid(request_data))
+            self.assertEquals("A valid SubjectConfirmation was not found on this Response", response.get_error())
+
     def testIsInValidSignIssues(self):
         """
         Tests the is_valid method of the OneLogin_Saml2_Response class

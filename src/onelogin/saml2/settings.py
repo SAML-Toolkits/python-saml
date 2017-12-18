@@ -280,6 +280,9 @@ class OneLogin_Saml2_Settings(object):
         # NameID element expected
         self.__security.setdefault('wantNameId', True)
 
+        # SAML responses with a InResponseTo attribute not rejected when requestId not passed
+        self.__security.setdefault('rejectUnsolicitedResponsesWithInResponseTo', False)
+
         # Encrypt expected
         self.__security.setdefault('wantAssertionsEncrypted', False)
         self.__security.setdefault('wantNameIdEncrypted', False)
