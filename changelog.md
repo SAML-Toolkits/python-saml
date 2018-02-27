@@ -1,4 +1,12 @@
 # python-saml changelog
+### 2.4.0 (Feb 27, 2018)
+* Fix vulnerability [CVE-2017-11427](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11427). Process text of nodes properly, ignoring comments
+* Improve how fingerprint is calcultated
+* Fix issue with LogoutRequest rejected by ADFS due NameID with unspecified format instead no format attribute
+* Be able to invalidate a SAMLResponse if it contains InResponseTo value but no RequestId parameter provided at the is_valid method. See rejectUnsolicitedResponsesWithInResponseTo security parameter (By default deactivated)
+* Fix signature position in the SP metadata
+* Redefine NSMAP constant
+
 ### 2.3.0 (Sep 15, 2017)
 * [#205](https://github.com/onelogin/python-saml/pull/205) Improve decrypt method, Add an option to decrypt an element in place or copy it before decryption.
 * [#204](https://github.com/onelogin/python-saml/pull/204) On a LogoutRequest if the NameIdFormat is entity, NameQualifier and SPNameQualifier will be ommited. If the NameIdFormat is not entity and a NameQualifier is provided, then the SPNameQualifier will be also added.
