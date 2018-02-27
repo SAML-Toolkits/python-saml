@@ -16,7 +16,7 @@ Python3: [python3-saml](https://github.com/onelogin/python3-saml).
 
 Update python-saml to 2.4.0, this version includes a fix for the [CVE-2017-11427](https://www.cvedetails.com/cve/CVE-2017-11427/) vulnerability.
 
-That version also change how calculate fingerprint method works, and will expect as input a formatted x509 certificate
+This version also changes how the calculate fingerprint method works, and will expect as input a formatted x509 certificate
 
 Update python-saml to 2.2.3, this version replaces some etree.tostring calls, that were introduced recently,  by the sanitized call provided by defusedxml
 
