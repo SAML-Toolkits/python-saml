@@ -557,9 +557,9 @@ class OneLogin_Saml2_Utils(object):
     @staticmethod
     def calculate_x509_fingerprint(x509_cert, alg='sha1'):
         """
-        Calculates the fingerprint of a x509cert.
+        Calculates the fingerprint of a formatted x509cert.
 
-        :param x509_cert: x509 cert
+        :param x509_cert: x509 cert formatted
         :type: string
 
         :param alg: The algorithm to build the fingerprint
@@ -572,22 +572,26 @@ class OneLogin_Saml2_Utils(object):
 
         lines = x509_cert.split('\n')
         data = ''
+        inData = False
 
         for line in lines:
             # Remove '\r' from end of line if present.
             line = line.rstrip()
-            if line == '-----BEGIN CERTIFICATE-----':
-                # Delete junk from before the certificate.
-                data = ''
-            elif line == '-----END CERTIFICATE-----':
-                # Ignore data after the certificate.
-                break
-            elif line == '-----BEGIN PUBLIC KEY-----' or line == '-----BEGIN RSA PRIVATE KEY-----':
-                # This isn't an X509 certificate.
-                return None
+            if not inData:
+                if line == '-----BEGIN CERTIFICATE-----':
+                    inData = True
+                elif line == '-----BEGIN PUBLIC KEY-----' or line == '-----BEGIN RSA PRIVATE KEY-----':
+                    # This isn't an X509 certificate.
+                    return None
             else:
+                if line == '-----END CERTIFICATE-----':
+                    break
+
                 # Append the current line to the certificate data.
                 data += line
+
+        if not data:
+            return None
 
         decoded_data = base64.b64decode(data)
 
@@ -1131,9 +1135,11 @@ class OneLogin_Saml2_Utils(object):
             if len(x509_certificate_nodes) > 0:
                 x509_certificate_node = x509_certificate_nodes[0]
                 x509_cert_value = OneLogin_Saml2_Utils.element_text(x509_certificate_node)
-                x509_fingerprint_value = OneLogin_Saml2_Utils.calculate_x509_fingerprint(x509_cert_value, fingerprintalg)
+                x509_cert_value_formatted = OneLogin_Saml2_Utils.format_cert(x509_cert_value)
+                x509_fingerprint_value = OneLogin_Saml2_Utils.calculate_x509_fingerprint(x509_cert_value_formatted, fingerprintalg)
+
                 if fingerprint == x509_fingerprint_value:
-                    cert = OneLogin_Saml2_Utils.format_cert(x509_cert_value)
+                    cert = x509_cert_value_formatted
 
         # Check if Reference URI is empty
         # reference_elem = OneLogin_Saml2_Utils.query(signature_node, '//ds:Reference')
