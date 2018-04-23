@@ -39,12 +39,12 @@ setup(
     extras_require={
         'test': (
             'teamcity-messages==1.17',
-            'coverage==4.0.3',
+            'coverage>=3.6',
             'freezegun==0.3.5',
             'pylint==1.3.1',
             'pep8==1.5.7',
             'pyflakes==0.8.1',
-            'coveralls==0.4.4',
+            'coveralls==1.1',
         ),
     },
     keywords='saml saml2 xmlsec django flask',
