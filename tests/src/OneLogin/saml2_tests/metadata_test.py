@@ -14,6 +14,7 @@ from teamcity.unittestpy import TeamcityTestRunner
 
 from onelogin.saml2.metadata import OneLogin_Saml2_Metadata
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
+from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
 
 
@@ -208,9 +209,11 @@ class OneLogin_Saml2_Metadata_Test(unittest.TestCase):
         cert = self.file_contents(join(cert_path, 'sp.crt'))
 
         signed_metadata = OneLogin_Saml2_Metadata.sign_metadata(metadata, key, cert)
+        self.assertTrue(OneLogin_Saml2_Utils.validate_metadata_sign(signed_metadata, cert))
 
         self.assertIn('<md:SPSSODescriptor', signed_metadata)
         self.assertIn('entityID="http://stuff.com/endpoints/metadata.php"', signed_metadata)
+        self.assertIn('ID="ONELOGIN_', signed_metadata)
         self.assertIn('AuthnRequestsSigned="false"', signed_metadata)
         self.assertIn('WantAssertionsSigned="false"', signed_metadata)
 
@@ -231,8 +234,10 @@ class OneLogin_Saml2_Metadata_Test(unittest.TestCase):
             OneLogin_Saml2_Metadata.sign_metadata('', key, cert)
 
         signed_metadata_2 = OneLogin_Saml2_Metadata.sign_metadata(metadata, key, cert, OneLogin_Saml2_Constants.RSA_SHA256, OneLogin_Saml2_Constants.SHA384)
+        self.assertTrue(OneLogin_Saml2_Utils.validate_metadata_sign(signed_metadata_2, cert))
         self.assertIn('<md:SPSSODescriptor', signed_metadata_2)
         self.assertIn('entityID="http://stuff.com/endpoints/metadata.php"', signed_metadata_2)
+        self.assertIn('ID="ONELOGIN_', signed_metadata_2)
         self.assertIn('AuthnRequestsSigned="false"', signed_metadata_2)
         self.assertIn('WantAssertionsSigned="false"', signed_metadata_2)
 

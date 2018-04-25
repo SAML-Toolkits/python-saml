@@ -869,7 +869,6 @@ class OneLogin_Saml2_Utils(object):
             error_callback_method = print_xmlsec_errors
         xmlsec.set_error_callback(error_callback_method)
 
-        # Sign the metadata with our private key.
         sign_algorithm_transform_map = {
             OneLogin_Saml2_Constants.DSA_SHA1: xmlsec.TransformDsaSha1,
             OneLogin_Saml2_Constants.RSA_SHA1: xmlsec.TransformRsaSha1,
@@ -879,18 +878,31 @@ class OneLogin_Saml2_Utils(object):
         }
         sign_algorithm_transform = sign_algorithm_transform_map.get(sign_algorithm, xmlsec.TransformRsaSha1)
 
-        signature = Signature(xmlsec.TransformExclC14N, sign_algorithm_transform)
+        signature = Signature(xmlsec.TransformExclC14N, sign_algorithm_transform, nsPrefix='ds')
 
         issuer = OneLogin_Saml2_Utils.query(elem, '//saml:Issuer')
         if len(issuer) > 0:
             issuer = issuer[0]
             issuer.addnext(signature)
+            elem_to_sign = issuer.getparent()
         else:
             entity_descriptor = OneLogin_Saml2_Utils.query(elem, '//md:EntityDescriptor')
             if len(entity_descriptor) > 0:
                 elem.insert(0, signature)
             else:
                 elem[0].insert(0, signature)
+            elem_to_sign = elem
+
+        elem_id = elem_to_sign.get('ID', None)
+        if elem_id is not None:
+            if elem_id:
+                elem_id = '#' + elem_id
+        else:
+            generated_id = generated_id = OneLogin_Saml2_Utils.generate_unique_id()
+            elem_id = '#' + generated_id
+            elem_to_sign.attrib['ID'] = generated_id
+
+        xmlsec.addIDs(elem_to_sign, ["ID"])
 
         digest_algorithm_transform_map = {
             OneLogin_Saml2_Constants.SHA1: xmlsec.TransformSha1,
@@ -901,6 +913,9 @@ class OneLogin_Saml2_Utils(object):
         digest_algorithm_transform = digest_algorithm_transform_map.get(digest_algorithm, xmlsec.TransformSha1)
 
         ref = signature.addReference(digest_algorithm_transform)
+        if elem_id:
+            ref.attrib['URI'] = elem_id
+
         ref.addTransform(xmlsec.TransformEnveloped)
         ref.addTransform(xmlsec.TransformExclC14N)
 
@@ -917,20 +932,8 @@ class OneLogin_Saml2_Utils(object):
         dsig_ctx.signKey = sign_key
         dsig_ctx.sign(signature)
 
+        return tostring(elem, encoding='unicode').encode('utf-8')
         newdoc = parseString(tostring(elem, encoding='unicode').encode('utf-8'))
-
-        signature_nodes = newdoc.getElementsByTagName("Signature")
-
-        for signature in signature_nodes:
-            signature.removeAttribute('xmlns')
-            signature.setAttribute('xmlns:ds', OneLogin_Saml2_Constants.NS_DS)
-            if not signature.tagName.startswith('ds:'):
-                signature.tagName = 'ds:' + signature.tagName
-            nodes = signature.getElementsByTagName("*")
-            for node in nodes:
-                if not node.tagName.startswith('ds:'):
-                    node.tagName = 'ds:' + node.tagName
-
         return newdoc.saveXML(newdoc.firstChild)
 
     @staticmethod
