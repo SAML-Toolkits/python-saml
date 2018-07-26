@@ -2,8 +2,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse, HttpResponseRedirect,
                          HttpResponseServerError)
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
@@ -97,13 +96,8 @@ def index(request):
         if len(request.session['samlUserdata']) > 0:
             attributes = request.session['samlUserdata'].items()
 
-    return render_to_response('index.html',
-                              {'errors': errors,
-                               'not_auth_warn': not_auth_warn,
-                               'success_slo': success_slo,
-                               'attributes': attributes,
-                               'paint_logout': paint_logout},
-                              context_instance=RequestContext(request))
+    return render(request, 'index.html', {'errors': errors, 'not_auth_warn': not_auth_warn, 'success_slo': success_slo,
+                                          'attributes': attributes, 'paint_logout': paint_logout})
 
 
 def attrs(request):
@@ -115,10 +109,9 @@ def attrs(request):
         if len(request.session['samlUserdata']) > 0:
             attributes = request.session['samlUserdata'].items()
 
-    return render_to_response('attrs.html',
-                              {'paint_logout': paint_logout,
-                               'attributes': attributes},
-                              context_instance=RequestContext(request))
+    return render(request, 'attrs.html',
+                  {'paint_logout': paint_logout,
+                   'attributes': attributes})
 
 
 def metadata(request):

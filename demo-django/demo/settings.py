@@ -22,8 +22,6 @@ SECRET_KEY = '0c7216)gs^ne$%3+je20zuo+g0&^6yb@e68qdr!^!r0hmb-6y+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -85,6 +83,15 @@ SAML_FOLDER = os.path.join(BASE_DIR, 'saml')
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': {
+                'django.contrib.auth.context_processors.auth'
+            }
+        },
+    },
+]
