@@ -38,7 +38,6 @@ setup(
     ],
     extras_require={
         'test': (
-            'teamcity-messages==1.17',
             'coverage>=3.6',
             'freezegun==0.3.5',
             'pylint==1.3.1',

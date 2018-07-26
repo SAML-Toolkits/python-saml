@@ -10,8 +10,6 @@ from freezegun import freeze_time
 import json
 from os.path import dirname, join, exists
 import unittest
-from teamcity import is_running_under_teamcity
-from teamcity.unittestpy import TeamcityTestRunner
 from xml.dom.minidom import parseString
 from lxml import etree
 from onelogin.saml2.response import OneLogin_Saml2_Response
@@ -1679,8 +1677,5 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
 
 
 if __name__ == '__main__':
-    if is_running_under_teamcity():
-        runner = TeamcityTestRunner()
-    else:
-        runner = unittest.TextTestRunner()
+    runner = unittest.TextTestRunner()
     unittest.main(testRunner=runner)

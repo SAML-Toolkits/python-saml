@@ -10,8 +10,6 @@ from os.path import dirname, join, exists
 from lxml.etree import XMLSyntaxError
 import unittest
 from urllib2 import URLError
-from teamcity import is_running_under_teamcity
-from teamcity.unittestpy import TeamcityTestRunner
 
 from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
@@ -645,8 +643,5 @@ class OneLogin_Saml2_IdPMetadataParser_Test(unittest.TestCase):
         self.assertEqual(expected_settings3, settings_result3)
 
 if __name__ == '__main__':
-    if is_running_under_teamcity():
-        runner = TeamcityTestRunner()
-    else:
-        runner = unittest.TextTestRunner()
+    runner = unittest.TextTestRunner()
     unittest.main(testRunner=runner)

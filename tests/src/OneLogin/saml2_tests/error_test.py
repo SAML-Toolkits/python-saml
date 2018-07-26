@@ -4,8 +4,6 @@
 # MIT License
 
 import unittest
-from teamcity import is_running_under_teamcity
-from teamcity.unittestpy import TeamcityTestRunner
 from onelogin.saml2.errors import OneLogin_Saml2_Error
 
 
@@ -19,8 +17,5 @@ class OneLogin_Saml2_Error_Test(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    if is_running_under_teamcity():
-        runner = TeamcityTestRunner()
-    else:
-        runner = unittest.TextTestRunner()
+    runner = unittest.TextTestRunner()
     unittest.main(testRunner=runner)

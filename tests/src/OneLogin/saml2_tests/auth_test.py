@@ -7,8 +7,6 @@ from base64 import b64decode, b64encode
 import json
 from os.path import dirname, join, exists
 import unittest
-from teamcity import is_running_under_teamcity
-from teamcity.unittestpy import TeamcityTestRunner
 from urlparse import urlparse, parse_qs
 
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
@@ -1166,8 +1164,5 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         self.assertIn(auth.get_last_message_id(), '_f9ee61bd9dbf63606faa9ae3b10548d5b3656fb859')
 
 if __name__ == '__main__':
-    if is_running_under_teamcity():
-        runner = TeamcityTestRunner()
-    else:
-        runner = unittest.TextTestRunner()
+    runner = unittest.TextTestRunner()
     unittest.main(testRunner=runner)
