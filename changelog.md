@@ -1,4 +1,9 @@
 # python-saml changelog
+### 2.4.2 (Sep 05, 2018)
+* Update dm.xmlsec.binding dependency to 1.3.7
+* Update pylint dependency to 1.9.1
+* Update Django demo to use LTS version of Django
+
 ### 2.4.1 (Apr 25, 2018)
 * Add ID to EntityDescriptor before sign it on add_sign method. Improve the way ds namespace is handled in add_sign method
 * Update defusedxml, coveralls and coverage dependencies
