@@ -111,6 +111,23 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         settings_3 = OneLogin_Saml2_Settings(custom_base_path=custom_base_path)
         self.assertEqual(len(settings_3.get_errors()), 0)
 
+    def testLoadSettingsFromCustomFile(self):
+        """
+        Tests the OneLogin_Saml2_Settings Constructor.
+        Case load setting from a custom file (other than "settings.json")
+        """
+        custom_base_path = join(dirname(__file__), '..', '..', '..', 'settings')
+        settings_custom = OneLogin_Saml2_Settings('settings1.json', custom_base_path=custom_base_path)
+        self.assertEqual(len(settings_custom.get_errors()), 0)
+
+        f = open(join(custom_base_path, 'settings1.json'))
+        d_json = json.load(f)
+        f.close()
+
+        settings_manual = OneLogin_Saml2_Settings(d_json, custom_base_path=custom_base_path)
+
+        self.assertEqual(settings_custom.get_sp_data(), settings_manual.get_sp_data())
+
     def testGetCertPath(self):
         """
         Tests getCertPath method of the OneLogin_Saml2_Settings

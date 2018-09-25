@@ -96,6 +96,18 @@ class OneLogin_Saml2_Settings(object):
                     ','.join(self.__errors)
                 )
             self.__add_default_values()
+        elif isinstance(settings, str):
+            try:
+                valid = self.__load_settings_from_file(settings)
+            except Exception as e:
+                raise e
+            if not valid:
+                raise OneLogin_Saml2_Error(
+                    'Invalid dict settings at the file: %s',
+                    OneLogin_Saml2_Error.SETTINGS_INVALID,
+                    ','.join(self.__errors)
+                )
+            self.__add_default_values()
         elif isinstance(settings, dict):
             if not self.__load_settings_from_dict(settings):
                 raise OneLogin_Saml2_Error(
@@ -217,31 +229,31 @@ class OneLogin_Saml2_Settings(object):
         self.__errors = errors
         return False
 
-    def __load_settings_from_file(self):
+    def __load_settings_from_file(self, filename='settings.json'):
         """
         Loads settings info from the settings json file
 
         :returns: True if the settings info is valid
         :rtype: boolean
         """
-        filename = self.get_base_path() + 'settings.json'
+        filepath = self.get_base_path() + filename
 
-        if not exists(filename):
+        if not exists(filepath):
             raise OneLogin_Saml2_Error(
                 'Settings file not found: %s',
                 OneLogin_Saml2_Error.SETTINGS_FILE_NOT_FOUND,
-                filename
+                filepath
             )
 
         # In the php toolkit instead of being a json file it is a php file and
         # it is directly included
-        json_data = open(filename, 'r')
+        json_data = open(filepath, 'r')
         settings = json.load(json_data)
         json_data.close()
 
-        advanced_filename = self.get_base_path() + 'advanced_settings.json'
-        if exists(advanced_filename):
-            json_data = open(advanced_filename, 'r')
+        advanced_filepath = self.get_base_path() + 'advanced_settings.json'
+        if exists(advanced_filepath):
+            json_data = open(advanced_filepath, 'r')
             settings.update(json.load(json_data))  # Merge settings
             json_data.close()
 

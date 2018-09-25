@@ -58,6 +58,20 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         auth_settings = auth.get_settings()
         self.assertEqual(settings.get_sp_data(), auth_settings.get_sp_data())
 
+    def testGetSettingsCustom(self):
+        """
+        Tests the get_settings method of the OneLogin_Saml2_Auth class
+        Build a OneLogin_Saml2_Settings object with a setting array
+        and compare the value returned from the method of the
+        auth object
+        """
+        path = join(dirname(__file__), '..', '..', '..', 'settings')
+        settings_direct = OneLogin_Saml2_Settings('settings1.json', custom_base_path=path)
+        auth = OneLogin_Saml2_Auth(self.get_request(), 'settings1.json', custom_base_path=path)
+
+        settings_auth = auth.get_settings()
+        self.assertEqual(settings_direct.get_sp_data(), settings_auth.get_sp_data())
+
     def testGetSSOurl(self):
         """
         Tests the get_sso_url method of the OneLogin_Saml2_Auth class

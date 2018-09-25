@@ -502,6 +502,12 @@ auth = OneLogin_Saml2_Auth(req, custom_base_path=custom_folder)
 # or
 settings = OneLogin_Saml2_Settings(custom_base_path=custom_folder)
 
+# Initializes toolkit with the custom settings file "my_settings.json" and the standard "advanced_settings.json".
+custom_folder = '/var/www/django-project'
+auth = OneLogin_Saml2_Auth(req, 'my_settings.json', custom_base_path=custom_folder)
+# or
+settings = OneLogin_Saml2_Settings('my_settings.json', custom_base_path=custom_folder)
+
 # Initializes toolkit with the dict provided.
 auth = OneLogin_Saml2_Auth(req, settings_data)
 # or
