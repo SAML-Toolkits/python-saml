@@ -1012,11 +1012,11 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
         settings.set_strict(True)
         response_3 = OneLogin_Saml2_Response(settings, message)
         self.assertFalse(response_3.is_valid(request_data))
-        self.assertEqual('Invalid issuer in the Assertion/Response', response_3.get_error())
+        self.assertEqual('Invalid issuer in the Assertion/Response (expected http://idp.example.com/, got http://invalid.issuer.example.com/)', response_3.get_error())
 
         response_4 = OneLogin_Saml2_Response(settings, message_2)
         self.assertFalse(response_4.is_valid(request_data))
-        self.assertEqual('Invalid issuer in the Assertion/Response', response_4.get_error())
+        self.assertEqual('Invalid issuer in the Assertion/Response (expected http://idp.example.com/, got http://invalid.isser.example.com/)', response_4.get_error())
 
     def testIsInValidSessionIndex(self):
         """

@@ -186,7 +186,7 @@ class OneLogin_Saml2_Logout_Response_Test(unittest.TestCase):
         settings.set_strict(True)
         response_2 = OneLogin_Saml2_Logout_Response(settings, message)
         self.assertFalse(response_2.is_valid(request_data))
-        self.assertIn('Invalid issuer in the Logout Request', response_2.get_error())
+        self.assertIn('Invalid issuer in the Logout Response', response_2.get_error())
 
     def testIsInValidDestination(self):
         """
@@ -272,7 +272,7 @@ class OneLogin_Saml2_Logout_Response_Test(unittest.TestCase):
         settings.set_strict(True)
         response_2 = OneLogin_Saml2_Logout_Response(settings, request_data['get_data']['SAMLResponse'])
         self.assertFalse(response_2.is_valid(request_data))
-        self.assertIn('Invalid issuer in the Logout Request', response_2.get_error())
+        self.assertIn('Invalid issuer in the Logout Response', response_2.get_error())
 
         settings.set_strict(False)
         old_signature = request_data['get_data']['Signature']
