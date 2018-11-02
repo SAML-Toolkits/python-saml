@@ -98,8 +98,14 @@ class OneLogin_Saml2_Utils(object):
         :returns: the string after decoding and inflating
         :rtype: string
         """
+        decoded = base64.b64decode(value)
+        # We try to inflate
+        try:
+            result = zlib.decompress(decoded, -15)
+        except Exception:
+            result = decoded
 
-        return zlib.decompress(base64.b64decode(value), -15).decode('utf-8')
+        return result.decode('utf-8')
 
     @staticmethod
     def deflate_and_base64_encode(value):
