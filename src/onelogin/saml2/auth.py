@@ -42,8 +42,8 @@ class OneLogin_Saml2_Auth(object):
         :param request_data: Request Data
         :type request_data: dict
 
-        :param settings: Optional. SAML Toolkit Settings
-        :type settings: dict
+        :param old_settings: Optional. SAML Toolkit Settings
+        :type old_settings: dict
 
         :param custom_base_path: Optional. Path where are stored the settings file and the cert folder
         :type custom_base_path: string
