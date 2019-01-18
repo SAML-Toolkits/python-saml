@@ -1,3 +1,3 @@
-[pep8]
+[pycodestyle]
 ignore = E501, E731
 max-line-length = 160
