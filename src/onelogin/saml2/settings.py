@@ -436,9 +436,9 @@ class OneLogin_Saml2_Settings(object):
                                 errors.append('sp_attributeConsumingService_requestedAttributes_name_not_found')
                             if 'name' in req_attrib and not req_attrib['name'].strip():
                                 errors.append('sp_attributeConsumingService_requestedAttributes_name_invalid')
-                            if 'attributeValue' in req_attrib and type(req_attrib['attributeValue']) != list:
+                            if 'attributeValue' in req_attrib and not isinstance(req_attrib['attributeValue'], list):
                                 errors.append('sp_attributeConsumingService_requestedAttributes_attributeValue_type_invalid')
-                            if 'isRequired' in req_attrib and type(req_attrib['isRequired']) != bool:
+                            if 'isRequired' in req_attrib and not isinstance(req_attrib['isRequired'], bool):
                                 errors.append('sp_attributeConsumingService_requestedAttributes_isRequired_type_invalid')
 
                     if "serviceDescription" in attributeConsumingService and not isinstance(attributeConsumingService['serviceDescription'], basestring):

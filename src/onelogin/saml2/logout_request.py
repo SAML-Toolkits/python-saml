@@ -8,6 +8,7 @@ MIT License
 Logout Request class of OneLogin's Python Toolkit.
 
 """
+from __future__ import print_function
 
 from zlib import decompress
 from base64 import b64encode, b64decode
@@ -425,7 +426,7 @@ class OneLogin_Saml2_Logout_Request(object):
             self.__error = err.__str__()
             debug = self.__settings.is_debug_active()
             if debug:
-                print err.__str__()
+                print(err.__str__())
             if raise_exceptions:
                 raise err
             return False

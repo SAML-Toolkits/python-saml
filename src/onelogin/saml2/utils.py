@@ -8,6 +8,7 @@ MIT License
 Auxiliary class of OneLogin's Python Toolkit.
 
 """
+from __future__ import print_function
 
 import base64
 from copy import deepcopy
@@ -75,7 +76,7 @@ def print_xmlsec_errors(filename, line, func, error_object, error_subject, reaso
     if reason != 1:
         info.append("errno=%d" % reason)
     if info:
-        print "%s:%d(%s)" % (filename, line, func), " ".join(info)
+        print("%s:%d(%s)" % (filename, line, func), " ".join(info))
 
 
 class OneLogin_Saml2_Utils(object):
