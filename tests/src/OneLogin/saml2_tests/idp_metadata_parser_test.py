@@ -641,6 +641,7 @@ class OneLogin_Saml2_IdPMetadataParser_Test(unittest.TestCase):
         expected_settings3 = json.loads(expected_settings3_json)
         self.assertEqual(expected_settings3, settings_result3)
 
+
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
     unittest.main(testRunner=runner)
