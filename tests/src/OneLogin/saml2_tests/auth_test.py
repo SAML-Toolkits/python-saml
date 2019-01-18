@@ -1163,6 +1163,7 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         auth.process_slo()
         self.assertIn(auth.get_last_message_id(), '_f9ee61bd9dbf63606faa9ae3b10548d5b3656fb859')
 
+
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
     unittest.main(testRunner=runner)
