@@ -50,7 +50,7 @@ class OneLogin_Saml2_IdPMetadataParser(object):
 
         if xml:
             try:
-                dom = fromstring(xml)
+                dom = fromstring(xml, forbid_dtd=True)
                 idp_descriptor_nodes = OneLogin_Saml2_Utils.query(dom, '//md:IDPSSODescriptor')
                 if idp_descriptor_nodes:
                     valid = True
@@ -124,7 +124,7 @@ class OneLogin_Saml2_IdPMetadataParser(object):
         """
         data = {}
 
-        dom = fromstring(idp_metadata)
+        dom = fromstring(idp_metadata, forbid_dtd=True)
 
         entity_desc_path = '//md:EntityDescriptor'
         if entity_id:

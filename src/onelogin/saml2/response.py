@@ -40,7 +40,7 @@ class OneLogin_Saml2_Response(object):
         self.__settings = settings
         self.__error = None
         self.response = b64decode(response)
-        self.document = fromstring(self.response)
+        self.document = fromstring(self.response, forbid_dtd=True)
         self.decrypted_document = None
         self.encrypted = None
         self.valid_scd_not_on_or_after = None
@@ -735,6 +735,7 @@ class OneLogin_Saml2_Response(object):
         signature_expr = '/ds:Signature/ds:SignedInfo/ds:Reference'
         signed_assertion_query = '/samlp:Response' + assertion_expr + signature_expr
         assertion_reference_nodes = self.__query(signed_assertion_query)
+        tagid = None
 
         if not assertion_reference_nodes:
             # Check if the message is signed
@@ -742,21 +743,26 @@ class OneLogin_Saml2_Response(object):
             message_reference_nodes = self.__query(signed_message_query)
             if message_reference_nodes:
                 message_id = message_reference_nodes[0].get('URI')
-                final_query = "/samlp:Response[@ID='%s']/" % message_id[1:]
+                final_query = "/samlp:Response[@ID=$tagid]/"
+                tagid = message_id[1:]
             else:
                 final_query = "/samlp:Response"
             final_query += assertion_expr
         else:
             assertion_id = assertion_reference_nodes[0].get('URI')
-            final_query = '/samlp:Response' + assertion_expr + "[@ID='%s']" % assertion_id[1:]
+            final_query = '/samlp:Response' + assertion_expr + "[@ID=$tagid]"
+            tagid = assertion_id[1:]
         final_query += xpath_expr
-        return self.__query(final_query)
+        return self.__query(final_query, tagid)
 
-    def __query(self, query):
+    def __query(self, query, tagid=None):
         """
         Extracts nodes that match the query from the Response
 
         :param query: Xpath Expresion
+        :type query: String
+
+        :param tagid: Tag ID
         :type query: String
 
         :returns: The queried nodes
@@ -766,7 +772,7 @@ class OneLogin_Saml2_Response(object):
             document = self.decrypted_document
         else:
             document = self.document
-        return OneLogin_Saml2_Utils.query(document, query)
+        return OneLogin_Saml2_Utils.query(document, query, None, tagid)
 
     def __decrypt_assertion(self, dom):
         """
@@ -817,7 +823,7 @@ class OneLogin_Saml2_Response(object):
                         if not uri.startswith('#'):
                             break
                         uri = uri.split('#')[1]
-                        encrypted_key = OneLogin_Saml2_Utils.query(encrypted_assertion_nodes[0], './xenc:EncryptedKey[@Id="' + uri + '"]')
+                        encrypted_key = OneLogin_Saml2_Utils.query(encrypted_assertion_nodes[0], './xenc:EncryptedKey[@Id=$tagid]', None, uri)
                         if encrypted_key:
                             keyinfo.append(encrypted_key[0])
 

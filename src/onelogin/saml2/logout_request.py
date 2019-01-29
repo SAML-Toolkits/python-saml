@@ -171,7 +171,7 @@ class OneLogin_Saml2_Logout_Request(object):
         else:
             if isinstance(request, Document):
                 request = request.toxml()
-            elem = fromstring(request)
+            elem = fromstring(request, forbid_dtd=True)
         return elem.get('ID', None)
 
     @staticmethod
@@ -190,7 +190,7 @@ class OneLogin_Saml2_Logout_Request(object):
         else:
             if isinstance(request, Document):
                 request = request.toxml()
-            elem = fromstring(request)
+            elem = fromstring(request, forbid_dtd=True)
 
         name_id = None
         encrypted_entries = OneLogin_Saml2_Utils.query(elem, '/samlp:LogoutRequest/saml:EncryptedID')
@@ -271,7 +271,7 @@ class OneLogin_Saml2_Logout_Request(object):
         else:
             if isinstance(request, Document):
                 request = request.toxml()
-            elem = fromstring(request)
+            elem = fromstring(request, forbid_dtd=True)
 
         issuer = None
         issuer_nodes = OneLogin_Saml2_Utils.query(elem, '/samlp:LogoutRequest/saml:Issuer')
@@ -293,7 +293,7 @@ class OneLogin_Saml2_Logout_Request(object):
         else:
             if isinstance(request, Document):
                 request = request.toxml()
-            elem = fromstring(request)
+            elem = fromstring(request, forbid_dtd=True)
 
         session_indexes = []
         session_index_nodes = OneLogin_Saml2_Utils.query(elem, '/samlp:LogoutRequest/samlp:SessionIndex')
@@ -314,7 +314,7 @@ class OneLogin_Saml2_Logout_Request(object):
         self.__error = None
         lowercase_urlencoding = False
         try:
-            dom = fromstring(self.__logout_request)
+            dom = fromstring(self.__logout_request, forbid_dtd=True)
 
             idp_data = self.__settings.get_idp_data()
             idp_entity_id = idp_data['entityId']

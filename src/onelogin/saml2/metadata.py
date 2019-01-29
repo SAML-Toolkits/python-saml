@@ -247,7 +247,7 @@ class OneLogin_Saml2_Metadata(object):
         if cert is None or cert == '':
             return metadata
         try:
-            xml = parseString(metadata.encode('utf-8'))
+            xml = parseString(metadata.encode('utf-8'), forbid_dtd=True)
         except Exception as e:
             raise Exception('Error parsing metadata. ' + e.message)
 

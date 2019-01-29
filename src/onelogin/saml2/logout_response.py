@@ -44,7 +44,7 @@ class OneLogin_Saml2_Logout_Response(object):
 
         if response is not None:
             self.__logout_response = OneLogin_Saml2_Utils.decode_base64_and_inflate(response)
-            self.document = parseString(self.__logout_response)
+            self.document = parseString(self.__logout_response, forbid_dtd=True)
             self.id = self.document.documentElement.getAttribute('ID')
 
     def get_issuer(self):
@@ -200,7 +200,7 @@ class OneLogin_Saml2_Logout_Response(object):
         """
         # Switch to lxml for querying
         xml = self.document.toxml()
-        return OneLogin_Saml2_Utils.query(fromstring(xml), query)
+        return OneLogin_Saml2_Utils.query(fromstring(xml, forbid_dtd=True), query)
 
     def build(self, in_response_to):
         """

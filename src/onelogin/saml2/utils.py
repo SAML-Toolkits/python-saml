@@ -141,7 +141,7 @@ class OneLogin_Saml2_Utils(object):
 
         # Switch to lxml for schema validation
         try:
-            dom = fromstring(xml.encode('utf-8'))
+            dom = fromstring(xml.encode('utf-8'), forbid_dtd=True)
         except Exception:
             return 'unloaded_xml'
 
@@ -160,7 +160,7 @@ class OneLogin_Saml2_Utils(object):
 
             return 'invalid_xml'
 
-        return parseString(tostring(dom, encoding='unicode').encode('utf-8'))
+        return parseString(tostring(dom, encoding='unicode').encode('utf-8'), forbid_dtd=True)
 
     @staticmethod
     def element_text(node):
@@ -530,7 +530,7 @@ class OneLogin_Saml2_Utils(object):
         return None
 
     @staticmethod
-    def query(dom, query, context=None):
+    def query(dom, query, context=None, tagid=None):
         """
         Extracts nodes that match the query from the Element
 
@@ -543,13 +543,21 @@ class OneLogin_Saml2_Utils(object):
         :param context: Context Node
         :type: DOMElement
 
+        :param tagid: Tag ID
+        :type: string
+
         :returns: The queried nodes
         :rtype: list
         """
         if context is None:
-            return dom.xpath(query, namespaces=OneLogin_Saml2_Constants.NSMAP)
+            source = dom
         else:
-            return context.xpath(query, namespaces=OneLogin_Saml2_Constants.NSMAP)
+            source = context
+
+        if tagid is None:
+            return source.xpath(query, namespaces=OneLogin_Saml2_Constants.NSMAP)
+        else:
+            return source.xpath(query, tagid=tagid, namespaces=OneLogin_Saml2_Constants.NSMAP)
 
     @staticmethod
     def delete_local_session(callback=None):
@@ -668,7 +676,7 @@ class OneLogin_Saml2_Utils(object):
 
         if cert is not None:
             xml = name_id_container.toxml()
-            elem = fromstring(xml)
+            elem = fromstring(xml, forbid_dtd=True)
 
             error_callback_method = None
             if debug:
@@ -697,7 +705,7 @@ class OneLogin_Saml2_Utils(object):
 
             edata = enc_ctx.encryptXml(enc_data, elem[0])
 
-            newdoc = parseString(tostring(edata, encoding='unicode').encode('utf-8'))
+            newdoc = parseString(tostring(edata, encoding='unicode').encode('utf-8'), forbid_dtd=True)
 
             if newdoc.hasChildNodes():
                 child = newdoc.firstChild
@@ -783,9 +791,9 @@ class OneLogin_Saml2_Utils(object):
         :rtype: lxml.etree.Element
         """
         if isinstance(encrypted_data, Element):
-            encrypted_data = fromstring(str(encrypted_data.toxml()))
+            encrypted_data = fromstring(str(encrypted_data.toxml()), forbid_dtd=True)
         elif isinstance(encrypted_data, basestring):
-            encrypted_data = fromstring(str(encrypted_data))
+            encrypted_data = fromstring(str(encrypted_data), forbid_dtd=True)
         elif not inplace and isinstance(encrypted_data, etree._Element):
             encrypted_data = deepcopy(encrypted_data)
 
@@ -851,7 +859,7 @@ class OneLogin_Saml2_Utils(object):
             elem = xml
         elif isinstance(xml, Document):
             xml = xml.toxml()
-            elem = fromstring(xml.encode('utf-8'))
+            elem = fromstring(xml.encode('utf-8'), forbid_dtd=True)
         elif isinstance(xml, Element):
             xml.setAttributeNS(
                 unicode(OneLogin_Saml2_Constants.NS_SAMLP),
@@ -864,9 +872,9 @@ class OneLogin_Saml2_Utils(object):
                 unicode(OneLogin_Saml2_Constants.NS_SAML)
             )
             xml = xml.toxml()
-            elem = fromstring(xml.encode('utf-8'))
+            elem = fromstring(xml.encode('utf-8'), forbid_dtd=True)
         elif isinstance(xml, basestring):
-            elem = fromstring(xml.encode('utf-8'))
+            elem = fromstring(xml.encode('utf-8'), forbid_dtd=True)
         else:
             raise Exception('Error parsing xml string')
 
@@ -939,8 +947,6 @@ class OneLogin_Saml2_Utils(object):
         dsig_ctx.sign(signature)
 
         return tostring(elem, encoding='unicode').encode('utf-8')
-        newdoc = parseString(tostring(elem, encoding='unicode').encode('utf-8'))
-        return newdoc.saveXML(newdoc.firstChild)
 
     @staticmethod
     @return_false_on_exception
@@ -981,7 +987,7 @@ class OneLogin_Saml2_Utils(object):
             elem = xml
         elif isinstance(xml, Document):
             xml = xml.toxml()
-            elem = fromstring(str(xml))
+            elem = fromstring(str(xml), forbid_dtd=True)
         elif isinstance(xml, Element):
             xml.setAttributeNS(
                 unicode(OneLogin_Saml2_Constants.NS_SAMLP),
@@ -994,9 +1000,9 @@ class OneLogin_Saml2_Utils(object):
                 unicode(OneLogin_Saml2_Constants.NS_SAML)
             )
             xml = xml.toxml()
-            elem = fromstring(str(xml))
+            elem = fromstring(str(xml), forbid_dtd=True)
         elif isinstance(xml, basestring):
-            elem = fromstring(str(xml))
+            elem = fromstring(str(xml), forbid_dtd=True)
         else:
             raise Exception('Error parsing xml string')
 
@@ -1065,7 +1071,7 @@ class OneLogin_Saml2_Utils(object):
             elem = xml
         elif isinstance(xml, Document):
             xml = xml.toxml()
-            elem = fromstring(str(xml))
+            elem = fromstring(str(xml), forbid_dtd=True)
         elif isinstance(xml, Element):
             xml.setAttributeNS(
                 unicode(OneLogin_Saml2_Constants.NS_MD),
@@ -1073,9 +1079,9 @@ class OneLogin_Saml2_Utils(object):
                 unicode(OneLogin_Saml2_Constants.NS_MD)
             )
             xml = xml.toxml()
-            elem = fromstring(str(xml))
+            elem = fromstring(str(xml), forbid_dtd=True)
         elif isinstance(xml, basestring):
-            elem = fromstring(str(xml))
+            elem = fromstring(str(xml), forbid_dtd=True)
         else:
             raise Exception('Error parsing xml string')
 
