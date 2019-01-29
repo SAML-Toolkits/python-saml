@@ -14,6 +14,8 @@ Python3: [python3-saml](https://github.com/onelogin/python3-saml).
 
 #### Warning ####
 
+Update python-saml to 2.5.0, this version includes security improvements for preventing XEE and Xpath Injections.
+
 Update python-saml to 2.4.0, this version includes a fix for the [CVE-2017-11427](https://www.cvedetails.com/cve/CVE-2017-11427/) vulnerability.
 
 This version also changes how the calculate fingerprint method works, and will expect as input a formatted x509 certificate
@@ -435,6 +437,9 @@ In addition to the required settings data (idp, sp), extra settings can be defin
         "requestedAuthnContext": true,
         // Allows the authn comparison parameter to be set, defaults to 'exact' if the setting is not present.
         "requestedAuthnContextComparison": "exact",
+
+        // Set to true to check that the AuthnContext received matches the one requested.
+        "failOnAuthnContextMismatch": false,
 
         // In some environment you will need to set how long the published metadata of the Service Provider gonna be valid.
         // is possible to not set the 2 following parameters (or set to null) and default values will be set (2 days, 1 week)

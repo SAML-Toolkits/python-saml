@@ -1,4 +1,14 @@
 # python-saml changelog
+### 2.5.0 (Jan 29, 2019)
+* Security improvements. Use of tagid to prevent XPath injection. Disable DTD on fromstring defusedxml method
+* [#239](https://github.com/onelogin/python-saml/issues/239) Check that the response has all of the AuthnContexts that we provided
+* Fixed a ValidationError misspelling
+* Don't require compression on LogoutResponse messages by relaxing the decode_base64_and_inflate method
+* Add expected/received in WRONG_ISSUER error
+* If debug enable, print reason for the SAMLResponse invalidation
+* [#238](https://github.com/onelogin/python-saml/issues/238) Fix DSA constant
+* Start using flake8 for code quality
+
 ### 2.4.2 (Sep 05, 2018)
 * Update dm.xmlsec.binding dependency to 1.3.7
 * Update pylint dependency to 1.9.1
