@@ -62,6 +62,7 @@ class OneLogin_Saml2_Auth(object):
         self.__last_message_id = None
         self.__last_assertion_id = None
         self.__last_assertion_not_on_or_after = None
+        self.__last_authn_contexts = []
         self.__last_request = None
         self.__last_response = None
 
@@ -107,6 +108,7 @@ class OneLogin_Saml2_Auth(object):
                 self.__session_expiration = response.get_session_not_on_or_after()
                 self.__last_message_id = response.get_id()
                 self.__last_assertion_id = response.get_assertion_id()
+                self.__last_authn_contexts = response.get_authn_contexts()
                 self.__last_assertion_not_on_or_after = response.get_assertion_not_on_or_after()
                 self.__authenticated = True
 
