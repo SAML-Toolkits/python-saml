@@ -655,6 +655,9 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
 
         self.assertEqual('3db29251b97559c67988ea0754cb0573fc409b6f75d89282d57cfb75089539b0bbdb2dcd9ec6e032549ecbc466439d5992e18db2cf5494ca2fe1b2e16f348dff', OneLogin_Saml2_Utils.calculate_x509_fingerprint(cert, 'sha512'))
 
+    def dscb(self):
+        return self.session_clear()
+
     def testDeleteLocalSession(self):
         """
         Tests the delete_local_session method of the OneLogin_Saml2_Utils
@@ -665,8 +668,7 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         OneLogin_Saml2_Utils.delete_local_session()
         self.assertEqual(1, local_session_test)
 
-        dscb = lambda: self.session_clear()
-        OneLogin_Saml2_Utils.delete_local_session(dscb)
+        OneLogin_Saml2_Utils.delete_local_session(self.dscb)
         self.assertEqual(0, local_session_test)
 
     def session_clear(self):

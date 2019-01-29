@@ -425,7 +425,7 @@ class OneLogin_Saml2_Logout_Request(object):
             self.__error = err.__str__()
             debug = self.__settings.is_debug_active()
             if debug:
-                print err.__str__()
+                print(err.__str__())
             if raise_exceptions:
                 raise err
             return False
