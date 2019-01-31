@@ -202,6 +202,13 @@ class OneLogin_Saml2_Auth(object):
             url = self.__request_data['get_data']['RelayState']
         return OneLogin_Saml2_Utils.redirect(url, parameters, request_data=self.__request_data)
 
+    def get_last_authn_contexts(self):
+        """
+        :returns: The list of authentication contexts sent in the last SAML Response.
+        :rtype: list
+        """
+        return self.__last_authn_contexts
+
     def is_authenticated(self):
         """
         Checks if the user is authenticated or not.
