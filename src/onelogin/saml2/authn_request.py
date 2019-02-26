@@ -27,7 +27,7 @@ class OneLogin_Saml2_Authn_Request(object):
         Constructs the AuthnRequest object.
 
         :param settings: OSetting data
-        :type return_to: OneLogin_Saml2_Settings
+        :type settings: OneLogin_Saml2_Settings
 
         :param force_authn: Optional argument. When true the AuthNRequest will set the ForceAuthn='true'.
         :type force_authn: bool
