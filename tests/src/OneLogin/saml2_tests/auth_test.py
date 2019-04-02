@@ -754,7 +754,6 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         self.assertIn('Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress">testuser@example.com</saml:NameID>', request_3)
         self.assertIn('<saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">', request_3)
 
-
     def testLogout(self):
         """
         Tests the logout method of the OneLogin_Saml2_Auth class
