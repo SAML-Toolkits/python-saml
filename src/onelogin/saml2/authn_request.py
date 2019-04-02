@@ -22,7 +22,7 @@ class OneLogin_Saml2_Authn_Request(object):
 
     """
 
-    def __init__(self, settings, force_authn=False, is_passive=False, set_nameid_policy=True):
+    def __init__(self, settings, force_authn=False, is_passive=False, set_nameid_policy=True, name_id_value_req=None):
         """
         Constructs the AuthnRequest object.
 
@@ -37,6 +37,9 @@ class OneLogin_Saml2_Authn_Request(object):
 
         :param set_nameid_policy: Optional argument. When true the AuthNRequest will set a nameIdPolicy element.
         :type set_nameid_policy: bool
+
+        :param name_id_value_req: Optional argument. Indicates to the IdP the subject that should be authenticated
+        :type name_id_value_req: string
         """
         self.__settings = settings
 
@@ -68,6 +71,14 @@ class OneLogin_Saml2_Authn_Request(object):
         is_passive_str = ''
         if is_passive is True:
             is_passive_str = "\n" + '    IsPassive="true"'
+
+        subject_str = ''
+        if name_id_value_req:
+            subject_str = """
+    <saml:Subject>
+        <saml:NameID Format="%s">%s</saml:NameID>
+        <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer"></saml:SubjectConfirmation>
+    </saml:Subject>""" % (sp_data['NameIDFormat'], name_id_value_req)
 
         nameid_policy_str = ''
         if set_nameid_policy:
@@ -110,7 +121,7 @@ class OneLogin_Saml2_Authn_Request(object):
     ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
     AssertionConsumerServiceURL="%(assertion_url)s"
     %(attr_consuming_service_str)s>
-    <saml:Issuer>%(entity_id)s</saml:Issuer>%(nameid_policy_str)s%(requested_authn_context_str)s
+    <saml:Issuer>%(entity_id)s</saml:Issuer>%(subject_str)s%(nameid_policy_str)s%(requested_authn_context_str)s
 </samlp:AuthnRequest>""" % \
             {
                 'id': uid,
@@ -121,6 +132,7 @@ class OneLogin_Saml2_Authn_Request(object):
                 'destination': destination,
                 'assertion_url': sp_data['assertionConsumerService']['url'],
                 'entity_id': sp_data['entityId'],
+                'subject_str': subject_str,
                 'nameid_policy_str': nameid_policy_str,
                 'requested_authn_context_str': requested_authn_context_str,
                 'attr_consuming_service_str': attr_consuming_service_str
