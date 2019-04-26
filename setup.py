@@ -34,7 +34,7 @@ setup(
     install_requires=[
         'dm.xmlsec.binding==1.3.7',
         'isodate>=0.5.0',
-        'defusedxml>=0.4.1',
+        'defusedxml>=0.6.0',
     ],
     extras_require={
         'test': (
