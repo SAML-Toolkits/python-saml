@@ -50,14 +50,19 @@ def index(request):
         return_to = OneLogin_Saml2_Utils.get_self_url(req) + reverse('attrs')
         return HttpResponseRedirect(auth.login(return_to))
     elif 'slo' in req['get_data']:
-        name_id = None
-        session_index = None
+        name_id = session_index = name_id_format = name_id_nq = name_id_spnq = None
         if 'samlNameId' in request.session:
             name_id = request.session['samlNameId']
         if 'samlSessionIndex' in request.session:
             session_index = request.session['samlSessionIndex']
+        if 'samlNameIdFormat' in request.session:
+            name_id_format = request.session['samlNameIdFormat']
+        if 'samlNameIdNameQualifier' in request.session:
+            name_id_nq = request.session['samlNameIdNameQualifier']
+        if 'samlNameIdSPNameQualifier' in request.session:
+            name_id_spnq = request.session['samlNameIdSPNameQualifier']
 
-        return HttpResponseRedirect(auth.logout(name_id=name_id, session_index=session_index))
+        return HttpResponseRedirect(auth.logout(name_id=name_id, session_index=session_index, nq=name_id_nq, name_id_format=name_id_format, spnq=name_id_spnq))
 
         # If LogoutRequest ID need to be stored in order to later validate it, do instead
         # slo_built_url = auth.logout(name_id=name_id, session_index=session_index)
@@ -77,6 +82,9 @@ def index(request):
                 del request.session['AuthNRequestID']
             request.session['samlUserdata'] = auth.get_attributes()
             request.session['samlNameId'] = auth.get_nameid()
+            request.session['samlNameIdFormat'] = auth.get_nameid_format()
+            request.session['samlNameIdNameQualifier'] = auth.get_nameid_nq()
+            request.session['samlNameIdSPNameQualifier'] = auth.get_nameid_spnq()
             request.session['samlSessionIndex'] = auth.get_session_index()
             if 'RelayState' in req['post_data'] and OneLogin_Saml2_Utils.get_self_url(req) != req['post_data']['RelayState']:
                 return HttpResponseRedirect(auth.redirect_to(req['post_data']['RelayState']))
