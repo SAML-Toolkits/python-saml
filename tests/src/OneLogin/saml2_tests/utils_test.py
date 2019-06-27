@@ -469,12 +469,20 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         saml_time = '2013-12-10T04:39:31Z'
         self.assertEqual(time, OneLogin_Saml2_Utils.parse_SAML_to_time(saml_time))
 
-        with self.assertRaisesRegexp(Exception, 'does not match format'):
+        with self.assertRaisesRegexp(Exception, 'Unrecognised ISO 8601 date format'):
             OneLogin_Saml2_Utils.parse_SAML_to_time('invalidSAMLTime')
 
-        # Now test if toolkit supports miliseconds
+        # Now test if toolkit supports milliseconds
         saml_time2 = '2013-12-10T04:39:31.120Z'
         self.assertEqual(time, OneLogin_Saml2_Utils.parse_SAML_to_time(saml_time2))
+
+        # Now test if toolkit supports microseconds
+        saml_time3 = '2013-12-10T04:39:31.120240Z'
+        self.assertEqual(time, OneLogin_Saml2_Utils.parse_SAML_to_time(saml_time3))
+
+        # Now test if toolkit supports nanoseconds
+        saml_time4 = '2013-12-10T04:39:31.120240360Z'
+        self.assertEqual(time, OneLogin_Saml2_Utils.parse_SAML_to_time(saml_time4))
 
     def testParseTime2SAML(self):
         """
