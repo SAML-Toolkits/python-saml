@@ -1,4 +1,13 @@
 # python-saml changelog
+### 2.6.0 (Jul 02, 2019)
+* Adjusted acs endpoint to extract NameQualifier and SPNameQualifier from SAMLResponse. Adjusted single logout service to provide NameQualifier and SPNameQualifier to logout method. Add getNameIdNameQualifier to Auth and SamlResponse. Extend logout method from Auth and LogoutRequest constructor to support SPNameQualifier parameter. Align LogoutRequest constructor with SAML specs
+* Added get_in_response_to method to Response and LogoutResponse classes
+* Add get_last_authn_contexts method
+* Fix bug on friendlyName/nameFormat parameters on RequestedAttribute elements. Wrong variable name caused FriendlyName to overwrite NameFormat
+* Add support for Subjects on AuthNRequests by the new name_id_value_req parameeter.Fix testshib test. Improve README: Added inline markup to important references
+* Update defusedxml
+* Fix path in flask demo
+
 ### 2.5.0 (Jan 29, 2019)
 * Security improvements. Use of tagid to prevent XPath injection. Disable DTD on fromstring defusedxml method
 * [#239](https://github.com/onelogin/python-saml/issues/239) Check that the response has all of the AuthnContexts that we provided
