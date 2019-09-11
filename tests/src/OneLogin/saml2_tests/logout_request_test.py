@@ -189,7 +189,6 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
             OneLogin_Saml2_Logout_Request.get_nameid_data(dom_2.toxml(), key)
 
         idp_data = settings.get_idp_data()
-        sp_data = settings.get_sp_data()
         expected_name_id_data = {
             'Format': 'urn:oasis:names:tc:SAML:2.0:nameid-format:emailAddress',
             'NameQualifier': idp_data['entityId'],

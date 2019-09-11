@@ -68,10 +68,10 @@ def index():
             name_id_spnq = session['samlNameIdSPNameQualifier']
 
         return redirect(auth.logout(name_id=name_id, session_index=session_index, nq=name_id_nq, name_id_format=name_id_format, spnq=name_id_spnq))
-        # If LogoutRequest ID need to be stored in order to later validate it, do instead
-        # slo_built_url = auth.logout(name_id=name_id, session_index=session_index)
-        # session['LogoutRequestID'] = auth.get_last_request_id()
-        #return redirect(slo_built_url)
+        #  If LogoutRequest ID need to be stored in order to later validate it, do instead
+        #  slo_built_url = auth.logout(name_id=name_id, session_index=session_index)
+        #  session['LogoutRequestID'] = auth.get_last_request_id()
+        # return redirect(slo_built_url)
     elif 'acs' in request.args:
         request_id = None
         if 'AuthNRequestID' in session:
