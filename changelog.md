@@ -1,4 +1,7 @@
 # python-saml changelog
+### 2.7.0 (Sep 11, 2019)
+* Set true as the default value for strict setting
+
 ### 2.6.0 (Jul 02, 2019)
 * Adjusted acs endpoint to extract NameQualifier and SPNameQualifier from SAMLResponse. Adjusted single logout service to provide NameQualifier and SPNameQualifier to logout method. Add getNameIdNameQualifier to Auth and SamlResponse. Extend logout method from Auth and LogoutRequest constructor to support SPNameQualifier parameter. Align LogoutRequest constructor with SAML specs
 * Added get_in_response_to method to Response and LogoutResponse classes
