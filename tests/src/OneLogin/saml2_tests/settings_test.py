@@ -331,7 +331,7 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
                 'emailAddress': 'auxiliar@example.com'
             }
         }
-        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: sp_signMetadata_invalid,contact_type_invalid,contact_not_enought_data,organization_not_enought_data'):
+        with self.assertRaisesRegexp(Exception, 'Invalid dict settings: sp_signMetadata_invalid,contact_type_invalid,contact_not_enough_data,organization_not_enough_data'):
             OneLogin_Saml2_Settings(settings_info)
 
     def testGetSPMetadata(self):
