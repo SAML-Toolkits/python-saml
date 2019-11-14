@@ -477,7 +477,7 @@ class OneLogin_Saml2_Settings(object):
                     contact = settings['contactPerson'][c_type]
                     if ('givenName' not in contact or len(contact['givenName']) == 0) or \
                             ('emailAddress' not in contact or len(contact['emailAddress']) == 0):
-                        errors.append('contact_not_enought_data')
+                        errors.append('contact_not_enough_data')
                         break
 
             if 'organization' in settings:
@@ -486,7 +486,7 @@ class OneLogin_Saml2_Settings(object):
                     if ('name' not in organization or len(organization['name']) == 0) or \
                         ('displayname' not in organization or len(organization['displayname']) == 0) or \
                             ('url' not in organization or len(organization['url']) == 0):
-                        errors.append('organization_not_enought_data')
+                        errors.append('organization_not_enough_data')
                         break
             # Restores the value that had the self.__sp
             if 'old_sp' in locals():
