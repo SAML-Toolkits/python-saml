@@ -1084,7 +1084,7 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
         # check that we catch when the contexts don't match
         response = OneLogin_Saml2_Response(settings, message)
         self.assertFalse(response.is_valid(request_data))
-        self.assertIn('The AuthnContext "%s" didn\'t include requested context "%s"' % (password_context, two_factor_context), response.get_error())
+        self.assertIn('The AuthnContext "%s" was not a requested context "%s"' % (password_context, two_factor_context), response.get_error())
 
         # now drop in the expected AuthnContextClassRef and see that it passes
         original_message = b64decode(message)
