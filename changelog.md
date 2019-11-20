@@ -1,4 +1,10 @@
 # python-saml changelog
+### 2.8.0 (NOv 20, 2019)
+* [#258](https://github.com/onelogin/python-saml/issues/258) Fix failOnAuthnContextMismatch feature
+* [#250](https://github.com/onelogin/python-saml/issues/250) Allow any number of decimal places for seconds on SAML datetimes
+* Update demo versions. Improve them and add Tornado demo.
+
+
 ### 2.7.0 (Sep 11, 2019)
 * Set true as the default value for strict setting
 
