@@ -5,6 +5,12 @@
 [![PyPi Version](https://img.shields.io/pypi/v/python-saml.svg)](https://pypi.python.org/pypi/python-saml)
 ![Python versions](https://img.shields.io/pypi/pyversions/python-saml.svg)
 
+```
+Python 2 was deprecated on January 1, 2020. We recommend to migrate your project
+to Python 3 and use python3-saml
+```
+
+
 Add SAML support to your Python software using this library.
 Forget those complicated libraries and use the open source library provided
 and supported by OneLogin Inc.
