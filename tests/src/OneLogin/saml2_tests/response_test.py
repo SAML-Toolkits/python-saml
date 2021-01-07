@@ -714,6 +714,17 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         self.assertFalse(response.is_valid(self.get_request_data()))
         self.assertEqual('test@onelogin.com', response.get_nameid())
 
+
+    def testDoesNotAllowSignatureWrappingAttack2(self):
+        # Signature Wraping attack 2
+        settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
+        settings.set_strict(False)
+        xml = self.file_contents(join(self.data_path, 'responses', 'invalids', 'signature_wrapping_attack2.xml.base64'))
+        response = OneLogin_Saml2_Response(settings, xml)
+        self.assertFalse(response.is_valid(self.get_request_data()))
+        self.assertEquals("SAML Response must contain 1 assertion", response.get_error())
+
+
     def testNodeTextAttack(self):
         """
         Tests the get_nameid and get_attributes methods of the OneLogin_Saml2_Response
