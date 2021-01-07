@@ -13,10 +13,10 @@ import urllib2
 import ssl
 
 from copy import deepcopy
-from defusedxml.lxml import fromstring
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.xmlparser import fromstring
 
 
 class OneLogin_Saml2_IdPMetadataParser(object):

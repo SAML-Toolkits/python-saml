@@ -16,7 +16,6 @@ import calendar
 from hashlib import sha1, sha256, sha384, sha512
 from isodate import parse_duration as duration_parser
 from lxml import etree
-from defusedxml.lxml import tostring, fromstring
 from os.path import basename, dirname, join
 import re
 from sys import stderr
@@ -35,6 +34,7 @@ from dm.xmlsec.binding.tmpl import EncData, Signature
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.errors import OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError
+from onelogin.saml2.xmlparser import tostring, fromstring
 
 
 if not globals().get('xmlsec_setup', False):
@@ -164,11 +164,12 @@ class OneLogin_Saml2_Utils(object):
 
             return 'invalid_xml'
 
-        return parseString(tostring(dom, encoding='unicode').encode('utf-8'), forbid_dtd=True)
+        return parseString(tostring(dom, encoding='unicode').encode('utf-8'), forbid_dtd=True, forbid_entities=True, forbid_external=True)
 
     @staticmethod
     def element_text(node):
-        etree.strip_tags(node, etree.Comment)
+        # Double check, the LXML Parser already removes comments
+        #etree.strip_tags(node, etree.Comment)
         return node.text
 
     @staticmethod
@@ -716,7 +717,7 @@ class OneLogin_Saml2_Utils(object):
 
             edata = enc_ctx.encryptXml(enc_data, elem[0])
 
-            newdoc = parseString(tostring(edata, encoding='unicode').encode('utf-8'), forbid_dtd=True)
+            newdoc = parseString(tostring(edata, encoding='unicode').encode('utf-8'), forbid_dtd=True, forbid_entities=True, forbid_external=True)
 
             if newdoc.hasChildNodes():
                 child = newdoc.firstChild

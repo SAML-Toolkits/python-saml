@@ -5,16 +5,16 @@
 
 from base64 import b64decode
 import json
-from defusedxml.lxml import fromstring
 from lxml import etree
 from os.path import dirname, join, exists
 import unittest
 from xml.dom.minidom import Document, parseString
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
+from onelogin.saml2.errors import OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
-from onelogin.saml2.errors import OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError
+from onelogin.saml2.xmlparser import fromstring
 
 
 class OneLogin_Saml2_Utils_Test(unittest.TestCase):
@@ -1034,7 +1034,6 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         self.assertFalse(OneLogin_Saml2_Utils.validate_sign(wrapping_attack1, cert))
         with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, "Expected exactly one signature node; got 0."):
             OneLogin_Saml2_Utils.validate_sign(wrapping_attack1, cert, raise_exceptions=True)
-
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()

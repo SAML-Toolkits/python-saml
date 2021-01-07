@@ -12,13 +12,12 @@ Logout Request class of OneLogin's Python Toolkit.
 from zlib import decompress
 from base64 import b64encode, b64decode
 from lxml import etree
-from defusedxml.lxml import fromstring
 from xml.dom.minidom import Document
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
-from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from onelogin.saml2.errors import OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError
-
+from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.xmlparser import fromstring
 
 class OneLogin_Saml2_Logout_Request(object):
     """
