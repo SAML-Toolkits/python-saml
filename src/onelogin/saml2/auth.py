@@ -446,26 +446,30 @@ class OneLogin_Saml2_Auth(object):
 
     def get_sso_url(self):
         """
-        Gets the SSO URL.
+        Gets the IdP SSO URL.
 
         :returns: An URL, the SSO endpoint of the IdP
         :rtype: string
         """
-        idp_data = self.__settings.get_idp_data()
-        return idp_data['singleSignOnService']['url']
+        return self.__settings.get_idp_sso_url()
 
     def get_slo_url(self):
         """
-        Gets the SLO URL.
+        Gets the IdP SLO URL.
 
         :returns: An URL, the SLO endpoint of the IdP
         :rtype: string
         """
-        url = None
-        idp_data = self.__settings.get_idp_data()
-        if 'singleLogoutService' in idp_data.keys() and 'url' in idp_data['singleLogoutService']:
-            url = idp_data['singleLogoutService']['url']
-        return url
+        return self.__settings.get_idp_slo_url()
+
+    def get_slo_response_url(self):
+        """
+        Gets the SLO return URL for IdP-initiated logout.
+
+        :returns: an URL, the SLO return endpoint of the IdP
+        :rtype: string
+        """
+        return self.__settings.get_idp_slo_response_url()
 
     def build_request_signature(self, saml_request, relay_state, sign_algorithm=OneLogin_Saml2_Constants.RSA_SHA1):
         """

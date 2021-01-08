@@ -208,7 +208,6 @@ class OneLogin_Saml2_Logout_Response(object):
         :type in_response_to: string
         """
         sp_data = self.__settings.get_sp_data()
-        idp_data = self.__settings.get_idp_data()
 
         uid = OneLogin_Saml2_Utils.generate_unique_id()
         issue_instant = OneLogin_Saml2_Utils.parse_time_to_SAML(OneLogin_Saml2_Utils.now())
@@ -229,7 +228,7 @@ class OneLogin_Saml2_Logout_Response(object):
             {
                 'id': uid,
                 'issue_instant': issue_instant,
-                'destination': idp_data['singleLogoutService']['url'],
+                'destination': self.__settings.get_idp_slo_response_url(),
                 'in_response_to': in_response_to,
                 'entity_id': sp_data['entityId'],
             }
