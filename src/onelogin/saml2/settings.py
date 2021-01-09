@@ -143,8 +143,7 @@ class OneLogin_Saml2_Settings(object):
         self.__paths = {
             'base': base_path,
             'cert': base_path + 'certs' + sep,
-            'lib': base_path + 'lib' + sep,
-            'extlib': base_path + 'extlib' + sep,
+            'lib': dirname(__file__) + sep
         }
 
     def __update_paths(self, settings):
@@ -168,6 +167,12 @@ class OneLogin_Saml2_Settings(object):
         """
         return self.__paths['base']
 
+    def set_cert_path(self, path):
+        """
+        Set a new cert path
+        """
+        self.__paths['cert'] = path
+
     def get_cert_path(self):
         """
         Returns cert path
@@ -185,15 +190,6 @@ class OneLogin_Saml2_Settings(object):
         :rtype: string
         """
         return self.__paths['lib']
-
-    def get_ext_lib_path(self):
-        """
-        Returns external lib path
-
-        :return: The external library folder path
-        :rtype: string
-        """
-        return self.__paths['extlib']
 
     def get_schemas_path(self):
         """
