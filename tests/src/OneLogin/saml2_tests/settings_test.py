@@ -64,6 +64,13 @@ class OneLogin_Saml2_Settings_Test(unittest.TestCase):
         with self.assertRaisesRegexp(Exception, 'Invalid dict settings: idp_sso_url_invalid'):
             OneLogin_Saml2_Settings(settings_info)
 
+        settings_info['idp']['singleSignOnService']['url'] = 'http://single-label-domain'
+        settings_info['security'] = {}
+        settings_info['security']['allowSingleLabelDomains'] = True
+        settings = OneLogin_Saml2_Settings(settings_info)
+        self.assertEqual(len(settings.get_errors()), 0)
+
+        del settings_info['security']
         del settings_info['sp']
         del settings_info['idp']
         with self.assertRaisesRegexp(Exception, 'Invalid dict settings: idp_not_found,sp_not_found'):
