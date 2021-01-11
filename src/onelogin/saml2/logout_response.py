@@ -126,8 +126,8 @@ class OneLogin_Saml2_Logout_Response(object):
                 # Check destination
                 if self.document.documentElement.hasAttribute('Destination'):
                     destination = self.document.documentElement.getAttribute('Destination')
-                    if destination != '':
-                        if current_url not in destination:
+                    if destination:
+                        if not OneLogin_Saml2_Utils.normalize_url(url=destination).startswith(OneLogin_Saml2_Utils.normalize_url(url=current_url)):
                             raise OneLogin_Saml2_ValidationError(
                                 'The LogoutResponse was received at %s instead of %s' % (current_url, destination),
                                 OneLogin_Saml2_ValidationError.WRONG_DESTINATION

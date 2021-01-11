@@ -23,6 +23,7 @@ from sys import stderr
 from tempfile import NamedTemporaryFile
 from textwrap import wrap
 from urllib import quote_plus
+from urlparse import urlsplit, urlunsplit
 from uuid import uuid4
 from xml.dom.minidom import Document, Element
 from defusedxml.minidom import parseString
@@ -1280,3 +1281,24 @@ class OneLogin_Saml2_Utils(object):
     def case_sensitive_urlencode(to_encode, lowercase=False):
         encoded = quote_plus(to_encode)
         return re.sub(r"%[A-F0-9]{2}", lambda m: m.group(0).lower(), encoded) if lowercase else encoded
+
+    @staticmethod
+    def normalize_url(url):
+        """
+        Returns normalized URL for comparison.
+        This method converts the netloc to lowercase, as it should be case-insensitive (per RFC 4343, RFC 7617)
+        If standardization fails, the original URL is returned
+        Python documentation indicates that URL split also normalizes query strings if empty query fields are present
+
+        :param url: URL
+        :type url: String
+
+        :returns: A normalized URL, or the given URL string if parsing fails
+        :rtype: String
+        """
+        try:
+            scheme, netloc, path, query, fragment = urlsplit(url)
+            normalized_url = urlunsplit((scheme.lower(), netloc.lower(), path, query, fragment))
+            return normalized_url
+        except Exception:
+            return url
