@@ -51,6 +51,7 @@ class OneLogin_Saml2_Auth(object):
         self.__request_data = request_data
         self.__settings = OneLogin_Saml2_Settings(old_settings, custom_base_path)
         self.__attributes = []
+        self.__friendlyname_attributes = []
         self.__nameid = None
         self.__nameid_format = None
         self.__nameid_nq = None
@@ -104,6 +105,7 @@ class OneLogin_Saml2_Auth(object):
             self.__last_response = response.get_xml_document()
             if response.is_valid(self.__request_data, request_id):
                 self.__attributes = response.get_attributes()
+                self.__friendlyname_attributes = response.get_friendlyname_attributes()
                 self.__nameid = response.get_nameid()
                 self.__nameid_format = response.get_nameid_format()
                 self.__nameid_nq = response.get_nameid_nq()
@@ -115,11 +117,9 @@ class OneLogin_Saml2_Auth(object):
                 self.__last_authn_contexts = response.get_authn_contexts()
                 self.__last_assertion_not_on_or_after = response.get_assertion_not_on_or_after()
                 self.__authenticated = True
-
             else:
                 self.__errors.append('invalid_response')
                 self.__error_reason = response.get_error()
-
         else:
             self.__errors.append('invalid_binding')
             raise OneLogin_Saml2_Error(
@@ -231,6 +231,15 @@ class OneLogin_Saml2_Auth(object):
         """
         return self.__attributes
 
+    def get_friendlyname_attributes(self):
+        """
+        Returns the set of SAML attributes indexed by FiendlyName.
+
+        :returns: SAML attributes
+        :rtype: dict
+        """
+        return self.__friendlyname_attributes
+
     def get_nameid(self):
         """
         Returns the nameID.
@@ -322,6 +331,22 @@ class OneLogin_Saml2_Auth(object):
         value = None
         if self.__attributes and name in self.__attributes.keys():
             value = self.__attributes[name]
+        return value
+
+    def get_friendlyname_attribute(self, friendlyname):
+        """
+        Returns the requested SAML attribute searched by FriendlyName.
+
+        :param friendlyname: FriendlyName of the attribute
+        :type friendlyname: string
+
+        :returns: Attribute value(s) if exists or None
+        :rtype: list
+        """
+        assert isinstance(friendlyname, basestring)
+        value = None
+        if self.__friendlyname_attributes and friendlyname in self.__friendlyname_attributes.keys():
+            value = self.__friendlyname_attributes[friendlyname]
         return value
 
     def get_last_request_id(self):
