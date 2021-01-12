@@ -32,6 +32,7 @@ setup(
     },
     test_suite='tests',
     install_requires=[
+        'lxml>=3.3.5',
         'dm.xmlsec.binding==1.3.7',
         'isodate>=0.5.0',
         'defusedxml>=0.6.0',

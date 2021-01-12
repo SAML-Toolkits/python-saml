@@ -11,12 +11,12 @@ SAML Response class of OneLogin's Python Toolkit.
 
 from base64 import b64decode
 from copy import deepcopy
-from defusedxml.lxml import tostring, fromstring
 from xml.dom.minidom import Document
 
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
-from onelogin.saml2.utils import OneLogin_Saml2_Utils, return_false_on_exception
 from onelogin.saml2.errors import OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError
+from onelogin.saml2.utils import OneLogin_Saml2_Utils, return_false_on_exception
+from onelogin.saml2.xmlparser import tostring, fromstring
 
 
 class OneLogin_Saml2_Response(object):
