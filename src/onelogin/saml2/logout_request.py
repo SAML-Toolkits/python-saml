@@ -19,6 +19,7 @@ from onelogin.saml2.errors import OneLogin_Saml2_Error, OneLogin_Saml2_Validatio
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from onelogin.saml2.xmlparser import fromstring
 
+
 class OneLogin_Saml2_Logout_Request(object):
     """
 

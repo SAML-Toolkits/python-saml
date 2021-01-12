@@ -170,7 +170,7 @@ class OneLogin_Saml2_Utils(object):
     @staticmethod
     def element_text(node):
         # Double check, the LXML Parser already removes comments
-        #etree.strip_tags(node, etree.Comment)
+        etree.strip_tags(node, etree.Comment)
         return node.text
 
     @staticmethod

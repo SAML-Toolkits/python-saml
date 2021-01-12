@@ -1035,6 +1035,7 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         with self.assertRaisesRegexp(OneLogin_Saml2_ValidationError, "Expected exactly one signature node; got 0."):
             OneLogin_Saml2_Utils.validate_sign(wrapping_attack1, cert, raise_exceptions=True)
 
+
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
     unittest.main(testRunner=runner)
