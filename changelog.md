@@ -1,4 +1,14 @@
 # python-saml changelog
+### 2.9.0 (Jan 13, 2021)
+* Destination URL Comparison is now case-insensitive for netloc
+* Support single-label-domains as valid. New security parameter allowSingleLabelDomains
+* Added get_idp_sso_url, get_idp_slo_url and get_idp_slo_response_url methods to the Settings class and use it in the toolkit
+* [#267](https://github.com/onelogin/python-saml/issues/267) Custom lxml parser based on the one defined at xmldefused. Parser will ignore comments and processing instructions and by default have deactivated huge_tree, DTD and access to external documents
+* Add get_friendlyname_attributes support
+* Remove external lib method get_ext_lib_path. Add set_cert_path in order to allow set the cert path in a different folder than the toolkit
+* Add python2 deprecation info
+* [#269](https://github.com/onelogin/python-saml/issues/269) Add sha256 instead sha1 algorithm for sign/digest as recommended value on documentation and settings
+
 ### 2.8.0 (NOv 20, 2019)
 * [#258](https://github.com/onelogin/python-saml/issues/258) Fix failOnAuthnContextMismatch feature
 * [#250](https://github.com/onelogin/python-saml/issues/250) Allow any number of decimal places for seconds on SAML datetimes
