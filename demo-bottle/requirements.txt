@@ -1,4 +1,4 @@
-bottle==0.12.8
+bottle==0.12.19
 beaker==1.6.4
 paste==1.7.5.1
 jinja2==2.7.3
