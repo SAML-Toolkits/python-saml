@@ -1,0 +1,31 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python package
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 2.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 2.7
+        
+    - name: Install dependencies
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -qq swig python-dev libxml2-dev libxmlsec1-dev
+        pip install .
+        pip install -e ".[test]"
+        
+    - name: Test
+      run: |
+        coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py test
+        coverage report -m --rcfile=tests/coverage.rc
+        pycodestyle tests/src/OneLogin/saml2_tests/*.py demo-flask/*.py demo-django/*.py src/onelogin/saml2/*.py --config=tests/pep8.rc
+        pyflakes src/onelogin/saml2 demo-django demo-flask tests/src/OneLogin/saml2_tests
