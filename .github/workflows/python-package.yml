@@ -20,26 +20,11 @@ jobs:
       run: |
         sudo apt-get update -qq
         sudo apt-get install -qq swig python-dev libxml2-dev libxmlsec1-dev
-        pip install .
-        pip install -e ".[test]"
+        make install-req
+        make install-test
 
     - name: Test
       run: |
         make pytest
         make pycodestyle
         make flake8       
-
-    - name: Coveralls
-      uses: AndreMiras/coveralls-python-action@develop
-      with:
-        parallel: true
-        flag-name: Test
-
-  coveralls_finish:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - name: Coveralls Finished
-      uses: AndreMiras/coveralls-python-action@develop
-      with:
-        parallel-finished: true
