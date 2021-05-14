@@ -14,10 +14,12 @@ __pycache_
 /*.eg
 *.egg-info
 /eggs
+/.eggs
 /build
 /dist
 /venv
 .coverage
+.pytest_cache
 .pypirc
 
 *.key

@@ -18,19 +18,21 @@ SOURCES=$(MAIN_SOURCE) $(DEMO) $(TESTS)
 
 $(VIRTUAL_ENV):
 	$(PYTHON_WITH_VERSION) -m venv $(VIRTUAL_ENV)
-	$(PIP) install .
-	$(PIP) install -e ".[test]"
 
 virtualenv: $(VIRTUAL_ENV)
 
-pytest: virtualenv
+install: $(PIP) install .
+
+install-dev: $(PIP) install -e ".[test]" 
+
+pytest: 
 	$(COVERAGE) run --source $(MAIN_SOURCE) --rcfile=$(COVERAGE_CONFIG) -m pytest
 	$(COVERAGE) report -m --rcfile=$(COVERAGE_CONFIG)
 
-pycodestyle: virtualenv
+pycodestyle:
 	$(PYCODESTYLE) $(SOURCES) --config=$(PEP8_CONFIG)
 
-flake8: virtualenv
+flake8:
 	$(FLAKE8) --ignore=E501,E731 $(SOURCES)
 
 clean: 
