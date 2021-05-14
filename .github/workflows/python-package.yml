@@ -6,7 +6,7 @@ name: Python package
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,17 +15,31 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 2.7
-        
+
     - name: Install dependencies
       run: |
         sudo apt-get update -qq
         sudo apt-get install -qq swig python-dev libxml2-dev libxmlsec1-dev
         pip install .
         pip install -e ".[test]"
-        
+
     - name: Test
       run: |
-        coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py test
-        coverage report -m --rcfile=tests/coverage.rc
-        pycodestyle tests/src/OneLogin/saml2_tests/*.py demo-flask/*.py demo-django/*.py src/onelogin/saml2/*.py --config=tests/pep8.rc
-        pyflakes src/onelogin/saml2 demo-django demo-flask tests/src/OneLogin/saml2_tests
+        make pytest
+        make pycodestyle
+        make flake8       
+
+    - name: Coveralls
+      uses: AndreMiras/coveralls-python-action@develop
+      with:
+        parallel: true
+        flag-name: Test
+
+  coveralls_finish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: AndreMiras/coveralls-python-action@develop
+      with:
+        parallel-finished: true

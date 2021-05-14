@@ -266,9 +266,8 @@ class OneLogin_Saml2_Response(object):
                         continue
                     else:
                         irt = sc_data.get('InResponseTo', None)
-                        if (in_response_to is None and irt is not None and
-                           security.get('rejectUnsolicitedResponsesWithInResponseTo', False)) or \
-                           in_response_to and irt and irt != in_response_to:
+                        rurwir = security.get('rejectUnsolicitedResponsesWithInResponseTo', False)
+                        if (in_response_to is None and irt is not None and rurwir) or in_response_to and in_response_to and irt and irt != in_response_to:
                             continue
                         recipient = sc_data.get('Recipient', None)
                         if recipient and current_url not in recipient:

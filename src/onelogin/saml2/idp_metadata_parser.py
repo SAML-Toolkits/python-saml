@@ -193,12 +193,10 @@ class OneLogin_Saml2_IdPMetadataParser(object):
                     data['idp']['singleLogoutService']['binding'] = required_slo_binding
 
                 if certs is not None:
-                    if (len(certs) == 1 and
-                        (('signing' in certs and len(certs['signing']) == 1) or
-                         ('encryption' in certs and len(certs['encryption']) == 1))) or \
-                        (('signing' in certs and len(certs['signing']) == 1) and
-                         ('encryption' in certs and len(certs['encryption']) == 1 and
-                         certs['signing'][0] == certs['encryption'][0])):
+                    signing_cond = 'signing' in certs and len(certs['signing']) == 1
+                    encryption_cond = 'encryption' in certs and len(certs['encryption']) == 1
+                    if (len(certs) == 1 and (signing_cond or encryption_cond)) or \
+                       (signing_cond and encryption_cond and certs['signing'][0] == certs['encryption'][0]):
                         if 'signing' in certs:
                             data['idp']['x509cert'] = certs['signing'][0]
                         else:

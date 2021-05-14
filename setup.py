@@ -39,10 +39,11 @@ setup(
     ],
     extras_require={
         'test': (
+            'pytest>=4.6',
             'coverage>=3.6, <5.0',
             'freezegun==0.3.5',
             'flake8==3.6.0',
-            'coveralls==1.1',
+            'coveralls==1.11.1',
         ),
     },
     keywords='saml saml2 xmlsec django flask',

@@ -697,8 +697,8 @@ class OneLogin_Saml2_Settings(object):
                     )
             else:
                 # Use a custom key to sign the metadata:
-                if ('keyFileName' not in self.__security['signMetadata'] or
-                        'certFileName' not in self.__security['signMetadata']):
+                if 'keyFileName' not in self.__security['signMetadata'] or \
+                        'certFileName' not in self.__security['signMetadata']:
                     raise OneLogin_Saml2_Error(
                         'Invalid Setting: signMetadata value of the sp is not valid',
                         OneLogin_Saml2_Error.SETTINGS_INVALID_SYNTAX
