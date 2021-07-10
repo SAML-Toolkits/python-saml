@@ -252,22 +252,14 @@ class OneLogin_Saml2_IdPMetadataParser(object):
         return result_settings
 
 
-def dict_deep_merge(a, b, path=None):
-    """Deep-merge dictionary `b` into dictionary `a`.
-    Kudos to http://stackoverflow.com/a/7205107/145400
-    """
-    if path is None:
-        path = []
-    for key in b:
-        if key in a:
-            if isinstance(a[key], dict) and isinstance(b[key], dict):
-                dict_deep_merge(a[key], b[key], path + [str(key)])
-            elif a[key] == b[key]:
-                # Key conflict, but equal value.
-                pass
-            else:
-                # Key/value conflict. Prioritize b over a.
-                a[key] = b[key]
+def dict_deep_merge(lhs, rhs):
+    """Deep-merge dictionary `rhs` into dictionary `lhs`."""
+    updated_rhs = {}
+    for key in rhs:
+        if key in lhs and isinstance(lhs[key], dict) and isinstance(rhs[key], dict):
+            updated_rhs[key] = dict_deep_merge(lhs[key], rhs[key])
         else:
-            a[key] = b[key]
-    return a
+            updated_rhs[key] = rhs[key]
+    lhs.update(updated_rhs)
+    return lhs
+
