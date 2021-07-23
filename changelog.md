@@ -1,4 +1,10 @@
 # python-saml changelog
+### 2.10.0 (Jul 23, 2021)
+* Removed CC-BY-SA 3.0 non compliant implementation of dict_deep_merge
+* Update expired dates from test responses
+* Add warning about the use of OneLogin_Saml2_IdPMetadataParser class about SSRF attacks
+* Migrate from Travis to Github Actions
+
 ### 2.9.0 (Jan 13, 2021)
 * Destination URL Comparison is now case-insensitive for netloc
 * Support single-label-domains as valid. New security parameter allowSingleLabelDomains
