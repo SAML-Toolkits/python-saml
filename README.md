@@ -734,6 +734,8 @@ if not errors:
         request.session['samlUserdata'] = auth.get_attributes()
         if 'RelayState' in req['post_data'] and
           OneLogin_Saml2_Utils.get_self_url(req) != req['post_data']['RelayState']:
+            # To avoid 'Open Redirect' attacks, before execute the redirection confirm
+            # the value of the req['post_data']['RelayState'] is a trusted URL.
             auth.redirect_to(req['post_data']['RelayState'])
         else:
             for attr_name in request.session['samlUserdata'].keys():
@@ -796,6 +798,8 @@ url = auth.process_slo(delete_session_cb=delete_session_callback)
 errors = auth.get_errors()
 if len(errors) == 0:
     if url is not None:
+        # To avoid 'Open Redirect' attacks, before execute the redirection confirm
+        # the value of the url is a trusted URL.
         return redirect(url)
     else:
         print "Sucessfully Logged out"
@@ -932,7 +936,9 @@ elif 'acs' in request.args:                 # Assertion Consumer Service
             request.session['samlSessionIndex'] = auth.get_session_index()
             self_url = OneLogin_Saml2_Utils.get_self_url(req)
             if 'RelayState' in request.form and self_url != request.form['RelayState']:
-                return redirect(auth.redirect_to(request.form['RelayState']))   # Redirect if there is a relayState
+                # To avoid 'Open Redirect' attacks, before execute the redirection confirm
+                # the value of the request.form['RelayState'] is a trusted URL.
+                return redirect(request.form['RelayState'])   # Redirect if there is a relayState
             else:                           # If there is user data we save that to print it later.
                 msg = ''
                 for attr_name in request.session['samlUserdata'].keys():
@@ -943,6 +949,8 @@ elif 'sls' in request.args:                                             # Single
     errors = auth.get_errors()              #  Retrieves possible validation errors
     if len(errors) == 0:
         if url is not None:
+            # To avoid 'Open Redirect' attacks, before execute the redirection confirm
+            # the value of the url is a trusted URL.
             return redirect(url)
         else:
             msg = "Sucessfully logged out"
