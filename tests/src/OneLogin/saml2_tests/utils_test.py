@@ -883,8 +883,8 @@ class OneLogin_Saml2_Utils_Test(unittest.TestCase):
         xml_authn_signed = OneLogin_Saml2_Utils.add_sign(xml_authn, key, cert)
         self.assertIn('<ds:SignatureValue>', xml_authn_signed)
         self.assertIn('<ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>', xml_authn_signed)
-        self.assertIn('<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>', xml_authn_signed)
-        self.assertIn('<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>', xml_authn_signed)
+        self.assertIn('<ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>', xml_authn_signed)
+        self.assertIn('<ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>', xml_authn_signed)
 
         xml_authn_signed_2 = OneLogin_Saml2_Utils.add_sign(xml_authn, key, cert, False, OneLogin_Saml2_Constants.RSA_SHA256, OneLogin_Saml2_Constants.SHA384)
         self.assertIn('<ds:SignatureValue>', xml_authn_signed_2)

@@ -398,7 +398,7 @@ class OneLogin_Saml2_Logout_Request(object):
                 signed_query = 'SAMLRequest=%s' % OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SAMLRequest', lowercase_urlencoding=lowercase_urlencoding)
                 if 'RelayState' in get_data:
                     signed_query = '%s&RelayState=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'RelayState', lowercase_urlencoding=lowercase_urlencoding))
-                signed_query = '%s&SigAlg=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SigAlg', OneLogin_Saml2_Constants.RSA_SHA1, lowercase_urlencoding=lowercase_urlencoding))
+                signed_query = '%s&SigAlg=%s' % (signed_query, OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SigAlg', sign_alg, lowercase_urlencoding=lowercase_urlencoding))
 
                 exists_x509cert = 'x509cert' in idp_data and idp_data['x509cert']
                 exists_multix509sign = 'x509certMulti' in idp_data and \

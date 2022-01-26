@@ -559,7 +559,7 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         self.assertIn('SigAlg', parsed_query)
         self.assertIn('Signature', parsed_query)
         self.assertIn('http://relaystate.com', parsed_query['RelayState'])
-        self.assertIn(OneLogin_Saml2_Constants.RSA_SHA1, parsed_query['SigAlg'])
+        self.assertIn(OneLogin_Saml2_Constants.RSA_SHA256, parsed_query['SigAlg'])
 
     def testLogin(self):
         """
@@ -630,7 +630,7 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         self.assertIn('SigAlg', parsed_query)
         self.assertIn('Signature', parsed_query)
         self.assertIn(return_to, parsed_query['RelayState'])
-        self.assertIn(OneLogin_Saml2_Constants.RSA_SHA1, parsed_query['SigAlg'])
+        self.assertIn(OneLogin_Saml2_Constants.RSA_SHA256, parsed_query['SigAlg'])
 
     def testLoginForceAuthN(self):
         """
@@ -831,7 +831,7 @@ class OneLogin_Saml2_Auth_Test(unittest.TestCase):
         self.assertIn('SigAlg', parsed_query)
         self.assertIn('Signature', parsed_query)
         self.assertIn(return_to, parsed_query['RelayState'])
-        self.assertIn(OneLogin_Saml2_Constants.RSA_SHA1, parsed_query['SigAlg'])
+        self.assertIn(OneLogin_Saml2_Constants.RSA_SHA256, parsed_query['SigAlg'])
 
     def testLogoutNoSLO(self):
         """

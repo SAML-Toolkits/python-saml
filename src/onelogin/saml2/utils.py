@@ -840,7 +840,7 @@ class OneLogin_Saml2_Utils(object):
         return f_temp
 
     @staticmethod
-    def add_sign(xml, key, cert, debug=False, sign_algorithm=OneLogin_Saml2_Constants.RSA_SHA1, digest_algorithm=OneLogin_Saml2_Constants.SHA1):
+    def add_sign(xml, key, cert, debug=False, sign_algorithm=OneLogin_Saml2_Constants.RSA_SHA256, digest_algorithm=OneLogin_Saml2_Constants.SHA256):
         """
         Adds signature key and senders certificate to an element (Message or
         Assertion).
@@ -1208,7 +1208,7 @@ class OneLogin_Saml2_Utils(object):
 
     @staticmethod
     @return_false_on_exception
-    def validate_binary_sign(signed_query, signature, cert=None, algorithm=OneLogin_Saml2_Constants.RSA_SHA1, debug=False):
+    def validate_binary_sign(signed_query, signature, cert=None, algorithm=OneLogin_Saml2_Constants.RSA_SHA256, debug=False):
         """
         Validates signed binary data (Used to validate GET Signature).
 

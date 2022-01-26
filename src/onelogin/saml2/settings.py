@@ -301,10 +301,10 @@ class OneLogin_Saml2_Settings(object):
         self.__security.setdefault('wantNameIdEncrypted', False)
 
         # Signature Algorithm
-        self.__security.setdefault('signatureAlgorithm', OneLogin_Saml2_Constants.RSA_SHA1)
+        self.__security.setdefault('signatureAlgorithm', OneLogin_Saml2_Constants.RSA_SHA256)
 
         # Digest Algorithm
-        self.__security.setdefault('digestAlgorithm', OneLogin_Saml2_Constants.SHA1)
+        self.__security.setdefault('digestAlgorithm', OneLogin_Saml2_Constants.SHA256)
 
         # AttributeStatement required by default
         self.__security.setdefault('wantAttributeStatement', True)
