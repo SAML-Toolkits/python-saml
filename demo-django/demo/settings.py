@@ -22,7 +22,7 @@ SECRET_KEY = '0c7216)gs^ne$%3+je20zuo+g0&^6yb@e68qdr!^!r0hmb-6y+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['pitbulk.no-ip.org']
+ALLOWED_HOSTS = ['localhost']
 
 # Application definition
 
