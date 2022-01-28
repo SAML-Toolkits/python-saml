@@ -1,4 +1,7 @@
 # python-saml changelog
+### 2.11.1 (Jan 28, 2022)
+- lxml fixed to be lower than 4.7.1 since it seems to have issues validating the signature of encrypted elements  See https://github.com/onelogin/python3-saml/issues/292
+
 ### 2.11.0 (Jan 28, 2022)
 - [#292](https://github.com/onelogin/python-saml/pull/292) Add rejectDeprecatedAlgorithm settings in order to be able reject messages signed with deprecated algorithms.
 - Upgrade dm.xmlsec.binding to 2.1
