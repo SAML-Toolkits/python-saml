@@ -1,4 +1,10 @@
 # python-saml changelog
+### 2.11.0 (Jan 28, 2022)
+- [#292](https://github.com/onelogin/python-saml/pull/292) Add rejectDeprecatedAlgorithm settings in order to be able reject messages signed with deprecated algorithms.
+- Upgrade dm.xmlsec.binding to 2.1
+- Set sha256 and rsa-sha256 as default algorithms
+- Added warning about Open Redirect and Reply attacks
+
 ### 2.10.0 (Jul 23, 2021)
 * Removed CC-BY-SA 3.0 non compliant implementation of dict_deep_merge
 * Update expired dates from test responses
