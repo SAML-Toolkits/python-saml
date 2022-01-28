@@ -104,6 +104,7 @@ class OneLogin_Saml2_Response(object):
             has_signed_response = '{%s}Response' % OneLogin_Saml2_Constants.NS_SAMLP in signed_elements
             has_signed_assertion = '{%s}Assertion' % OneLogin_Saml2_Constants.NS_SAML in signed_elements
 
+            security = self.__settings.get_security_data()
             if self.__settings.is_strict():
                 no_valid_xml_msg = 'Invalid SAML Response. Not match the saml-schema-protocol-2.0.xsd'
                 res = OneLogin_Saml2_Utils.validate_xml(
@@ -130,7 +131,6 @@ class OneLogin_Saml2_Response(object):
                             OneLogin_Saml2_ValidationError.INVALID_XML_FORMAT
                         )
 
-                security = self.__settings.get_security_data()
                 current_url = OneLogin_Saml2_Utils.get_self_url_no_query(request_data)
 
                 in_response_to = self.get_in_response_to()
@@ -323,14 +323,14 @@ class OneLogin_Saml2_Response(object):
                     multicerts = idp_data['x509certMulti']['signing']
 
                 # If find a Signature on the Response, validates it checking the original response
-                if has_signed_response and not OneLogin_Saml2_Utils.validate_sign(self.document, cert, fingerprint, fingerprintalg, xpath=OneLogin_Saml2_Utils.RESPONSE_SIGNATURE_XPATH, multicerts=multicerts, raise_exceptions=False):
+                if has_signed_response and not OneLogin_Saml2_Utils.validate_sign(self.document, cert, fingerprint, fingerprintalg, xpath=OneLogin_Saml2_Utils.RESPONSE_SIGNATURE_XPATH, multicerts=multicerts,  raise_exceptions=False):
                     raise OneLogin_Saml2_ValidationError(
                         'Signature validation failed. SAML Response rejected',
                         OneLogin_Saml2_ValidationError.INVALID_SIGNATURE
                     )
 
                 document_check_assertion = self.decrypted_document if self.encrypted else self.document
-                if has_signed_assertion and not OneLogin_Saml2_Utils.validate_sign(document_check_assertion, cert, fingerprint, fingerprintalg, xpath=OneLogin_Saml2_Utils.ASSERTION_SIGNATURE_XPATH, multicerts=multicerts, raise_exceptions=False):
+                if has_signed_assertion and not OneLogin_Saml2_Utils.validate_sign(document_check_assertion, cert, fingerprint, fingerprintalg, xpath=OneLogin_Saml2_Utils.ASSERTION_SIGNATURE_XPATH, multicerts=multicerts,  raise_exceptions=False):
                     raise OneLogin_Saml2_ValidationError(
                         'Signature validation failed. SAML Response rejected',
                         OneLogin_Saml2_ValidationError.INVALID_SIGNATURE
@@ -688,6 +688,9 @@ class OneLogin_Saml2_Response(object):
         """
         sign_nodes = self.__query('//ds:Signature')
 
+        security = self.__settings.get_security_data()
+        reject_deprecated_alg = security.get('rejectDeprecatedAlgorithm', False)
+
         signed_elements = []
         verified_seis = []
         verified_ids = []
@@ -735,6 +738,26 @@ class OneLogin_Saml2_Response(object):
                             OneLogin_Saml2_ValidationError.DUPLICATED_REFERENCE_IN_SIGNED_ELEMENTS
                         )
                     verified_seis.append(sei)
+
+            # Check the signature and digest algorithm
+            if reject_deprecated_alg:
+                sig_method_node = OneLogin_Saml2_Utils.query(sign_node, './/ds:SignatureMethod')
+                if sig_method_node:
+                    sig_method = sig_method_node[0].get("Algorithm")
+                    if sig_method in OneLogin_Saml2_Constants.DEPRECATED_ALGORITHMS:
+                        raise OneLogin_Saml2_ValidationError(
+                            'Deprecated signature algorithm found: %s' % sig_method,
+                            OneLogin_Saml2_ValidationError.DEPRECATED_SIGNATURE_METHOD
+                        )
+
+                dig_method_node = OneLogin_Saml2_Utils.query(sign_node, './/ds:DigestMethod')
+                if dig_method_node:
+                    dig_method = dig_method_node[0].get("Algorithm")
+                    if dig_method in OneLogin_Saml2_Constants.DEPRECATED_ALGORITHMS:
+                        raise OneLogin_Saml2_ValidationError(
+                            'Deprecated digest algorithm found: %s' % dig_method,
+                            OneLogin_Saml2_ValidationError.DEPRECATED_DIGEST_METHOD
+                        )
 
             signed_elements.append(signed_element)
 

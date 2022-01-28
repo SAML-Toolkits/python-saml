@@ -439,6 +439,30 @@ class OneLogin_Saml2_Logout_Response_Test(unittest.TestCase):
         logout_response = OneLogin_Saml2_Logout_Response(settings, request_data['get_data']['SAMLResponse'])
         self.assertTrue(logout_response.is_valid(request_data))
 
+    def testIsInValidRejectingDeprecatedSignatureAlgorithm(self):
+        """
+        Tests the is_valid method of the OneLogin_Saml2_LogoutResponse
+        """
+        """
+        Tests the is_valid method of the OneLogin_Saml2_LogoutResponse
+        """
+        request_data = {
+            'http_host': 'example.com',
+            'script_name': 'index.html',
+            'get_data': {
+                'SAMLResponse': 'fZHbasJAEIZfJey9ZrNZc1gSodRSBKtQxYveyGQz1kCyu2Q24OM3jS21UHo3p++f4Z+CoGud2th3O/hXJGcNYXDtWkNqapVs6I2yQA0pAx2S8lrtH142Ssy5cr31VtuW3SH/E0CEvW+sYcF6VbLTIktFLMWZgxQR8DSP85wDB4GJGMOqShYVaoBUsOCIPY1kyUahEScacG3Ig/FjiUdyxuOZ4IcoUVGq4vSNBSsk3xjwE3Xx3qkwJD+cz3NtuxBN7WxjPN1F1NLcXdwob77tONiS7bZPm93zenvCqopxgVJmuU50jREsZF4noKWAOuNZJbNznnBky+LTDDVd2S+/dje1m+MVOtfidEER3g8Vt2fsPfiBfmePtsbgCO2A/9tL07TaD1ojEQuXtw0/ouFfD19+AA==',
+                'RelayState': 'http://stuff.com/endpoints/endpoints/index.php',
+                'SigAlg': 'http://www.w3.org/2000/09/xmldsig#rsa-sha1',
+                'Signature': 'OV9c4R0COSjN69fAKCpV7Uj/yx6/KFxvbluVCzdK3UuortpNMpgHFF2wYNlMSG9GcYGk6p3I8nB7Z+1TQchMWZOlO/StjAqgtZhtpiwPcWryNuq8vm/6hnJ3zMDhHTS7F8KG4qkCXmJ9sQD3Y31UNcuygBwIbNakvhDT5Qo9Nsw='
+            }
+        }
+        settings_info = self.loadSettingsJSON('settings8.json')
+        settings_info['security']['rejectDeprecatedAlgorithm'] = True
+        settings = OneLogin_Saml2_Settings(settings_info)
+        logout_response = OneLogin_Saml2_Logout_Response(settings, request_data['get_data']['SAMLResponse'])
+        self.assertFalse(logout_response.is_valid(request_data))
+        self.assertEqual('Deprecated signature algorithm found: http://www.w3.org/2000/09/xmldsig#rsa-sha1', logout_response.get_error())
+
     def testGetXML(self):
         """
         Tests that we can get the logout response XML directly without

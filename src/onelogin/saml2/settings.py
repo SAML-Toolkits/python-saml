@@ -306,6 +306,9 @@ class OneLogin_Saml2_Settings(object):
         # Digest Algorithm
         self.__security.setdefault('digestAlgorithm', OneLogin_Saml2_Constants.SHA256)
 
+        # Reject Deprecated Algorithms
+        self.__security.setdefault('rejectDeprecatedAlgorithm', False)
+
         # AttributeStatement required by default
         self.__security.setdefault('wantAttributeStatement', True)
 
