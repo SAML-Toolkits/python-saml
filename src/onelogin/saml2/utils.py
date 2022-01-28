@@ -1208,13 +1208,12 @@ class OneLogin_Saml2_Utils(object):
 
     @staticmethod
     @return_false_on_exception
-    def validate_binary_sign(signed_query, signature, cert=None, algorithm=OneLogin_Saml2_Constants.RSA_SHA256, debug=False):
+    def validate_binary_sign(signed_query, signature, cert=None, algorithm=OneLogin_Saml2_Constants.RSA_SHA1, debug=False):
         """
         Validates signed binary data (Used to validate GET Signature).
 
         :param signed_query: The element we should validate
         :type: string
-
 
         :param signature: The signature that will be validate
         :type: string

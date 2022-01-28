@@ -335,6 +335,7 @@ class OneLogin_Saml2_Logout_Request(object):
             if 'lowercase_urlencoding' in request_data.keys():
                 lowercase_urlencoding = request_data['lowercase_urlencoding']
 
+            security = self.__settings.get_security_data()
             if self.__settings.is_strict():
                 res = OneLogin_Saml2_Utils.validate_xml(dom, 'saml-schema-protocol-2.0.xsd', self.__settings.is_debug_active())
                 if not isinstance(res, Document):
@@ -342,8 +343,6 @@ class OneLogin_Saml2_Logout_Request(object):
                         'Invalid SAML Logout Request. Not match the saml-schema-protocol-2.0.xsd',
                         OneLogin_Saml2_ValidationError.INVALID_XML_FORMAT
                     )
-
-                security = self.__settings.get_security_data()
 
                 current_url = OneLogin_Saml2_Utils.get_self_url_no_query(request_data)
 
@@ -394,6 +393,14 @@ class OneLogin_Saml2_Logout_Request(object):
                     sign_alg = OneLogin_Saml2_Constants.RSA_SHA1
                 else:
                     sign_alg = get_data['SigAlg']
+
+                reject_deprecated_alg = security.get('rejectDeprecatedAlgorithm', False)
+                if reject_deprecated_alg:
+                    if sign_alg in OneLogin_Saml2_Constants.DEPRECATED_ALGORITHMS:
+                        raise OneLogin_Saml2_ValidationError(
+                            'Deprecated signature algorithm found: %s' % sign_alg,
+                            OneLogin_Saml2_ValidationError.DEPRECATED_SIGNATURE_METHOD
+                        )
 
                 signed_query = 'SAMLRequest=%s' % OneLogin_Saml2_Utils.get_encoded_parameter(get_data, 'SAMLRequest', lowercase_urlencoding=lowercase_urlencoding)
                 if 'RelayState' in get_data:

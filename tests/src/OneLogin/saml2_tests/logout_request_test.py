@@ -582,6 +582,27 @@ class OneLogin_Saml2_Logout_Request_Test(unittest.TestCase):
         logout_request = OneLogin_Saml2_Logout_Request(settings, request_data['get_data']['SAMLRequest'])
         self.assertTrue(logout_request.is_valid(request_data))
 
+    def testIsInValidRejectingDeprecatedSignatureAlgorithm(self):
+        """
+        Tests the is_valid method of the OneLogin_Saml2_LogoutRequest
+        """
+        request_data = {
+            'http_host': 'example.com',
+            'script_name': 'index.html',
+            'get_data': {
+                'SAMLRequest': 'fZJNa+MwEIb/itHdiTz6sC0SQyEsBPoB27KHXoIsj7cGW3IlGfLzV7G7kN1DL2KYmeedmRcdgp7GWT26326JP/FzwRCz6zTaoNbKkSzeKqfDEJTVEwYVjXp9eHpUsKNq9i4640Zyh3xP6BDQx8FZkp1PR3KpqexAl72QmpUCS8SW01IiZz2TVVGD4X1VQYlAsl/oQyKPJAklPIQFzzZEbWNK0YLnlOVA3wqpQCoB7yQ7pWsGq+NKfcQ4q/0+xKXvd8ZNe7Td7AYbw10UxrCbP2aSPbv4Yl/8Qx/R3+SB5bTOoXiDQvFNvjnc7lXrIr75kh+6eYdXPc0jrkMO+/umjXhOtpxP2Q/nJx2/9+uWGbq8X1tV9NqGAW0kzaVvoe1AAJeCSWqYaUVRM2SilKKuqDTpFSlszdcK29RthVm9YriZebYdXpsLdhVAB7VJzif3haYMqqTVcl0JMBR4y+s2zak3sf/4v8l/vlHzBw==',
+                'RelayState': '_1037fbc88ec82ce8e770b2bed1119747bb812a07e6',
+                'SigAlg': 'http://www.w3.org/2000/09/xmldsig#rsa-sha1',
+                'Signature': 'Ouxo9BV6zmq4yrgamT9EbSKy/UmvSxGS8z26lIMgKOEP4LFR/N23RftdANmo4HafrzSfA0YTXwhKDqbOByS0j+Ql8OdQOes7vGioSjo5qq/Bi+5i6jXwQfphnfcHAQiJL4gYVIifkhhHRWpvYeiysF1Y9J02me0izwazFmoRXr4='
+            }
+        }
+        settings_info = self.loadSettingsJSON('settings8.json')
+        settings_info['security']['rejectDeprecatedAlgorithm'] = True
+        settings = OneLogin_Saml2_Settings(settings_info)
+        logout_request = OneLogin_Saml2_Logout_Request(settings, request_data['get_data']['SAMLRequest'])
+        self.assertFalse(logout_request.is_valid(request_data))
+        self.assertEqual('Deprecated signature algorithm found: http://www.w3.org/2000/09/xmldsig#rsa-sha1', logout_request.get_error())
+
     def testGetXML(self):
         """
         Tests that we can get the logout request XML directly without
