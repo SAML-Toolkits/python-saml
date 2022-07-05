@@ -156,9 +156,9 @@ a trusted and expected URL.
 
 Read more about Open Redirect [CWE-601](https://cwe.mitre.org/data/definitions/601.html).
 
-### Avoiding Reply attacks ###
+### Avoiding Replay attacks ###
 
-A reply attack is basically try to reuse an intercepted valid SAML Message in order to impersonate a SAML action (SSO or SLO).
+A replay attack is basically try to reuse an intercepted valid SAML Message in order to impersonate a SAML action (SSO or SLO).
 
 SAML Messages have a limited timelife (NotBefore, NotOnOrAfter) that
 make harder this kind of attacks, but they are still possible.
@@ -169,7 +169,7 @@ we don't need to store all processed message/assertion Ids, but the most recent 
 
 The OneLogin_Saml2_Auth class contains the [get_last_request_id](https://github.com/onelogin/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L352), [get_last_message_id](https://github.com/onelogin/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L359) and [get_last_assertion_id](https://github.com/onelogin/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L366) methods to retrieve the IDs 
 
-Checking that the ID of the current Message/Assertion does not exists in the lis of the ones already processed will prevent reply
+Checking that the ID of the current Message/Assertion does not exists in the lis of the ones already processed will prevent replay
 attacks.
 
 
@@ -988,7 +988,7 @@ The ``x509certMulti`` is an array with 2 keys:
 
 ### Replay attacks ###
  
- In order to avoid reply attacks, you can store the ID of the SAML messages already processed, to avoid processing them twice. Since the Messages expires and will be invalidated due that fact, you don't need to store those IDs longer than the time frame that you currently accepting.
+ In order to avoid replay attacks, you can store the ID of the SAML messages already processed, to avoid processing them twice. Since the Messages expires and will be invalidated due that fact, you don't need to store those IDs longer than the time frame that you currently accepting.
  
  Get the ID of the last processed message/assertion with the ``get_last_message_id``/``get_last_assertion_id method`` of the ``Auth`` object.
 
