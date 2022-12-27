@@ -9,4 +9,3 @@ urlpatterns = [
     url(r'^attrs/$', attrs, name='attrs'),
     url(r'^metadata/$', metadata, name='metadata')
 ]
-
