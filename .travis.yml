@@ -2,6 +2,16 @@ language: python
 python:
   - '2.7'
 
+jobs:
+  include:
+    - name: "Python 2.7 on Focal Linux"
+       os: linux
+       dist: focal
+       python: 2.7
+    - name: "Python 2.7 on macOS"
+      osx_image: xcode13.4
+      python: 2.7
+
 install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq swig python-dev libxml2-dev libxmlsec1-dev
