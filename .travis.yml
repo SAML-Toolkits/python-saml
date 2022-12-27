@@ -9,7 +9,7 @@ jobs:
        dist: focal
        python: 2.7
     - name: "Python 2.7 on macOS"
-      osx_image: xcode13.4
+      os: osx
       python: 2.7
 
 install:
