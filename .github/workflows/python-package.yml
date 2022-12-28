@@ -15,14 +15,15 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 2.7
-        
+
     - name: Install dependencies
       run: |
         sudo apt-get update -qq
         sudo apt-get install -qq swig python-dev libxml2-dev libxmlsec1-dev
+        pip install --force-reinstall --no-binary lxml lxml
         pip install .
         pip install -e ".[test]"
-        
+
     - name: Test
       run: |
         coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py test
