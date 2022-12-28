@@ -94,6 +94,7 @@ Installation
 ### Dependencies ###
 
  * python 2.7
+* [lxml](https://pypi.python.org/pypi/lxml) Python bindings for the libxml2 and libxslt libraries.
  * [dm.xmlsec.binding](https://pypi.python.org/pypi/dm.xmlsec.binding)  Cython/lxml based binding for the XML security library (depends on python-dev libxml2-dev libxmlsec1-dev)
  * [isodate](https://pypi.python.org/pypi/isodate)  An ISO 8601 date/time/duration parser and formater
  * [defusedxml](https://pypi.python.org/pypi/defusedxml)  XML bomb protection for Python stdlib modules
@@ -135,6 +136,14 @@ $ pip install python-saml
 If you want to know how a project can handle python packages review this [guide](https://packaging.python.org/en/latest/tutorial.html) and review this [sampleproject](https://github.com/pypa/sampleproject)
 
 
+#### NOTE ####
+To avoid ``libxml2`` library version incompatibilities between ``xmlsec`` and ``lxml`` it is recommended that ``lxml`` is not installed from binary.
+
+This can be ensured by executing:
+```
+$ pip install --force-reinstall --no-binary lxml lxml
+```
+
 Security Warning
 ----------------
 
@@ -164,10 +173,10 @@ SAML Messages have a limited timelife (NotBefore, NotOnOrAfter) that
 make harder this kind of attacks, but they are still possible.
 
 In order to avoid them, the SP can keep a list of SAML Messages or Assertion IDs alredy valdidated and processed. Those values only need
-to be stored the amount of time of the SAML Message life time, so 
+to be stored the amount of time of the SAML Message life time, so
 we don't need to store all processed message/assertion Ids, but the most recent ones.
 
-The OneLogin_Saml2_Auth class contains the [get_last_request_id](https://github.com/onelogin/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L352), [get_last_message_id](https://github.com/onelogin/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L359) and [get_last_assertion_id](https://github.com/onelogin/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L366) methods to retrieve the IDs 
+The OneLogin_Saml2_Auth class contains the [get_last_request_id](https://github.com/onelogin/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L352), [get_last_message_id](https://github.com/onelogin/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L359) and [get_last_assertion_id](https://github.com/onelogin/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L366) methods to retrieve the IDs
 
 Checking that the ID of the current Message/Assertion does not exists in the lis of the ones already processed will prevent replay attacks.
 
@@ -334,7 +343,7 @@ This is the ``settings.json`` file:
         /*
          * Key rollover
          * If you plan to update the SP X.509 cert and privateKey
-         * you can define here the new X.509 cert and it will be 
+         * you can define here the new X.509 cert and it will be
          * published on the SP metadata so Identity Providers can
          * read them and get ready for rollover.
          */
@@ -467,7 +476,7 @@ In addition to the required settings data (idp, sp), extra settings can be defin
         "wantAttributeStatement": true,
 
         // Rejects SAML responses with a InResponseTo attribute when request_id
-        // not provided in the process_response method that later call the 
+        // not provided in the process_response method that later call the
         // response is_valid method with that parameter.
         "rejectUnsolicitedResponsesWithInResponseTo": false,
 
@@ -582,7 +591,7 @@ There's an easier method -- use a metadata exchange.  Metadata is just an XML fi
 
 Using ````parse_remote```` IdP metadata can be obtained and added to the settings withouth further ado.
 
-But take in mind that the OneLogin_Saml2_IdPMetadataParser class does not validate in any way the URL that is introduced in order to be parsed. 
+But take in mind that the OneLogin_Saml2_IdPMetadataParser class does not validate in any way the URL that is introduced in order to be parsed.
 
 Usually the same administrator that handles the Service Provider also sets the URL to the IdP, which should be a trusted resource.
 
@@ -967,7 +976,7 @@ else:
 
 ### SP Key rollover ###
 
-If you plan to update the SP X.509 cert and privateKey you can define the new X.509 cert as ``settings['sp']['x509certNew']`` and it will be 
+If you plan to update the SP X.509 cert and privateKey you can define the new X.509 cert as ``settings['sp']['x509certNew']`` and it will be
 published on the SP metadata so Identity Providers can read them and get ready for rollover.
 
 
@@ -981,14 +990,14 @@ In order to handle that the toolkit offers the ``settings['idp']['x509certMulti'
 When that parameter is used, ``x509cert`` and ``certFingerprint`` values will be ignored by the toolkit.
 
 The ``x509certMulti`` is an array with 2 keys:
-- ``signing``. An array of certs that will be used to validate IdP signature 
+- ``signing``. An array of certs that will be used to validate IdP signature
 - ``encryption`` An array with one unique cert that will be used to encrypt data to be sent to the IdP
 
 
 ### Replay attacks ###
- 
+
  In order to avoid replay attacks, you can store the ID of the SAML messages already processed, to avoid processing them twice. Since the Messages expires and will be invalidated due that fact, you don't need to store those IDs longer than the time frame that you currently accepting.
- 
+
  Get the ID of the last processed message/assertion with the ``get_last_message_id``/``get_last_assertion_id method`` of the ``Auth`` object.
 
 

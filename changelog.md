@@ -1,4 +1,9 @@
 # python-saml changelog
+### 2.12.0 (Dec 28, 2022)
+- Remove version restriction on lxml dependency
+- Update Demo Bottle
+- Updated Travis file. Forced lxml to be installed using no-validate_binary
+
 ### 2.11.1 (Jan 28, 2022)
 - lxml fixed to be lower than 4.7.1 since it seems to have issues validating the signature of encrypted elements  See https://github.com/onelogin/python3-saml/issues/292
 
@@ -120,7 +125,7 @@ Implement a more specific exception class for handling some validation errors. I
 * Improve Signature validation process
 * [#149](https://github.com/onelogin/python-saml/pull/149) Work-around for xmlsec.initialize
 * [#151](https://github.com/onelogin/python-saml/pull/151) Fix flask demo error handling and improve documentation
-* [#152](https://github.com/onelogin/python-saml/pull/152) Update LICENSE to include MIT rather than BSD license 
+* [#152](https://github.com/onelogin/python-saml/pull/152) Update LICENSE to include MIT rather than BSD license
 * [#155](https://github.com/onelogin/python-saml/pull/155) Fix typographical errors in docstring
 * Fix RequestedAttribute Issue
 * Fix __build_signature method. If relay_state is null not be part of the SignQuery
@@ -226,11 +231,3 @@ Implement a more specific exception class for handling some validation errors. I
 
 ### 1.0.0 (Jun 26, 2014)
 * OneLogin's SAML Python Toolkit v1.0.0
-
-
-
-
-
-
-
-
