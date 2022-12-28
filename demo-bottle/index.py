@@ -44,7 +44,7 @@ def prepare_bottle_request(req):
 
 @app.route('/acs/', method='POST')
 @jinja2_view('index.html', template_lookup=['templates'])
-def index():
+def acs():
     req = prepare_bottle_request(request)
     auth = init_saml_auth(req)
     paint_logout = False
@@ -62,7 +62,7 @@ def index():
         self_url = OneLogin_Saml2_Utils.get_self_url(req)
         if 'RelayState' in request.forms and self_url != request.forms['RelayState']:
             # To avoid 'Open Redirect' attacks, before execute the redirection confirm
-                # the value of the request.forms['RelayState'] is a trusted URL.
+            # the value of the request.forms['RelayState'] is a trusted URL.
             return redirect(request.forms['RelayState'])
 
     if 'samlUserdata' in session:
@@ -71,10 +71,10 @@ def index():
             attributes = session['samlUserdata'].items()
 
     return {
-        'errors':errors,
-        'not_auth_warn':not_auth_warn,
-        'attributes':attributes,
-        'paint_logout':paint_logout
+        'errors': errors,
+        'not_auth_warn': not_auth_warn,
+        'attributes': attributes,
+        'paint_logout': paint_logout
     }
 
 
@@ -124,11 +124,11 @@ def index():
             attributes = session['samlUserdata'].items()
 
     return {
-        'errors':errors,
-        'not_auth_warn':not_auth_warn,
-        'success_slo':success_slo,
-        'attributes':attributes,
-        'paint_logout':paint_logout
+        'errors': errors,
+        'not_auth_warn': not_auth_warn,
+        'success_slo': success_slo,
+        'attributes': attributes,
+        'paint_logout': paint_logout
     }
 
 
@@ -144,8 +144,8 @@ def attrs():
         if len(session['samlUserdata']) > 0:
             attributes = session['samlUserdata'].items()
 
-    return {'paint_logout':paint_logout,
-            'attributes':attributes}
+    return {'paint_logout': paint_logout,
+            'attributes': attributes}
 
 
 @app.route('/metadata/')
@@ -178,7 +178,7 @@ class SSLPasteServer(ServerAdapter):
 
 if __name__ == "__main__":
     # To run HTTPS
-    #run(SessionMiddleware(app, config=session_opts), host='0.0.0.0', port=8000, debug=True, reloader=True, server=SSLPasteServer)
+    # run(SessionMiddleware(app, config=session_opts), host='0.0.0.0', port=8000, debug=True, reloader=True, server=SSLPasteServer)
 
     # To run HTTP
     run(SessionMiddleware(app, config=session_opts), host='0.0.0.0', port=8000, debug=True, reloader=True, server='paste')

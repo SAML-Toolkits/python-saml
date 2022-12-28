@@ -64,10 +64,10 @@ def index(request):
 
         return HttpResponseRedirect(auth.logout(name_id=name_id, session_index=session_index, nq=name_id_nq, name_id_format=name_id_format, spnq=name_id_spnq))
 
-        # If LogoutRequest ID need to be stored in order to later validate it, do instead
+        #  If LogoutRequest ID need to be stored in order to later validate it, do instead
         # slo_built_url = auth.logout(name_id=name_id, session_index=session_index)
         # request.session['LogoutRequestID'] = auth.get_last_request_id()
-        #return HttpResponseRedirect(slo_built_url)
+        # return HttpResponseRedirect(slo_built_url)
     elif 'acs' in req['get_data']:
         request_id = None
         if 'AuthNRequestID' in request.session:
@@ -91,7 +91,7 @@ def index(request):
                 # the value of the req['post_data']['RelayState'] is a trusted URL.
                 return HttpResponseRedirect(auth.redirect_to(req['post_data']['RelayState']))
         elif auth.get_settings().is_debug_active():
-                error_reason = auth.get_last_error_reason()
+            error_reason = auth.get_last_error_reason()
     elif 'sls' in req['get_data']:
         request_id = None
         if 'LogoutRequestID' in request.session:
