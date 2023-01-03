@@ -1,7 +1,7 @@
 # OneLogin's SAML Python Toolkit
 
-[![Build Status](https://api.travis-ci.org/onelogin/python-saml.png?branch=master)](http://travis-ci.org/onelogin/python-saml)
-[![Coverage Status](https://coveralls.io/repos/onelogin/python-saml/badge.png)](https://coveralls.io/r/onelogin/python-saml)
+[![Python package](https://github.com/SAML-Toolkits/python-saml/actions/workflows/python-package.yml/badge.svg)](https://github.com/SAML-Toolkits/python-saml/actions/workflows/python-package.yml)
+[![Coverage Status](https://coveralls.io/repos/SAML-Toolkits/python-saml/badge.png)](https://coveralls.io/r/SAML-Toolkits/python-saml)
 [![PyPi Version](https://img.shields.io/pypi/v/python-saml.svg)](https://pypi.python.org/pypi/python-saml)
 ![Python versions](https://img.shields.io/pypi/pyversions/python-saml.svg)
 
