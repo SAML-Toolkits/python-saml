@@ -1,4 +1,4 @@
-# OneLogin's SAML Python Toolkit
+# SAML Python Toolkit
 
 [![Python package](https://github.com/SAML-Toolkits/python-saml/actions/workflows/python-package.yml/badge.svg)](https://github.com/SAML-Toolkits/python-saml/actions/workflows/python-package.yml)
 ![PyPI Downloads](https://img.shields.io/pypi/dm/python-saml.svg?label=PyPI%20Downloads)
@@ -13,11 +13,10 @@ to Python 3 and use python3-saml
 
 
 Add SAML support to your Python software using this library.
-Forget those complicated libraries and use the open source library provided
-and supported by OneLogin Inc.
+Forget those complicated libraries and use the open source library.
 
 This version supports Python2. There is a separate version that supports
-Python3: [python3-saml](https://github.com/onelogin/python3-saml).
+Python3: [python3-saml](https://github.com/SAML-Toolkits/python3-saml).
 
 #### Warning ####
 
@@ -37,7 +36,7 @@ Update ``python-saml`` to ``2.2.0``, this version includes a security patch that
 
 #### Security Guidelines ####
 
-If you believe you have discovered a security vulnerability in this toolkit, please report it at https://www.onelogin.com/security with a description. We follow responsible disclosure guidelines, and will work with you to quickly find a resolution.
+If you believe you have discovered a security vulnerability in this toolkit, please report it by mail to the maintainer: sixto.martin.garcia+security@gmail.com
 
 Why add SAML support to my software?
 ------------------------------------
@@ -65,7 +64,7 @@ since 2002, but lately it is becoming popular due its advantages:
 General Description
 -------------------
 
-OneLogin's SAML Python toolkit lets you turn your Python application into a SP
+SAML Python toolkit lets you turn your Python application into a SP
 (Service Provider) that can be connected to an IdP (Identity Provider).
 
 **Supports:**
@@ -86,7 +85,7 @@ OneLogin's SAML Python toolkit lets you turn your Python application into a SP
  * **Easy to use** - Programmer will be allowed to code high-level and
    low-level programming, 2 easy to use APIs are available.
  * **Tested** - Thoroughly tested.
- * **Popular** - OneLogin's customers use it. Add easy support to your Django/Flask/Bottle/Pyramid web projects.
+ * **Popular** - Developers use it. Add easy support to your Django/Flask/Bottle/Pyramid web projects.
 
 
 Installation
@@ -120,8 +119,8 @@ $ brew install libxmlsec1
 
 The toolkit is hosted on Github. You can download it from:
 
- * Lastest release: https://github.com/onelogin/python-saml/releases/latest
- * Master repo: https://github.com/onelogin/python-saml/tree/master
+ * Lastest release: https://github.com/SAML-Toolkits/python-saml/releases/latest
+ * Master repo: https://github.com/SAML-Toolkits/python-saml/tree/master
 
 Copy the core of the library ``(src/onelogin/saml2 folder)`` and merge the setup.py inside the Python application. (Each application has its structure so take your time to locate the Python SAML toolkit in the best place).
 
@@ -177,7 +176,7 @@ In order to avoid them, the SP can keep a list of SAML Messages or Assertion IDs
 to be stored the amount of time of the SAML Message life time, so
 we don't need to store all processed message/assertion Ids, but the most recent ones.
 
-The OneLogin_Saml2_Auth class contains the [get_last_request_id](https://github.com/onelogin/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L352), [get_last_message_id](https://github.com/onelogin/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L359) and [get_last_assertion_id](https://github.com/onelogin/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L366) methods to retrieve the IDs
+The OneLogin_Saml2_Auth class contains the [get_last_request_id](https://github.com/SAML-Toolkits/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L352), [get_last_message_id](https://github.com/SAML-Toolkits/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L359) and [get_last_assertion_id](https://github.com/SAML-Toolkits/python-saml/blob/00b1f823b6c668b0dfb5e4a40d3709a4ceb2a6ae/src/onelogin/saml2/auth.py#L366) methods to retrieve the IDs
 
 Checking that the ID of the current Message/Assertion does not exists in the lis of the ones already processed will prevent replay attacks.
 
@@ -187,7 +186,7 @@ Getting Started
 
 ### Knowing the toolkit ###
 
-The new OneLogin SAML Toolkit contains different folders (``cert``, ``lib``, ``demo-django``, ``demo-flask``, ``demo-bottle`` and ``tests``) and some files.
+The SAML Toolkit contains different folders (``cert``, ``lib``, ``demo-django``, ``demo-flask``, ``demo-bottle`` and ``tests``) and some files.
 
 Let's start describing them:
 
@@ -300,7 +299,7 @@ This is the ``settings.json`` file:
             // URL Location where the <Response> from the IdP will be returned
             "url": "https://<sp_domain>/?acs",
             // SAML protocol binding to be used when returning the <Response>
-            // message. OneLogin Toolkit supports this endpoint for the
+            // message. SAML Toolkit supports this endpoint for the
             // HTTP-POST binding only.
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
         },
@@ -328,7 +327,7 @@ This is the ``settings.json`` file:
             // OPTIONAL: only specify if different from url parameter
             //"responseUrl": "https://<sp_domain>/?sls",
             // SAML protocol binding to be used when returning the <Response>
-            // message. OneLogin Toolkit supports the HTTP-Redirect binding
+            // message. SAML Toolkit supports the HTTP-Redirect binding
             // only for this endpoint.
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
         },
@@ -361,7 +360,7 @@ This is the ``settings.json`` file:
             // will be sent.
             "url": "https://app.onelogin.com/trust/saml2/http-post/sso/<onelogin_connector_id>",
             // SAML protocol binding to be used when returning the <Response>
-            // message. OneLogin Toolkit supports the HTTP-Redirect binding
+            // message. SAML Toolkit supports the HTTP-Redirect binding
             // only for this endpoint.
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
         },
@@ -373,7 +372,7 @@ This is the ``settings.json`` file:
             // OPTIONAL: only specify if different from url parameter
             "responseUrl": "https://app.onelogin.com/trust/saml2/http-redirect/slo_return/<onelogin_connector_id>",
             // SAML protocol binding to be used when returning the <Response>
-            // message. OneLogin Toolkit supports the HTTP-Redirect binding
+            // message. SAML Toolkit supports the HTTP-Redirect binding
             // only for this endpoint.
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
         },
@@ -1008,7 +1007,7 @@ Described below are the main classes and methods that can be invoked from the SA
 
 #### OneLogin_Saml2_Auth - auth.py ####
 
-Main class of OneLogin Python Toolkit
+Main class of SAML Python Toolkit
 
 * `__init__` Initializes the SP SAML instance.
 * ***login*** Initiates the SSO process.
@@ -1100,7 +1099,7 @@ SAML 2 Logout Response class
 
 #### OneLogin_Saml2_Settings - settings.py ####
 
-Configuration of the OneLogin Python Toolkit
+Configuration of the SAML Python Toolkit
 
 * `__init__`  Initializes the settings: Sets the paths of the different folders and Loads settings info from settings file or array/object provided.
 * ***check_settings*** Checks the settings info.
@@ -1263,7 +1262,7 @@ The flask project contains:
 
 #### SP setup ####
 
-The Onelogin's Python Toolkit allows you to provide the settings info in 2 ways: Settings files or define a setting dict. In the ``demo-flask``, it uses the first method.
+The SAML Python Toolkit allows you to provide the settings info in 2 ways: Settings files or define a setting dict. In the ``demo-flask``, it uses the first method.
 
 In the index.py file we define the ``app.config['SAML_PATH']``, that will target to the ``saml`` folder. We require it in order to load the settings files.
 
@@ -1336,7 +1335,7 @@ The django project contains:
 
 #### SP setup ####
 
-The Onelogin's Python Toolkit allows you to provide the settings info in 2 ways: Settings files or define a setting dict. In the ``demo-django``, it uses the first method.
+The SAML Python Toolkit allows you to provide the settings info in 2 ways: Settings files or define a setting dict. In the ``demo-django``, it uses the first method.
 
 After set the ``SAML_FOLDER`` in the ``demo/settings.py``, the settings of the python toolkit will be loaded on the django web.
 
@@ -1391,7 +1390,7 @@ The Pyramid project contains:
 
 #### SP setup ####
 
-The Onelogin's Python Toolkit allows you to provide the settings info in 2 ways: Settings files or define a setting dict. In ``demo_pyramid`` the first method is used.
+The Python Toolkit allows you to provide the settings info in 2 ways: Settings files or define a setting dict. In ``demo_pyramid`` the first method is used.
 
 In the views.py file we define the ``SAML_PATH``, which will target the ``saml`` folder. We require it in order to load the settings files.
 
