@@ -34,6 +34,7 @@ jobs:
 
     - name: Upload coverage data to coveralls.io
       run: |
+        pip install coverage[toml]
         coveralls --service=github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
