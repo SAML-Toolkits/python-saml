@@ -99,9 +99,9 @@ pythonpath = [
 [tool.coverage.run]
 branch = true
 source = ["src/onelogin/saml2"]
-ignore_errors = true
 
 [tool.coverage.report]
+ignore_errors = true
 exclude_lines = [
   "pragma: no cover",
   "def __repr__",
