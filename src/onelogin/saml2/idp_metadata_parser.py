@@ -2,10 +2,9 @@
 
 """ OneLogin_Saml2_IdPMetadataParser class
 
-Copyright (c) 2010-2021 OneLogin, Inc.
 MIT License
 
-Metadata class of OneLogin's Python Toolkit.
+Metadata class of Python Toolkit.
 
 """
 

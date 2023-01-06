@@ -2,10 +2,9 @@
 
 """ OneLogin_Saml2_Auth class
 
-Copyright (c) 2010-2021 OneLogin, Inc.
 MIT License
 
-Main class of OneLogin's Python Toolkit.
+Main class of Python Toolkit.
 
 Initializes the SP SAML instance
 

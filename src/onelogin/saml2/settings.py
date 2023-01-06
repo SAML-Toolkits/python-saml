@@ -2,10 +2,9 @@
 
 """ OneLogin_Saml2_Settings class
 
-Copyright (c) 2010-2021 OneLogin, Inc.
 MIT License
 
-Setting class of OneLogin's Python Toolkit.
+Setting class of Python Toolkit.
 
 """
 

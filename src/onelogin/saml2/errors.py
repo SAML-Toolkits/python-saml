@@ -2,10 +2,9 @@
 
 """ OneLogin_Saml2_Error class
 
-Copyright (c) 2010-2021 OneLogin, Inc.
 MIT License
 
-Error class of OneLogin's Python Toolkit.
+Error class of Python Toolkit.
 
 Defines common Error codes and has a custom initializator.
 

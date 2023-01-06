@@ -230,4 +230,4 @@ Implement a more specific exception class for handling some validation errors. I
 * Security improved, added more checks at the SAMLResponse validation
 
 ### 1.0.0 (Jun 26, 2014)
-* OneLogin's SAML Python Toolkit v1.0.0
+* SAML Python Toolkit v1.0.0

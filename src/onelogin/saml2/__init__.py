@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright (c) 2010-2021 OneLogin, Inc.
+Copyright (c) 2010-2022 OneLogin, Inc.
+Copyright (c) 2023 IAM Digital Services, SL.
+
 MIT License
 
 Add SAML support to your Python softwares using this library.
 Forget those complicated libraries and use that open source
-library provided and supported by OneLogin Inc.
+library.
 
-OneLogin's SAML Python toolkit let you build a SP (Service Provider)
+SAML Python toolkit let you build a SP (Service Provider)
 over your Python application and connect it to any IdP (Identity Provider).
 
 Supports:

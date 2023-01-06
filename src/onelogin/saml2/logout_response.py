@@ -2,10 +2,9 @@
 
 """ OneLogin_Saml2_Logout_Response class
 
-Copyright (c) 2010-2021 OneLogin, Inc.
 MIT License
 
-Logout Response class of OneLogin's Python Toolkit.
+Logout Response class of Python Toolkit.
 
 """
 
