@@ -33,6 +33,7 @@ jobs:
         flake8 --ignore E226,E302,E41,E731,E501,C901,W504
 
     - name: Upload coverage data to coveralls.io
-        run: coveralls --service=github
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        coveralls --service=github
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
