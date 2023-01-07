@@ -32,7 +32,7 @@ jobs:
 
     - name: Upload coverage data to coveralls.io
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
         pip install coverage[toml]
         coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py test
