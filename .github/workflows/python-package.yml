@@ -8,7 +8,7 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-20.04
-
+    environment: CI
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 2.7
@@ -24,10 +24,19 @@ jobs:
         pip install .
         pip install -e ".[test]"
 
-    - name: Test
+    - name: Lint
       run: |
-        coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py test
-        coverage report -m --rcfile=tests/coverage.rc
         #pycodestyle tests/src/OneLogin/saml2_tests/*.py demo-flask/*.py demo-django/*.py src/onelogin/saml2/*.py --config=tests/pep8.rc
         #pyflakes src/onelogin/saml2 demo-django demo-flask tests/src/OneLogin/saml2_tests
         flake8 --ignore E226,E302,E41,E731,E501,C901,W504
+
+    - name: Test
+      run: |
+        coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py test
+
+    - name: Coveralls
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: |
+        pip install python-coveralls
+        coveralls
