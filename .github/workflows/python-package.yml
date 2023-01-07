@@ -8,7 +8,6 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-20.04
-    environment: CI
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 2.7
@@ -30,10 +29,29 @@ jobs:
         #pyflakes src/onelogin/saml2 demo-django demo-flask tests/src/OneLogin/saml2_tests
         flake8 --ignore E226,E302,E41,E731,E501,C901,W504
 
+
+  coverage:
+    runs-on: ubuntu-20.04
+    environment: CI
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8.10
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8.10
+
+    - name: Install dependencies
+      run: |
+        pip install -U setuptools
+        sudo apt-get update -qq
+        sudo apt-get install -qq swig python-dev libxml2-dev libxmlsec1-dev
+
     - name: Upload coverage data to coveralls.io
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
+        pip install coveralls==3.3.1     
+        pip install requests
         pip install coverage[toml]
         coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py test
         coverage report -m --rcfile=tests/coverage.rc
