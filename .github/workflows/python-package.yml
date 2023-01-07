@@ -8,6 +8,7 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-20.04
+    environment: CI
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 2.7
@@ -33,38 +34,9 @@ jobs:
       run: |
         coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py test
 
-    - uses: actions/upload-artifact@v3
-      with:
-        name: my-artifact
-        path: .coverage
-
-
-  coveralls:
-    needs: build
-    runs-on: ubuntu-20.04
-    environment: CI
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8.10
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8.10
-
-    - name: Install dependencies
-      run: |
-        sudo apt-get update -qq
-        sudo apt-get install -qq swig python-dev libxml2-dev libxmlsec1-dev
-        pip install coveralls==3.3.1 requests coverage[toml]
-    
-    - uses: actions/download-artifact@v3
-      with:
-        name: my-artifact
-        path: .coverage
-
-    - name: Upload coverage data to coveralls.io
+    - name: Coveralls
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
-        pip install coveralls==3.3.1 requests coverage[toml]
-        coverage report -m --rcfile=tests/coverage.rc
-        coveralls --service=github
+        pip install python-coveralls
+        coveralls
