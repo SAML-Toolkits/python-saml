@@ -26,16 +26,15 @@ jobs:
 
     - name: Test
       run: |
-        coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py test
-        coverage report -m --rcfile=tests/coverage.rc
         #pycodestyle tests/src/OneLogin/saml2_tests/*.py demo-flask/*.py demo-django/*.py src/onelogin/saml2/*.py --config=tests/pep8.rc
         #pyflakes src/onelogin/saml2 demo-django demo-flask tests/src/OneLogin/saml2_tests
         flake8 --ignore E226,E302,E41,E731,E501,C901,W504
 
     - name: Upload coverage data to coveralls.io
-      run: |
-        pip install coverage[toml]
-        coveralls --service=github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: |
+        pip install coverage[toml]
+        coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py test
+        coverage report -m --rcfile=tests/coverage.rc
+        coveralls --service=github
