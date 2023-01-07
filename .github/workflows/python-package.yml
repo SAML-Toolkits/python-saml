@@ -23,14 +23,23 @@ jobs:
         pip install .
         pip install -e ".[test]"
 
-    - name: Test
+    - name: Lint
       run: |
         #pycodestyle tests/src/OneLogin/saml2_tests/*.py demo-flask/*.py demo-django/*.py src/onelogin/saml2/*.py --config=tests/pep8.rc
         #pyflakes src/onelogin/saml2 demo-django demo-flask tests/src/OneLogin/saml2_tests
         flake8 --ignore E226,E302,E41,E731,E501,C901,W504
 
+    - name: Test
+      run: |
+        coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py tes
 
-  coverage:
+    - uses: actions/upload-artifact@v3
+      with:
+        name: my-artifact
+        path: .coverage
+
+
+  coveralls:
     runs-on: ubuntu-20.04
     environment: CI
     steps:
@@ -42,17 +51,19 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install -U setuptools
         sudo apt-get update -qq
         sudo apt-get install -qq swig python-dev libxml2-dev libxmlsec1-dev
+        pip install coveralls==3.3.1 requests coverage[toml]
+    
+    - uses: actions/download-artifact@v3
+      with:
+        name: my-artifact
+        path: .coverage
 
     - name: Upload coverage data to coveralls.io
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
-        pip install coveralls==3.3.1     
-        pip install requests
-        pip install coverage[toml]
-        coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py test
+        pip install coveralls==3.3.1 requests coverage[toml]
         coverage report -m --rcfile=tests/coverage.rc
         coveralls --service=github
