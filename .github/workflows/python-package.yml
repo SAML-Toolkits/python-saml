@@ -31,7 +31,7 @@ jobs:
 
     - name: Test
       run: |
-        coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py tes
+        coverage run --source=src/onelogin/saml2 --rcfile=tests/coverage.rc setup.py test
 
     - uses: actions/upload-artifact@v3
       with:
