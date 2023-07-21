@@ -8,21 +8,19 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-20.04
+    container:
+      image: python:2.7.18-buster
     environment: CI
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 2.7
-      uses: actions/setup-python@v2
-      with:
-        python-version: 2.7
-
+    - name: Checkout project
+      uses: actions/checkout@v3
     - name: Install dependencies
       run: |
-        sudo apt-get update -qq
-        sudo apt-get install -qq swig python-dev libxml2-dev libxmlsec1-dev
-        pip install --force-reinstall --no-binary lxml lxml
-        pip install .
-        pip install -e ".[test]"
+        apt-get update -qq
+        apt-get install -qq swig python-dev libxml2-dev libxmlsec1-dev
+        pip install --disable-pip-version-check --no-cache-dir --force-reinstall --no-binary lxml lxml
+        pip install --disable-pip-version-check --no-cache-dir .
+        pip install --disable-pip-version-check --no-cache-dir -e ".[test]"
 
     - name: Lint
       run: |
