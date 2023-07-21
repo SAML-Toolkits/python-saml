@@ -18,7 +18,6 @@ jobs:
       run: |
         apt-get update -qq
         apt-get install -qq swig python-dev libxml2-dev libxmlsec1-dev
-        python -m pip install --upgrade --disable-pip-version-check --no-cache-dir pip
         pip install --disable-pip-version-check --no-cache-dir --force-reinstall --no-binary lxml lxml
         pip install --disable-pip-version-check --no-cache-dir .
         pip install --disable-pip-version-check --no-cache-dir -e ".[test]"
