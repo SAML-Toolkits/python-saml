@@ -12,14 +12,16 @@ jobs:
       image: python:2.7.18-buster
     environment: CI
     steps:
+    - name: Checkout project
+      uses: actions/checkout@v3
     - name: Install dependencies
       run: |
         apt-get update -qq
         apt-get install -qq swig python-dev libxml2-dev libxmlsec1-dev
-        python --disable-pip-version-check --no-cache-dir -m pip install --upgrade pip
+        python -m pip install --upgrade --disable-pip-version-check --no-cache-dir pip
         pip install --force-reinstall --no-binary --no-cache-dir lxml lxml
-        pip install .
-        pip install -e ".[test]"
+        pip install --disable-pip-version-check --no-cache-dir .
+        pip install --disable-pip-version-check --no-cache-dir -e ".[test]"
 
     - name: Lint
       run: |
