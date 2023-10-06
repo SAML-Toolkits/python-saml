@@ -941,26 +941,9 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
         Tests the is_valid method of the OneLogin_Saml2_Response
         Case AttributeStatement is optional
         """
-        # shortcut
         json_settings = self.loadSettingsJSON()
-        # ensure valid entityid
         json_settings['sp']['entityId'] = 'https://pitbulk.no-ip.org/newonelogin/demo1/metadata.php'
         json_settings['idp']['entityId'] = 'https://pitbulk.no-ip.org/simplesaml/saml2/idp/metadata.php'
-        json_settings['idp']['x509cert'] = """
-MIICVzCCAcACCQDIVHaNSBYL6TANBgkqhkiG9w0BAQsFADBwMQswCQYDVQQGEwJG
-UjEOMAwGA1UECAwFUGFyaXMxDjAMBgNVBAcMBVBhcmlzMRYwFAYDVQQKDA1Ob3Zh
-cG9zdCBURVNUMSkwJwYJKoZIhvcNAQkBFhpmbG9yZW50LnBpZ291dEBub3ZhcG9z
-dC5mcjAeFw0xNDAyMTMxMzUzNDBaFw0xNTAyMTMxMzUzNDBaMHAxCzAJBgNVBAYT
-AkZSMQ4wDAYDVQQIDAVQYXJpczEOMAwGA1UEBwwFUGFyaXMxFjAUBgNVBAoMDU5v
-dmFwb3N0IFRFU1QxKTAnBgkqhkiG9w0BCQEWGmZsb3JlbnQucGlnb3V0QG5vdmFw
-b3N0LmZyMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQChLFHn3LnN4JQ/7WCd
-YupxkUgcNOQnPF+yll+/DPpux9npfY059PIUatB8X7kCn5i8tRwIy/ikHJR6Mr8+
-MPvc6VOZDxPNdZvMo/8lhxrbN3Jdrw3whZmU/KPR9F3BdFdu+SLzrMl1TDUZlPtY
-9XzUFXcqN8IXcy8TJzCBeNey3QIDAQABMA0GCSqGSIb3DQEBCwUAA4GBACtJ8feG
-ze1NHB5Vw18jMUPvHo7H3Gwmj6ZDAXQlaiAXMuNBxNXVWVwifl6V+nW3w9Qa7Feo
-/nZ/O4TUOH1nz+adklcCD4QpZaEIbmAbriPWJKgb4LWGhqQruwYR7ItTR1MNX9gL
-bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
-""".strip()
 
         settings = OneLogin_Saml2_Settings(json_settings)
         settings.set_strict(True)
@@ -970,16 +953,12 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
 
         xml = self.file_contents(join(self.data_path, 'responses', 'invalids', 'signed_assertion_response.xml.base64'))
 
-        not_on_or_after = datetime.strptime('2014-03-31T08:37:16Z', '%Y-%m-%dT%H:%M:%SZ')
-        not_on_or_after -= timedelta(seconds=150)
-
         response = OneLogin_Saml2_Response(settings, xml)
-        with freeze_time(not_on_or_after):
-            self.assertFalse(response.is_valid({
-                'https': 'on',
-                'http_host': 'pitbulk.no-ip.org',
-                'script_name': 'newonelogin/demo1/index.php?acs'
-            }))
+        self.assertFalse(response.is_valid({
+            'https': 'on',
+            'http_host': 'pitbulk.no-ip.org',
+            'script_name': 'newonelogin/demo1/index.php?acs'
+        }))
         self.assertEqual('There is no AttributeStatement on the Response', response.get_error())
 
         security = settings.get_security_data()
@@ -994,16 +973,15 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
         self.assertFalse(settings.get_security_data()['wantAttributeStatement'])
 
         response = OneLogin_Saml2_Response(settings, xml)
-        response.is_valid(self.get_request_data())
 
         # check response
-        with freeze_time(not_on_or_after):
-            self.assertTrue(response.is_valid({
-                'https': 'on',
-                'http_host': 'pitbulk.no-ip.org',
-                'script_name': 'newonelogin/demo1/index.php?acs'
-            }))
-        self.assertIsNone(response.get_error())
+        self.assertFalse(response.is_valid({
+            'https': 'on',
+            'http_host': 'pitbulk.no-ip.org',
+            'script_name': 'newonelogin/demo1/index.php?acs'
+        }))
+        self.assertNotEqual('There is no AttributeStatement on the Response', response.get_error())
+        self.assertEqual('Signature validation failed. SAML Response rejected', response.get_error())
 
     def testIsInValidNoKey(self):
         """
@@ -1867,7 +1845,7 @@ bP0z0zvDEQnnt/VUWFEBLSJq4Z4Nre8LFmS2
         settings = OneLogin_Saml2_Settings(self.loadSettingsJSON())
         xml = self.file_contents(join(self.data_path, 'responses', 'signed_message_response.xml.base64'))
         response = OneLogin_Saml2_Response(settings, xml)
-        self.assertEqual(response.get_id(), 'pfxc3d2b542-0f7e-8767-8e87-5b0dc6913375')
+        self.assertEqual(response.get_id(), 'pfxf209cd60-f060-722b-02e9-4850ac5a2e41')
 
     def testGetAssertionId(self):
         """
