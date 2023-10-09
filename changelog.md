@@ -1,4 +1,10 @@
 # python-saml changelog
+### 2.13.0 (Oct 9, 2023)
+- Improve get_metadata method from Parser, allowing to set timeouts and headers
+- Fix expired payloads used on tests
+- Updated content from docs folder
+- Remove references of OneLogin as maintainer
+
 ### 2.12.0 (Dec 28, 2022)
 - Remove version restriction on lxml dependency
 - Update Demo Bottle
