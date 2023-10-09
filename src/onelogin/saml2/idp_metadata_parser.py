@@ -27,7 +27,7 @@ class OneLogin_Saml2_IdPMetadataParser(object):
     """
 
     @staticmethod
-    def get_metadata(url, validate_cert=True):
+    def get_metadata(url, validate_cert=True, timeout=None, headers=None):
         """
         Gets the metadata XML from the provided URL
 
@@ -37,17 +37,26 @@ class OneLogin_Saml2_IdPMetadataParser(object):
         :param validate_cert: If the url uses https schema, that flag enables or not the verification of the associated certificate.
         :type validate_cert: bool
 
+        :param timeout: Timeout in seconds to wait for metadata response
+        :type timeout: int
+
+        :param headers: Extra headers to send in the request
+        :type headers: dict
+
         :returns: metadata XML
         :rtype: string
         """
         valid = False
+
+        request = urllib2.Request(url, headers=headers or {})
+
         if validate_cert:
-            response = urllib2.urlopen(url)
+            response = urllib2.urlopen(request, timeout=timeout)
         else:
             ctx = ssl.create_default_context()
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
-            response = urllib2.urlopen(url, context=ctx)
+            response = urllib2.urlopen(request, context=ctx, timeout=timeout)
         xml = response.read()
 
         if xml:
@@ -65,7 +74,7 @@ class OneLogin_Saml2_IdPMetadataParser(object):
         return xml
 
     @staticmethod
-    def parse_remote(url, validate_cert=True, entity_id=None, **kwargs):
+    def parse_remote(url, validate_cert=True, entity_id=None, timeout=None, **kwargs):
         """
         Gets the metadata XML from the provided URL and parse it, returning a dict with extracted data
 
@@ -79,10 +88,13 @@ class OneLogin_Saml2_IdPMetadataParser(object):
                           that contains multiple EntityDescriptor.
         :type entity_id: string
 
+        :param timeout: Timeout in seconds to wait for metadata response
+        :type timeout: int
+
         :returns: settings dict with extracted data
         :rtype: dict
         """
-        idp_metadata = OneLogin_Saml2_IdPMetadataParser.get_metadata(url, validate_cert)
+        idp_metadata = OneLogin_Saml2_IdPMetadataParser.get_metadata(url, validate_cert, timeout, headers=kwargs.pop('headers', None))
         return OneLogin_Saml2_IdPMetadataParser.parse(idp_metadata, entity_id=entity_id, **kwargs)
 
     @staticmethod
