@@ -24,16 +24,14 @@ class OneLogin_Saml2_Response_Test(unittest.TestCase):
     def loadSettingsJSON(self, name='settings1.json'):
         filename = join(self.settings_path, name)
         if exists(filename):
-            stream = open(filename, 'r')
-            settings = json.load(stream)
-            stream.close()
-            return settings
+            with open(filename, 'r') as stream:
+                settings = json.load(stream)
+                return settings
 
     def file_contents(self, filename):
-        f = open(filename, 'r')
-        content = f.read()
-        f.close()
-        return content
+        with open(filename, 'r') as f:
+            content = f.read()
+            return content
 
     def get_request_data(self):
         return {
