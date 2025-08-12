@@ -172,7 +172,7 @@ A replay attack is basically try to reuse an intercepted valid SAML Message in o
 SAML Messages have a limited timelife (NotBefore, NotOnOrAfter) that
 make harder this kind of attacks, but they are still possible.
 
-In order to avoid them, the SP can keep a list of SAML Messages or Assertion IDs alredy valdidated and processed. Those values only need
+In order to avoid them, the SP can keep a list of SAML Messages or Assertion IDs already valdidated and processed. Those values only need
 to be stored the amount of time of the SAML Message life time, so
 we don't need to store all processed message/assertion Ids, but the most recent ones.
 
@@ -647,7 +647,7 @@ req = {
 ```
 
 Each Python framework built its own ``request`` object, you may map its data to match what the SAML toolkit expects.
-Let`s see some examples:
+Let's see some examples:
 
 ```python
 def prepare_from_django_request(request):
@@ -689,7 +689,7 @@ The ``AuthNRequest`` will be sent signed or unsigned based on the security info 
 
 The IdP will then return the SAML Response to the user's client. The client is then forwarded to the **Assertion Consumer Service (ACS)** of the SP with this information.
 
-We can set a ``return_to`` url parameter to the login function and that will be converted as a ``RelayState`` parameter:
+We can set a ``return_to`` URL parameter to the login function and that will be converted as a ``RelayState`` parameter:
 
 ```python
 target_url = 'https://example.com'
@@ -711,7 +711,7 @@ auth.get_last_request_id()
 #### The SP Endpoints ####
 
 Related to the SP there are 3 important endpoints: The metadata view, the ACS view and the SLS view.
-The toolkit provides examples of those views in the demos, but lets see an example.
+The toolkit provides examples of those views in the demos, but let's see an example.
 
 *** SP Metadata ***
 
@@ -891,7 +891,7 @@ The Logout Request will be sent signed or unsigned based on the security info of
 
 The IdP will return the Logout Response through the user's client to the Single Logout Service (SLS) of the SP.
 
-We can set a ``return_to`` url parameter to the logout function and that will be converted as a ``RelayState`` parameter:
+We can set a ``return_to`` URL parameter to the logout function and that will be converted as a ``RelayState`` parameter:
 
 ```python
 target_url = 'https://example.com'
@@ -1020,7 +1020,7 @@ Main class of SAML Python Toolkit
 * ***logout*** Initiates the SLO process.
 * ***process_response*** Process the SAML Response sent by the IdP.
 * ***process_slo*** Process the SAML Logout Response / Logout Request sent by the IdP.
-* ***redirect_to*** Redirects the user to the url past by parameter or to the url that we defined in our SSO Request.
+* ***redirect_to*** Redirects the user to the URL passed by parameter or to the URL that we defined in our SSO Request.
 * ***is_authenticated*** Checks if the user is authenticated or not.
 * ***get_attributes*** Returns the set of SAML attributes.
 * ***get_attribute*** Returns the requested SAML attribute.
@@ -1029,8 +1029,8 @@ Main class of SAML Python Toolkit
 * ***get_session_expiration*** Gets the ``SessionNotOnOrAfter`` from the ``AuthnStatement``.
 * ***get_errors*** Returns a list with code errors if something went wrong.
 * ***get_last_error_reason*** Returns the reason of the last error
-* ***get_sso_url*** Gets the SSO url.
-* ***get_slo_url*** Gets the SLO url.
+* ***get_sso_url*** Gets the SSO URL.
+* ***get_slo_url*** Gets the SLO URL.
 * ***get_last_request_id*** The ``ID`` of the last Request SAML message generated (``AuthNRequest``, ``LogoutRequest``).
 * ***get_last_authn_contexts*** Returns the list of authentication contexts sent in the last SAML Response.
 * ***build_request_signature*** Builds the Signature of the SAML Request.
@@ -1155,7 +1155,7 @@ Auxiliary class that contains several methods
 * ***validate_xml*** Validates a xml against a schema.
 * ***format_cert*** Returns a X.509 cert (adding header & footer if required).
 * ***format_private_key*** Returns a private key (adding header & footer if required).
-* ***redirect*** Executes a redirection to the provided url (or return the target url).
+* ***redirect*** Executes a redirection to the provided URL (or return the target URL).
 * ***get_self_url_host*** Returns the protocol + the current host + the port (if different than common ports).
 * ***get_self_host*** Returns the current host.
 * ***is_https*** Checks if https or http.
@@ -1179,7 +1179,7 @@ Auxiliary class that contains several methods
 * ***add_sign*** Adds signature key and senders certificate to an element (Message or Assertion).
 * ***validate_sign*** Validates a signature (Message or Assertion).
 * ***validate_binary_sign*** Validates signed bynary data (Used to validate GET Signature).
-* ***def get_encoded_parameter*** Return an url encoded get parameter value
+* ***def get_encoded_parameter*** Return an URL encoded get parameter value
 * ***extract_raw_query_parameter***
 
 #### OneLogin_Saml2_IdPMetadataParser - idp_metadata_parser.py ####
@@ -1202,12 +1202,12 @@ Demos included in the toolkit
 The toolkit includes 4 demos to teach how use the toolkit (Django, Flask, Pyramid and Bootle projects), take a look on them.
 Demos require that SP and IdP are well configured before test it, so edit the settings files.
 
-Notice that each python framework has it own way to handle routes/urls and process request, so focus on
+Notice that each python framework has it own way to handle routes/URLs and process request, so focus on
 how it deployed. New demos using other python frameworks are welcome as a contribution.
 
 ### Getting Started ###
 
-We said that this toolkit includes a demos, lets see how fast is deploy some of them.
+We said that this toolkit includes a demos, let's see how fast is deploy some of them.
 
 *** Virtualenv ***
 
@@ -1276,7 +1276,7 @@ First we need to edit the ``saml/settings.json``, configure the SP part and  rev
 
 #### IdP setup ####
 
-Once the SP is configured, the metadata of the SP is published at the ``/metadata`` url. Based on that info, configure the IdP.
+Once the SP is configured, the metadata of the SP is published at the ``/metadata`` URL. Based on that info, configure the IdP.
 
 #### How it works ####
 
@@ -1284,15 +1284,15 @@ Once the SP is configured, the metadata of the SP is published at the ``/metadat
 
  2. When you click:
 
-    2.1 in the first link, we access to ``/?sso`` (index view). An ``AuthNRequest`` is sent to the IdP, we authenticate at the IdP and then a Response is sent through the user's client to the SP, specifically the Assertion Consumer Service view: /?acs. Notice that a RelayState parameter is set to the url that initiated the process, the index view.
+    2.1 in the first link, we access to ``/?sso`` (index view). An ``AuthNRequest`` is sent to the IdP, we authenticate at the IdP and then a Response is sent through the user's client to the SP, specifically the Assertion Consumer Service view: /?acs. Notice that a RelayState parameter is set to the URL that initiated the process, the index view.
 
-    2.2 in the second link we access to ``/?attrs`` (attrs view), we will expetience have the same process described at 2.1 with the diference that as ``RelayState`` is set the attrs url.
+    2.2 in the second link we access to ``/?attrs`` (attrs view), we will experience the same process as described at 2.1 with the difference that as ``RelayState`` is set the attrs url.
 
  3. The ``SAMLResponse`` is processed in the ACS ``/?acs``, if the Response is not valid, the process stops here and a message is shown. Otherwise we are redirected to the ``RelayState`` view. a) / or b) ``/?attrs``
 
  4. We are logged in the app and the user attributes are showed. At this point, we can test the single log out functionality.
 
- The single log out funcionality could be tested by 2 ways.
+ The single log out functionality could be tested by 2 ways.
 
     5.1 SLO Initiated by SP. Click on the ``logout`` link at the SP, after that a Logout Request is sent to the IdP, the session at the IdP is closed and replies through the client to the SP with a Logout Response (sent to the Single Logout Service endpoint). The SLS endpoint ``/?sls`` of the SP process the Logout Response and if is valid, close the user session of the local app. Notice that the SLO Workflow starts and ends at the SP.
 
@@ -1333,7 +1333,7 @@ The django project contains:
 
 * ***demo*** Is the main folder of the django project, that contains the typical files:
   * ***settings.py*** Contains the default parameters of a django project except the SAML_FOLDER parameter, that may contain the path where is located the 'saml' folder.
-  * ***urls.py*** A file that define url routes. In the demo we defined ``/`` that is related to the index view, ``/attrs`` that is related with the attrs view and ``/metadata``, related to th metadata view.
+  * ***urls.py*** A file that defines URL routes. In the demo we defined ``/`` that is related to the index view, ``/attrs`` that is related with the attrs view and ``/metadata``, related to th metadata view.
   * ***views.py*** This file contains the views of the django project and some aux methods.
   * ***wsgi.py*** A file that let as deploy django using WSGI, the Python standard for web servers and applications.
 
@@ -1404,7 +1404,7 @@ First we need to edit the ``saml/settings.json``, configure the SP part and revi
 
 #### IdP setup ####
 
-Once the SP is configured, the metadata of the SP is published at the ``/metadata/`` url. Based on that info, configure the IdP.
+Once the SP is configured, the metadata of the SP is published at the ``/metadata/`` URL. Based on that info, configure the IdP.
 
 #### How it works ####
 
@@ -1412,15 +1412,15 @@ Once the SP is configured, the metadata of the SP is published at the ``/metadat
 
  2. When you click:
 
-    2.1 in the first link, we access to ``/?sso`` (index view). An ``AuthNRequest`` is sent to the IdP, we authenticate at the IdP and then a Response is sent through the user's client to the SP, specifically the Assertion Consumer Service view: ``/?acs``. Notice that a RelayState parameter is set to the url that initiated the process, the index view.
+    2.1 in the first link, we access to ``/?sso`` (index view). An ``AuthNRequest`` is sent to the IdP, we authenticate at the IdP and then a Response is sent through the user's client to the SP, specifically the Assertion Consumer Service view: ``/?acs``. Notice that a RelayState parameter is set to the URL that initiated the process, the index view.
 
-    2.2 in the second link we access to ``/?attrs`` (attrs view), we will expetience have the same process described at 2.1 with the diference that as ``RelayState`` is set the attrs url.
+    2.2 in the second link we access to ``/?attrs`` (attrs view), we will experience the same process as described at 2.1 with the difference that as ``RelayState`` is set the attrs URL.
 
  3. The SAML Response is processed in the ACS ``/?acs``, if the Response is not valid, the process stops here and a message is shown. Otherwise we are redirected to the ``RelayState`` view. a) / or b) ``/?attrs``
 
  4. We are logged in the app and the user attributes are showed. At this point, we can test the single log out functionality.
 
- The single log out funcionality could be tested by 2 ways.
+ The single log out functionality could be tested by 2 ways.
 
     5.1 SLO Initiated by SP. Click on the ``logout`` link at the SP, after that a Logout Request is sent to the IdP, the session at the IdP is closed and replies through the client to the SP with a Logout Response (sent to the Single Logout Service endpoint). The SLS endpoint ``/?sls`` of the SP process the Logout Response and if is valid, close the user session of the local app. Notice that the SLO Workflow starts and ends at the SP.
 
